@@ -1,0 +1,162 @@
+/* Custom styles for the sensor dashboard */
+
+/* Primary color variables */
+:root {
+    --primary-dark: #121212;
+    --primary-bg: #1e1e1e;
+    --card-bg: #252525;
+    --text-color: #e0e0e0;
+    --border-color: #333;
+    --highlight-color: #0d6efd;
+    --highlight-hover: #0b5ed7;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #0dcaf0;
+  }
+  
+  /* Ensure content takes up full height */
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Sensor button styling */
+  .sensor-button {
+    transition: all 0.2s ease-in-out;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .sensor-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(13, 110, 253, 0.2);
+  }
+  
+  .sensor-button.active {
+    background-color: var(--highlight-color);
+    color: white;
+    border-color: var(--highlight-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+  }
+  
+  .sensor-button.active .sensor-unit {
+    color: rgba(255, 255, 255, 0.8) ;
+  }
+  
+  .sensor-name {
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+    display: block;
+  }
+  
+  .sensor-unit {
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+  
+  /* Sensor panel styling */
+  .sensor-panel {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+  }
+  
+  /* Visualization container */
+  .visualization-container {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Loading spinner */
+  .loading-spinner {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  /* Error alert */
+  .error-message {
+    max-width: 600px;
+    margin: 2rem auto;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .visualization-container {
+      min-height: 300px;
+    }
+    
+    .sensor-button {
+      min-height: 60px;
+    }
+    
+    .sensor-name {
+      font-size: 0.8rem;
+    }
+    
+    .sensor-unit {
+      font-size: 0.7rem;
+    }
+  }
+  
+  /* Chart container */
+  .chart-container {
+    width: 100%;
+    height: 400px;
+    margin: 0 auto;
+  }
+  
+  /* CSV data preview table */
+  .csv-preview {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 1rem;
+    background-color: var(--card-bg);
+    border-radius: 0.25rem;
+  }
+  
+  /* Header styles */
+  .app-header {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Footer styles */
+  .app-footer {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #888;
+  }
+  
+  /* Active sensor badge */
+  #active-sensor-badge {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.65rem;
+  }
+  
+  /* Initial message styling */
+  #initial-message {
+    color: var(--text-color);
+    opacity: 0.6;
+  }
+  
+  /* Sticky sidebar adjustments */
+  .sticky-top {
+    top: 1rem;
+  }
+  
