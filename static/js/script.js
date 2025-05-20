@@ -27,6 +27,11 @@ document.addEventListener("DOMContentLoaded", () => {
         // Sensor ist schon aktiv → entferne ihn
         activeSensors.delete(sensorId);
         button.classList.remove("active");
+        button.classList.remove("active");
+        button.style.backgroundColor = '';
+        button.style.color = '';
+        button.dataset.active = "false";
+
         redrawPlot(activeSensors);
       } else {
         // Sensor neu hinzufügen
@@ -39,7 +44,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             activeSensors.set(sensorId, data);
-            button.classList.add("active");
+            const color = sensorColors[sensorId] || 'black';
+            button.style.backgroundColor = color;
+            button.style.color = 'white';  // optional, für Kontrast
+            button.dataset.active = "true";  // zum Zurücksetzen später
+
             redrawPlot(activeSensors);
           });
       }
