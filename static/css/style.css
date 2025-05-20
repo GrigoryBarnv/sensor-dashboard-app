@@ -24,14 +24,19 @@
   
   /* Sensor button styling */
   .sensor-button {
-    transition: all 0.2s ease-in-out;
-    min-height: 70px;
+    transition: all 0.3s ease-in-out;
+    min-height: 40px;
+    max-width: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 0.5rem;
     overflow: hidden;
     position: relative;
+  }
+
+  .col-12 {
+    display: flex-wrap;
   }
   
   .sensor-button:hover {
@@ -160,3 +165,9 @@
     top: 1rem;
   }
   
+  
+  .sensor-button.active {
+  background-color: #0d6efd;  /* Bootstrap primary */
+  color: white;
+  border-color: #0d6efd;
+ }
