@@ -12,220 +12,198 @@
 </head>
 
 <body>
+
     <div class="container py-4">
-        <header class="app-header text-center">
-            <h1 class="display-5 fw-bold">Sensor-Daten-Dashboard</h1>
-            <p class="lead">Interaktive Visualisierung von CSV-Sensordaten</p>
-        </header>
+      <header class="app-header text-center position-relative">
+  <div class="language-switch position-absolute top-0 end-0 p-2">
+    <button id="btn-de" class="btn btn-sm btn-outline-light me-1" onclick="setLanguage('de')">🇩🇪</button>
+    <button id="btn-en" class="btn btn-sm btn-outline-light" onclick="setLanguage('en')">🇬🇧</button>
+  </div>
+
+  <h1 class="display-5 fw-bold" data-i18n="mainTitle">Sensor Daten Dashboard</h1>
+  <p class="lead" data-i18n="subtitle">Interaktive Visualisierung von CSV-Sensordaten</p>
+</header>
+
 
         <main>
-            <div class="row">
-                <div class="col">  fefef
-                    <div class="sticky-top pt-3">
-                        <div class="sensor-panel mb-4">
-                            <h4 class="mb-3">Sensor auswählen</h4>
-                            <div class="sensor-buttons d-grid" style="grid-template-columns: repeat(6, 1fr); gap: 0.3rem;">
 
-                                <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
-                                    data-sensor-id="MQ2">
-                                    <div class="d-flex flex-column align-items-center text-center">
-                                        <span class="sensor-name">MQ2 Sensor</span>
-                                        <small class="sensor-unit text-muted">Ohm</small>
-                                    </div>
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
-                                    data-sensor-id="MQ3_1">
-                                    <div class="d-flex flex-column align-items-center text-center">
-                                        <span class="sensor-name">MQ3_1 Sensor</span>
-                                        <small class="sensor-unit text-muted">Ohm</small>
-                                    </div>
-                                </button>
+            <div class="d-flex justify-content-center">
+                <div class="sticky-top pt-3">
+                    <div class="sensor-panel mb-4">
+                        <h4 class="mb-3" data-i18n="selectSensor">Sensor auswählen</h4>
 
-                                <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
-                                    data-sensor-id="MQ3_10">
 
-                                    <div class="d-flex flex-column align-items-center text-center">
-                                        <div class="d-flex flex-column align-items-center text-center">
-                                            <span class="sensor-name">MQ3_10 Sensor</span>
-                                            <small class="sensor-unit text-muted">Ohm</small>
-                                        </div>
-                                    </div>
-                                </button>
+                        <div class="sensor-buttons">
 
-                                <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
-                                    data-sensor-id="MQ4">
-                                    <div class="d-flex flex-column align-items-center text-center">
-                                        <span class="sensor-name">MQ4 Sensor</span>
-                                        <small class="sensor-unit text-muted">Ohm</small>
-                                    </div>
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
-                                    data-sensor-id="MQ5">
-                                    <div class="d-flex flex-column align-items-center text-center">
-                                        <span class="sensor-name">MQ5 Sensor</span>
-                                        <small class="sensor-unit text-muted">Ohm</small>
-                                    </div>
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
-                                    data-sensor-id="MQ6">
-                                    <div class="d-flex flex-column align-items-center text-center">
-                                        <span class="sensor-name">MQ6 Sensor</span>
-                                        <small class="sensor-unit text-muted">Ohm</small>
-                                    </div>
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
-                                    data-sensor-id="MQ8">
-                                    <div class="d-flex flex-column align-items-center text-center">
-                                        <span class="sensor-name">MQ8 Sensor</span>
-                                        <small class="sensor-unit text-muted">Ohm</small>
-                                    </div>
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
-                                    data-sensor-id="MQ9">
-                                    <div class="d-flex flex-column align-items-center text-center">
-                                        <span class="sensor-name">MQ9 Sensor</span>
-                                        <small class="sensor-unit text-muted">Ohm</small>
-                                    </div>
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
-                                    data-sensor-id="MQ135">
-                                    <div class="d-flex flex-column align-items-center text-center">
-                                        <span class="sensor-name">MQ135 Sensor</span>
-                                        <small class="sensor-unit text-muted">Ohm</small>
-                                    </div>
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
-                                    data-sensor-id="MQ136">
-                                    <div class="d-flex flex-column align-items-center text-center">
-                                        <span class="sensor-name">MQ136 Sensor</span>
-                                        <small class="sensor-unit text-muted">Ohm</small>
-                                    </div>
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
-                                    data-sensor-id="MQ137">
-                                    <div class="d-flex flex-column align-items-center text-center">
-                                        <span class="sensor-name">MQ137 Sensor</span>
-                                        <small class="sensor-unit text-muted">Ohm</small>
-                                    </div>
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
-                                    data-sensor-id="MQ138">
-                                    <div class="d-flex flex-column align-items-center text-center">
-                                        <span class="sensor-name">MQ138 Sensor</span>
-                                        <small class="sensor-unit text-muted">Ohm</small>
-                                    </div>
-                                </button>
-                            </div>
-                        </div>
+                            <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
+                                data-sensor-id="MQ2">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <span class="sensor-name">MQ2 Sensor</span>
+                                </div>
+                            </button>
+                            <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
+                                data-sensor-id="MQ3_1">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <span class="sensor-name">MQ3_1 Sensor</span>
+                                </div>
+                            </button>
 
-                        <div class="mt-4">
-                            <button id="csv-preview-toggle" class="btn btn-sm btn-outline-secondary">CSV-Vorschau
-                                anzeigen</button>
-                            <div id="csv-preview" class="csv-preview d-none">
-                                {% if csv_data_preview %}
-                                <div class="p-2">
-                                    <h6>Datei: {{ csv_data_preview.filename }}</h6>
-                                    <p class="small">Zeilen: {{ csv_data_preview.rows }} | Spalten: {{
-                                        csv_data_preview.columns|length }}</p>
-                                    <div class="table-responsive">
-                                        <table class="table table-sm table-dark">
-                                            <thead>
-                                                <tr>
-                                                    {% for col in csv_data_preview.columns %}
-                                                    <th>{{ col }}</th>
-                                                    {% endfor %}
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for row in csv_data_preview.preview %}
-                                                <tr>
-                                                    {% for col in csv_data_preview.columns %}
-                                                    <td>{{ row[col] }}</td>
-                                                    {% endfor %}
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
+                            <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
+                                data-sensor-id="MQ3_10">
+
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <div class="d-flex flex-column align-items-center text-center">
+                                        <span class="sensor-name">MQ3_10 Sensor</span>
+
                                     </div>
                                 </div>
-                                {% else %}
-                                <div class="p-2">
-                                    <p>Keine CSV-Daten verfügbar.</p>
+                            </button>
+
+                            <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
+                                data-sensor-id="MQ4">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <span class="sensor-name">MQ4 Sensor</span>
                                 </div>
-                                {% endif %}
-                            </div>
+                            </button>
+                            <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
+                                data-sensor-id="MQ5">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <span class="sensor-name">MQ5 Sensor</span>
+                                </div>
+                            </button>
+                            <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
+                                data-sensor-id="MQ6">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <span class="sensor-name">MQ6 Sensor</span>
+                                </div>
+                            </button>
+                            <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
+                                data-sensor-id="MQ8">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <span class="sensor-name">MQ8 Sensor</span>
+                                </div>
+                            </button>
+                            <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
+                                data-sensor-id="MQ9">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <span class="sensor-name">MQ9 Sensor</span>
+                                </div>
+                            </button>
+                            <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
+                                data-sensor-id="MQ135">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <span class="sensor-name">MQ135 Sensor</span>
+                                </div>
+                            </button>
+                            <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
+                                data-sensor-id="MQ136">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <span class="sensor-name">MQ136 Sensor</span>
+                                </div>
+                            </button>
+                            <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
+                                data-sensor-id="MQ137">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <span class="sensor-name">MQ137 Sensor</span>
+                                </div>
+                            </button>
+                            <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
+                                data-sensor-id="MQ138">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <span class="sensor-name">MQ138 Sensor</span>
+                                </div>
+                            </button>
                         </div>
                     </div>
+
+
                 </div>
+            </div>
 
 
 
-                
 
-                <div class="col-md-9">
 
-                    <!-- container for holding the visualization -->
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h4 id="visualization-title">Ausgewählter Sensor</h4>
-                            <span id="active-sensor-badge" class="badge bg-primary d-none">Sensor</span>
+            <div class="main-content-wrapper">
+
+                <!-- container for holding the visualization -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 id="visualization-title" data-i18n="selectedSensor">Ausgewählter Sensor</h4>
+                        <span id="active-sensor-badge" class="badge bg-primary d-none" data-i18n="sensor">Sensor</span>
+                    </div>
+
+                    <div class="card-body visualization-container">
+                        <!-- Ladespinner -->
+                        <div id="loading-spinner" class="spinner-border loading-spinner d-none" role="status">
+                            <span class="visually-hidden" data-i18n="loading">Lade...</span>
                         </div>
-                        <div class="card-body visualization-container">
-                            <div id="loading-spinner" class="spinner-border loading-spinner d-none" role="status">
-                                <span class="visually-hidden">Lade...</span>
-                            </div>
-                            <div id="error-container" class="alert alert-danger error-message d-none" role="alert">
-                            </div>
 
-                            <!-- container for chart -->
-                            <div id="chart-container" class="chart-container">
-                                <div id="plot" style="width: 100%; height: 400px;"></div>
-                            </div>
+                        <!-- Fehleranzeige (optional dynamisch einfügen) -->
+                        <div id="error-container" class="alert alert-danger error-message d-none" role="alert">
+                            <!-- Wird dynamisch befüllt -->
+                        </div>
 
-                            <div id="initial-message" class="text-center p-5 d-none">
-                                <p class="lead text-muted">Bitte wählen Sie einen Sensor aus der linken Liste</p>
-                            </div>
+                        <!-- Plot-Container -->
+                        <div id="chart-container" class="chart-container">
+                            <div id="plot" style="width: 100%; height: 400px;"></div>
+                        </div>
+
+                        <!-- Hinweis bei Nicht-Auswahl -->
+                        <div id="initial-message" class="text-center p-5 d-none">
+                            <p class="lead text-muted" data-i18n="selectSensorHint">
+                                Bitte wählen Sie einen Sensor aus der linken Liste
+                            </p>
                         </div>
                     </div>
 
                     <div class="card mt-3">
                         <div class="card-body">
-                            <h5>Über die MQ-Gassensoren</h5>
-                            <p>Klicken Sie auf einen Sensor, um dessen Datenvisualisierung anzuzeigen.</p>
-                            <p>Unterstützte Sensor-Typen:</p>
+                            <h5 data-i18n="aboutSensors">Über die MQ-Gassensoren</h5>
+                            <p data-i18n="clickSensor">Klicken Sie auf einen Sensor, um dessen Datenvisualisierung
+                                anzuzeigen.</p>
+                            <p data-i18n="supportedTypes">Unterstützte Sensor-Typen:</p>
                             <div class="row">
                                 <div class="col-md-6">
                                     <ul>
-                                        <li><strong>MQ2:</strong> Beschreibung MQ2</li>
-                                        <li><strong>MQ3_1:</strong> Beschreibung MQ3</li>
-                                        <li><strong>MQ3_10:</strong> Beschreibung MQ3</li>
-                                        <li><strong>MQ4:</strong> Beschreibung MQ4</li>
-                                        <li><strong>MQ5:</strong> Beschreibung MQ5</li>
-                                        <li><strong>MQ6:</strong> Beschreibung MQ6</li>
+                                        <li data-i18n="mq2"><strong>MQ2:</strong> Methan, Butan, LPG</li>
+                                        <li data-i18n="mq3_1"><strong>MQ3_1:</strong> Ethanol</li>
+                                        <li data-i18n="mq3_10"><strong>MQ3_10:</strong> Ethanol</li>
+                                        <li data-i18n="mq4"><strong>MQ4:</strong> Methan, CNG</li>
+                                        <li data-i18n="mq5"><strong>MQ5:</strong> Natürliche Gase, LPG</li>
+                                        <li data-i18n="mq6"><strong>MQ6:</strong> LPG, Butan</li>
                                     </ul>
                                 </div>
                                 <div class="col-md-6">
                                     <ul>
-                                        <li><strong>MQ8:</strong> Beschreibung MQ8</li>
-                                        <li><strong>MQ9:</strong>Beschreibung MQ9</li>
-                                        <li><strong>MQ135:</strong>Beschreibung MQ135</li>
-                                        <li><strong>MQ136:</strong>Beschreibung MQ136</li>
-                                        <li><strong>MQ137:</strong> Beschreibung MQ137</li>
-                                        <li><strong>MQ138:</strong> Beschreibung MQ138</li>
+                                        <li data-i18n="mq8"><strong>MQ8:</strong> Wasserstoff</li>
+                                        <li data-i18n="mq9"><strong>MQ9:</strong> Kohlenstoffmonoxid</li>
+                                        <li data-i18n="mq135"><strong>MQ135:</strong> Ammoniak, Stickoxide, Benzol, CO2
+                                        </li>
+                                        <li data-i18n="mq136"><strong>MQ136:</strong> Schwefelwasserstoff</li>
+                                        <li data-i18n="mq137"><strong>MQ137:</strong> Ammoniak</li>
+                                        <li data-i18n="mq138"><strong>MQ138:</strong> Toluol, Alkohol, Aceton,
+                                            Wasserstoff</li>
                                     </ul>
                                 </div>
+
                             </div>
-                            <p class="mt-3"><small>Die Sensorwerte repräsentieren Daten. niedrigere Werte deuten auf
-                                    eine höhere Gaskonzentration hin.</small></p>
+                            <p class="mt-3">
+                                <small data-i18n="sensorHint">
+                                    Die Sensorwerte repräsentieren Daten. Niedrigere Werte deuten auf eine höhere
+                                    Gaskonzentration hin.
+                                </small>
+                            </p>
+
                         </div>
                     </div>
                 </div>
-            </div>
-        </main>
 
+        </main>
         <footer class="app-footer">
-            <p>&copy; 2025 Sensor-Daten-Dashboard</p>
+            <p data-i18n="footer">&copy; 2025 Sensor-Daten-Dashboard</p>
         </footer>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>

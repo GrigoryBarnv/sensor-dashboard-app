@@ -15,14 +15,191 @@ const sensorColors = {
 
 
 
+
+// Sprachdaten in einem Objekt speichern
+const translations = {
+  de: {
+    pageTitle: "Sensor-Daten-Dashboard",
+    mainTitle: "Sensor Daten Dashboard",
+    subtitle: "Interaktive Visualisierung von CSV-Sensordaten",
+    selectSensor: "Sensor auswählen",
+    selectedSensor: "Ausgewählter Sensor",
+    sensor: "Sensor",
+    loading: "Lade...",
+    selectSensorHint: "Bitte wählen Sie einen Sensor aus der linken Liste",
+    aboutSensors: "Über die MQ-Gassensoren",
+    clickSensor: "Klicken Sie auf einen Sensor, um dessen Datenvisualisierung anzuzeigen.",
+    supportedTypes: "Unterstützte Sensor-Typen:",
+    sensorHint: "Die Sensorwerte repräsentieren Daten. Niedrigere Werte deuten auf eine höhere Gaskonzentration hin.",
+    footer: "&copy; 2025 Sensor-Daten-Dashboard",
+    // Sensor Gase
+    MQ2: "Methan, Butan, LPG",
+    MQ3_1: "Ethanol",
+    MQ3_10: "Ethanol",
+    MQ4: "Methan, CNG",
+    MQ5: "Natürliche Gase, LPG",
+    MQ6: "LPG, Butan",
+    MQ8: "Wasserstoff",
+    MQ9: "Kohlenstoffmonoxid",
+    MQ135: "Ammoniak, Stickoxide, Benzol, CO2",
+    MQ136: "Schwefelwasserstoff",
+    MQ137: "Ammoniak",
+    MQ138: "Toluol, Alkohol, Aceton, Wasserstoff",
+    sensorGases: {
+      MQ2: "Methan, Butan, LPG",
+      MQ3_1: "Ethanol",
+      MQ3_10: "Ethanol",
+      MQ4: "Methan, CNG",
+      MQ5: "Natürliche Gase, LPG",
+      MQ6: "LPG, Butan",
+      MQ8: "Wasserstoff",
+      MQ9: "Kohlenstoffmonoxid",
+      MQ135: "Ammoniak, Stickoxide, Benzol, CO2",
+      MQ136: "Schwefelwasserstoff",
+      MQ137: "Ammoniak",
+      MQ138: "Toluol, Alkohol, Aceton, Wasserstoff"
+    }
+
+  },
+
+  en: {
+    pageTitle: "Sensor Data Dashboard",
+    mainTitle: "Sensor Data Dashboard",
+    subtitle: "Interactive visualization of CSV sensor data",
+    selectSensor: "Select sensor",
+    selectedSensor: "Selected Sensor",
+    sensor: "Sensor",
+    loading: "Loading...",
+    selectSensorHint: "Please select a sensor from the list on the left",
+    aboutSensors: "About MQ Gas Sensors",
+    clickSensor: "Click on a sensor to display its data visualization.",
+    supportedTypes: "Supported sensor types:",
+    sensorHint: "The sensor values represent data. Lower values indicate a higher gas concentration.",
+    footer: "&copy; 2025 Sensor Data Dashboard",
+    // Sensor gases
+    MQ2: "Methane, Butane, LPG",
+    MQ3_1: "Ethanol",
+    MQ3_10: "Ethanol",
+    MQ4: "Methane, CNG",
+    MQ5: "Natural gases, LPG",
+    MQ6: "LPG, Butane",
+    MQ8: "Hydrogen",
+    MQ9: "Carbon monoxide",
+    MQ135: "Ammonia, Nitrogen oxides, Benzene, CO2",
+    MQ136: "Hydrogen sulfide",
+    MQ137: "Ammonia",
+    MQ138: "Toluene, Alcohol, Acetone, Hydrogen",
+    sensorGases: {
+      MQ2: "Methane, Butane, LPG",
+      MQ3_1: "Ethanol",
+      MQ3_10: "Ethanol",
+      MQ4: "Methane, CNG",
+      MQ5: "Natural gases, LPG",
+      MQ6: "LPG, Butane",
+      MQ8: "Hydrogen",
+      MQ9: "Carbon monoxide",
+      MQ135: "Ammonia, Nitrogen oxides, Benzene, CO2",
+      MQ136: "Hydrogen sulfide",
+      MQ137: "Ammonia",
+      MQ138: "Toluene, Alcohol, Acetone, Hydrogen"
+    }
+  }
+};
+
+
+
+
+//die Funktion zum aktualisieren der Tooltips, damit die Sprache passend ist ohne neu laden
+function updateSensorTooltips(lang) {
+  const gases = translations[lang].sensorGases;
+
+  document.querySelectorAll(".sensor-button").forEach(button => {
+    const sensorId = button.getAttribute("data-sensor-id");
+    const newTitle = gases[sensorId] || "-";
+
+    // ❗ Zuerst alten Tooltip zerstören
+    const oldTooltip = bootstrap.Tooltip.getInstance(button);
+    if (oldTooltip) oldTooltip.dispose();
+
+    // ❗ Alles Bereinigen, inkl. Bootstrap-internem Cache
+    button.removeAttribute("data-bs-original-title");
+    button.removeAttribute("aria-describedby");
+    button.setAttribute("title", newTitle);
+
+    // ❗ Tooltip neu erzeugen
+    new bootstrap.Tooltip(button, {
+      placement: 'top',
+      trigger: 'hover',
+      delay: { show: 100, hide: 100 },
+      customClass: 'custom-tooltip'
+    });
+  });
+}
+
+
+
+
+
+// Funktion zum setzen der Sprache
+function setLanguage(lang) {
+  // Spracheinstellungen aktualisieren
+  localStorage.setItem("lang", lang);
+
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    if (translations[lang][key]) {
+      el.textContent = translations[lang][key];
+    }
+  });
+  // Sprachbutton-Styling aktualisieren
+  const btnDe = document.getElementById("btn-de");
+  const btnEn = document.getElementById("btn-en");
+
+  if (lang === "de") {
+    btnDe.classList.add("active-language");
+    btnEn.classList.remove("active-language");
+  } else {
+    btnEn.classList.add("active-language");
+    btnDe.classList.remove("active-language");
+  }
+  updateSensorTooltips(lang);
+}
+
+
+
+
+
+
+
+// 1. DOM geladen → Initialisierung ausfuehren
 document.addEventListener("DOMContentLoaded", () => {
   const buttons = document.querySelectorAll(".sensor-button");
   const activeSensors = new Map(); // Merkt sich aktive Sensoren + Daten
+  const savedLang = localStorage.getItem("lang") || "de";
+  setLanguage(savedLang);
+  //updateSensorTooltips(savedLang);
 
+  
+    // 2. Tooltips aktivieren
+  const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(el => {
+    new bootstrap.Tooltip(el, {
+      placement: 'top',
+      trigger: 'hover',
+      delay: { show: 100, hide: 100 },
+      customClass: 'custom-tooltip'
+    });
+  });
+
+  // 3. Klickverhalten
   buttons.forEach(button => {
     button.addEventListener("click", () => {
       const sensorId = button.getAttribute("data-sensor-id");
 
+
+
+
+      // 4. Klickverhalten verarbeiten und Plot aktualisieren 
       if (activeSensors.has(sensorId)) {
         // Sensor ist schon aktiv → entferne ihn
         activeSensors.delete(sensorId);
@@ -46,17 +223,22 @@ document.addEventListener("DOMContentLoaded", () => {
             activeSensors.set(sensorId, data);
             const color = sensorColors[sensorId] || 'black';
             button.style.backgroundColor = color;
-            button.style.color = 'white';  // optional, für Kontrast
-            button.dataset.active = "true";  // zum Zurücksetzen später
+            button.style.color = 'white';  // Textfarbe auf Weiß setzen
+            button.dataset.active = "true";  // zum Zureucksetzen spaeter
 
             redrawPlot(activeSensors);
           });
       }
     });
+      setLanguage(savedLang);
+  updateSensorTooltips(savedLang)
   });
 });
 
 
+
+
+// Plot aktualisieren wenn neue Sensordaten geladen wurden
 function redrawPlot(sensorMap) {
   const traces = [];
 
@@ -83,7 +265,7 @@ function redrawPlot(sensorMap) {
 }
 
 
-
+//  Funktion zum Laden der Sensordaten aus der API mittels fetch
 function fetchSensorData(sensorId) {
   const url = `/api/sensor/${sensorId}`;
 
@@ -100,6 +282,8 @@ function fetchSensorData(sensorId) {
     });
 }
 
+
+// Funktion zum Zeichnen des Plots mit Plotly
 function renderPlot(timeArray, valueArray, sensorId) {
   const trace = {
     x: timeArray,
@@ -120,7 +304,7 @@ function renderPlot(timeArray, valueArray, sensorId) {
       margin: { t: 40 }
     };
 
-      Plotly.newPlot('plot', [trace], layout);
+    Plotly.newPlot('plot', [trace], layout);
   } else {
     // Prüfen ob Sensor schon geplottet ist
     const exists = plotDiv.data.some(d => d.name === sensorId);
@@ -131,6 +315,8 @@ function renderPlot(timeArray, valueArray, sensorId) {
 
 }
 
+
+// Funktion zum Aktualisieren des Sensor-Titels im HTML
 function updateSensorTitle(sensorId) {
   const badge = document.getElementById("active-sensor-badge");
   const title = document.getElementById("visualization-title");
