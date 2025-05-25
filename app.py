@@ -7,6 +7,10 @@ app = Flask(__name__)
 def home():
     return render_template("index.html")  # templates/index.html muss existieren
 
+@app.route("/live")
+def live():
+    return render_template("live.html")
+
 @app.route("/api/sensor/<sensor_id>")
 def api_sensor(sensor_id):
     result = get_sensor_data(sensor_id)

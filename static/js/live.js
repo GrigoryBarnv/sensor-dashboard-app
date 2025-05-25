@@ -1,3 +1,4 @@
+
 const sensorColors = {
   MQ2: "red",
   MQ3_1: "orange",
@@ -168,28 +169,23 @@ function setLanguage(lang) {
 
 
 
-
-
-
-
 document.addEventListener("DOMContentLoaded", () => {
+  const liveBtn = document.getElementById("btn-live");
+
+  // Immer LIVE anzeigen
+  liveBtn.classList.add("blinking", "live-active");
+  liveBtn.innerHTML = '<span class="dot"></span> Live';
+
+  // Klick auf Button → zurück zur normalen Seite
+  liveBtn.addEventListener("click", () => {
+    window.location.href = "/";
+  });
+
   const buttons = document.querySelectorAll(".sensor-button");
   const activeSensors = new Map();
   const savedLang = localStorage.getItem("lang") || "de";
   setLanguage(savedLang);
   updateSensorTooltips(savedLang);
-
-  const liveBtn = document.getElementById("btn-live");
-
-  // Immer OFFLINE anzeigen
-  liveBtn.classList.remove("blinking", "live-active");
-  liveBtn.innerHTML = '<span class="dot"></span> Offline';
-
-  // Klick auf Button → zur LIVE-Seite wechseln
-  liveBtn.addEventListener("click", () => {
-    window.location.href = "/live";
-  });
-
 
 
   // 2. Tooltips aktivieren
@@ -222,9 +218,9 @@ document.addEventListener("DOMContentLoaded", () => {
         button.style.color = '';
         button.dataset.active = "false";
 
-        
+
         redrawPlot(activeSensors);
-      
+    
 
       } else {
         // Sensor neu hinzufügen
@@ -256,7 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-// Plot aktualisieren wenn neue Sensordaten geladen wurden
+ // Plot aktualisieren wenn neue Sensordaten geladen wurden
 function redrawPlot(sensorMap) {
   const traces = [];
 
@@ -301,7 +297,7 @@ function fetchSensorData(sensorId) {
 }
 
 
-// Funktion zum Zeichnen des Plots mit Plotly
+ // Funktion zum Zeichnen des Plots mit Plotly
 function renderPlot(timeArray, valueArray, sensorId) {
   const trace = {
     x: timeArray,
@@ -334,7 +330,7 @@ function renderPlot(timeArray, valueArray, sensorId) {
 }
 
 
-// Funktion zum Aktualisieren des Sensor-Titels im HTML
+ // Funktion zum Aktualisieren des Sensor-Titels im HTML
 function updateSensorTitle(sensorId) {
   const badge = document.getElementById("active-sensor-badge");
   const title = document.getElementById("visualization-title");
@@ -345,6 +341,5 @@ function updateSensorTitle(sensorId) {
     title.textContent = `Ausgewählter Sensor: ${sensorId}`;
   }
 }
-
 
 
