@@ -16,5 +16,10 @@ def api_sensor(sensor_id):
     result = get_sensor_data(sensor_id)
     return jsonify(result)
 
+@app.route("/test")
+def test_page():
+    return render_template("test.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True)
