@@ -14,15 +14,19 @@
 <body>
 
     <div class="container py-4">
-      <header class="app-header text-center position-relative">
-  <div class="language-switch position-absolute top-0 end-0 p-2">
-    <button id="btn-de" class="btn btn-sm btn-outline-light me-1" onclick="setLanguage('de')">🇩🇪</button>
-    <button id="btn-en" class="btn btn-sm btn-outline-light" onclick="setLanguage('en')">🇬🇧</button>
-  </div>
+        <header class="app-header text-center position-relative">
+            <div class="language-switch position-absolute top-0 end-0 p-2">
+                <button id="btn-live" class="btn btn-sm btn-outline-danger ms-2">
+                    <span class="dot"></span> Live
+                </button>
 
-  <h1 class="display-5 fw-bold" data-i18n="mainTitle">Sensor Daten Dashboard</h1>
-  <p class="lead" data-i18n="subtitle">Interaktive Visualisierung von CSV-Sensordaten</p>
-</header>
+                <button id="btn-de" class="btn btn-sm btn-outline-light me-1" onclick="setLanguage('de')">DE</button>
+                <button id="btn-en" class="btn btn-sm btn-outline-light" onclick="setLanguage('en')">EN</button>
+            </div>
+
+            <h1 class="display-5 fw-bold" data-i18n="mainTitle">Sensor Daten Dashboard</h1>
+            <p class="lead" data-i18n="subtitle">Interaktive Visualisierung von CSV-Sensordaten</p>
+        </header>
 
 
         <main>
@@ -198,7 +202,7 @@
                         </div>
                     </div>
                 </div>
-
+            </div>
         </main>
         <footer class="app-footer">
             <p data-i18n="footer">&copy; 2025 Sensor-Daten-Dashboard</p>

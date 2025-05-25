@@ -36,23 +36,5 @@ if __name__ == "__main__":
     sensor_input = input("Gib den Sensornamen ein (z. B. MQ2): ").strip()
     result = get_sensor_data(sensor_input)
 
-    result = get_sensor_data(sensor_input)
-    result = get_sensor_data(sensor_input)
-    result = get_sensor_data(sensor_input)
-    dsdsdsesult = get_sensor_data(sensor_input)
-    dsdsdsesult = get_sensor_data(sensor_input)
-    dsdsdsesult = get_sensor_data(sensor_input)
-    dsdsdsesult = get_sensor_data(sensor_input)
-    result = get_sensor_data(sensor_input)
 
-    dsdsdsesult = get_sensor_data(sensor_input)
-
-    result = get_sensor_data(sensor_input)
-
-    dsdsdsesult = get_sensor_data(sensor_input)
-    dsdsdsesult = get_sensor_data(sensor_input)
-    dsdsdsesult = get_sensor_data(sensor_input)
-    result = get_sensor_data(sensor_input)
-
-    dsdsdsesult = get_sensor_data(sensor_input)
 

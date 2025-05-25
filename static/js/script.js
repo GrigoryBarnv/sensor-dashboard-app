@@ -117,16 +117,16 @@ function updateSensorTooltips(lang) {
     const sensorId = button.getAttribute("data-sensor-id");
     const newTitle = gases[sensorId] || "-";
 
-    // ❗ Zuerst alten Tooltip zerstören
+    //  Zuerst alten Tooltip zerstören
     const oldTooltip = bootstrap.Tooltip.getInstance(button);
     if (oldTooltip) oldTooltip.dispose();
 
-    // ❗ Alles Bereinigen, inkl. Bootstrap-internem Cache
+    //  Alles Bereinigen, inkl. Bootstrap-internem Cache
     button.removeAttribute("data-bs-original-title");
     button.removeAttribute("aria-describedby");
     button.setAttribute("title", newTitle);
 
-    // ❗ Tooltip neu erzeugen
+    //  Tooltip neu erzeugen
     new bootstrap.Tooltip(button, {
       placement: 'top',
       trigger: 'hover',
@@ -179,8 +179,8 @@ document.addEventListener("DOMContentLoaded", () => {
   setLanguage(savedLang);
   //updateSensorTooltips(savedLang);
 
-  
-    // 2. Tooltips aktivieren
+
+  // 2. Tooltips aktivieren
   const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
   tooltipTriggerList.forEach(el => {
     new bootstrap.Tooltip(el, {
@@ -230,8 +230,8 @@ document.addEventListener("DOMContentLoaded", () => {
           });
       }
     });
-      setLanguage(savedLang);
-  updateSensorTooltips(savedLang)
+    setLanguage(savedLang);
+    updateSensorTooltips(savedLang)
   });
 });
 
@@ -326,4 +326,71 @@ function updateSensorTitle(sensorId) {
     badge.textContent = sensorId;
     title.textContent = `Ausgewählter Sensor: ${sensorId}`;
   }
+}
+
+
+
+
+//button blinckt 
+
+let isLive = false;
+let liveInterval = null;
+let liveData = [];
+let liveIndex = 0;
+
+// Annahme: du lädst Daten aus CSV vorher in ein Array (nur Beispielstruktur!)
+const simulatedData = {
+  time: [],   // Zeitstempel als String-Array (z. B. ["14:33:01", "14:33:02", ...])
+  values: []  // Messwerte als Zahl-Array (z. B. [123.4, 124.1, ...])
+};
+
+// Hole Button und hänge Listener an
+document.getElementById("btn-live").addEventListener("click", () => {
+  const button = document.getElementById("btn-live");
+  isLive = !isLive;
+
+  if (isLive) {
+    button.classList.add("blinking");
+    startLiveSimulation();
+  } else {
+    button.classList.remove("blinking");
+    stopLiveSimulation();
+  }
+});
+
+function startLiveSimulation() {
+  liveData = [];  // leere bisherige Daten
+  liveIndex = 0;
+
+  liveInterval = setInterval(() => {
+    if (liveIndex >= simulatedData.time.length) {
+      liveIndex = 0; // neu starten
+      liveData = [];
+    }
+
+    // nächsten Punkt hinzufügen
+    liveData.push({
+      x: simulatedData.time[liveIndex],
+      y: simulatedData.values[liveIndex]
+    });
+
+    Plotly.newPlot("plot", [{
+      x: liveData.map(p => p.x),
+      y: liveData.map(p => p.y),
+      type: 'scatter',
+      mode: 'lines+markers',
+      marker: { color: 'red' },
+      name: 'Live-Messung'
+    }], {
+      title: "Sensorverlauf (Live)",
+      xaxis: { title: 'Zeit' },
+      yaxis: { title: 'Sensorwert (Ohm)' }
+    });
+
+    liveIndex++;
+  }, 500); // alle 0.5 Sekunden
+}
+
+function stopLiveSimulation() {
+  clearInterval(liveInterval);
 }
