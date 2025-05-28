@@ -168,177 +168,137 @@ function setLanguage(lang) {
 
 
 
-// f
+  const buttons = document.querySelectorAll(".sensor-button");
+ 
+  const liveSimulations = new Map();
+
 document.addEventListener("DOMContentLoaded", () => {
   const liveBtn = document.getElementById("btn-live");
 
-  // Immer LIVE anzeigen
   liveBtn.classList.add("blinking", "live-active");
   liveBtn.innerHTML = '<span class="dot"></span> Live';
 
-  // Klick auf Button → zurück zur normalen Seite
   liveBtn.addEventListener("click", () => {
     window.location.href = "/";
   });
 
-  const buttons = document.querySelectorAll(".sensor-button");
-  const activeSensors = new Map();
   const savedLang = localStorage.getItem("lang") || "de";
   setLanguage(savedLang);
   updateSensorTooltips(savedLang);
 
-
-  // 2. Tooltips aktivieren
-  const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  tooltipTriggerList.forEach(el => {
-    new bootstrap.Tooltip(el, {
-      placement: 'top',
-      trigger: 'hover',
-      delay: { show: 100, hide: 100 },
-      customClass: 'custom-tooltip'
+  const buttons = document.querySelectorAll(".sensor-button");
+  buttons.forEach(button => {
+    button.addEventListener("click", () => {
+      const sensorId = button.getAttribute("data-sensor-id");
+      if (sensorId) startSensorLive(sensorId);
     });
   });
 
-  // 3. Klickverhalten
-  buttons.forEach(button => {
-    button.addEventListener("click", () => {
-      
-      const sensorId = button.getAttribute("data-sensor-id");
+  const refreshBtn = document.getElementById("refresh-button");
+  if (refreshBtn) {
+    refreshBtn.addEventListener("click", resetGraph);
+  }
 
-
-      // 4. Klickverhalten verarbeiten und Plot aktualisieren 
-      if (activeSensors.has(sensorId)) {
-        // Sensor ist schon aktiv → entferne ihn
-        activeSensors.delete(sensorId);
-        button.classList.remove("active");
-        button.classList.remove("active");
-        button.style.backgroundColor = '';
-        button.style.color = '';
-        button.dataset.active = "false";
-
-
-        redrawPlot(activeSensors);
-    
-
-      } else {
-        // Sensor neu hinzufügen
-        fetch(`/api/sensor/${sensorId}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data.error) {
-              alert("Fehler: " + data.error);
-              return;
-            }
-
-            activeSensors.set(sensorId, data);
-            const color = sensorColors[sensorId] || 'black';
-            button.style.backgroundColor = color;
-            button.style.color = 'white';  // Textfarbe auf Weiß setzen
-            button.dataset.active = "true";  // zum Zureucksetzen spaeter
-
-            redrawPlot(activeSensors);
-          });
-      }
-    });
-    setLanguage(savedLang);
-    updateSensorTooltips(savedLang);
-   
-
+  Plotly.newPlot('plot', [], {
+    title: 'Sensorverlauf (Live)',
+    xaxis: { title: 'Zeit' },
+    yaxis: { title: 'Sensorwert (Ohm)' },
+    margin: { t: 40 }
   });
 });
 
 
 
 
- // Plot aktualisieren wenn neue Sensordaten geladen wurden
-function redrawPlot(sensorMap) {
-  const traces = [];
+function startSensorLive(sensorId) {
+  if (liveSimulations.has(sensorId)) return; // already active
 
-  for (const [sensorId, data] of sensorMap.entries()) {
-    const trace = {
-      x: data.time,
-      y: data.values,
-      type: 'scatter',
-      mode: 'lines+markers',
-      marker: { color: sensorColors[sensorId] || 'black' },
-      name: sensorId
-    };
-    traces.push(trace);
-  }
-
-  const layout = {
-    title: "Sensorverlauf",
-    xaxis: { title: 'Zeit' },
-    yaxis: { title: 'Sensorwert (Ohm)' },
-    margin: { t: 40 }
-  };
-
-  Plotly.newPlot('plot', traces, layout);
-}
-
-
-//  Funktion zum Laden der Sensordaten aus der API mittels fetch
-function fetchSensorData(sensorId) {
-  const url = `/api/sensor/${sensorId}`;
-
-  fetch(url)
+  fetch(`/api/sensor/${sensorId}`)
     .then(res => res.json())
     .then(data => {
       if (data.error) {
         alert("Fehler: " + data.error);
         return;
       }
-
-      renderPlot(data.time, data.values, data.sensor_id);
-      updateSensorTitle(data.sensor_id);
-      
+      simulateLivePlot(sensorId, data.time, data.values);
+      updateSensorTitle();
     });
 }
 
-e
- // Funktion zum Zeichnen des Plots mit Plotly
-function renderPlot(timeArray, valueArray, sensorId) {
-  const trace = {
-    x: timeArray,
-    y: valueArray,
-    type: 'scatter',
-    mode: 'lines+markers',
-    marker: { color: sensorColors[sensorId] || 'black' },
-    name: sensorId
-  };
+function simulateLivePlot(sensorId, timeArray, valueArray) {
+  const existingTraceIndex = getTraceIndex(sensorId);
+  let i = 0;
 
-  // Initialisiere Plot, wenn leer
-  const plotDiv = document.getElementById('plot');
-  if (plotDiv.data === undefined || plotDiv.data.length === 0) {
-    const layout = {
-      title: 'Sensorverlauf',
-      xaxis: { title: 'Zeit' },
-      yaxis: { title: 'Sensorwert (Ohm)' },
-      margin: { t: 40 }
+  if (existingTraceIndex === -1) {
+    const newTrace = {
+      x: [],
+      y: [],
+      type: 'scatter',
+      mode: 'lines+markers',
+      marker: { color: sensorColors[sensorId] || 'black' },
+      name: sensorId
     };
-
-    Plotly.newPlot('plot', [trace], layout);
-  } else {
-    // Prüfen ob Sensor schon geplottet ist
-    const exists = plotDiv.data.some(d => d.name === sensorId);
-    if (!exists) {
-      Plotly.addTraces('plot', trace);
-    }
+    Plotly.addTraces('plot', newTrace);
   }
 
+  const intervalId = setInterval(() => {
+    if (i >= timeArray.length) {
+      clearInterval(intervalId);
+      liveSimulations.delete(sensorId);
+      updateSensorTitle();
+      return;
+    }
+
+    const traceIndex = getTraceIndex(sensorId);
+    if (traceIndex !== -1) {
+      Plotly.extendTraces('plot', {
+        x: [[timeArray[i]]],
+        y: [[valueArray[i]]]
+      }, [traceIndex]);
+    }
+
+    i++;
+  }, 1000);
+
+  liveSimulations.set(sensorId, intervalId);
 }
 
+function getTraceIndex(sensorId) {
+  const plotDiv = document.getElementById("plot");
+  if (!plotDiv.data) return -1;
+  return plotDiv.data.findIndex(trace => trace.name === sensorId);
+}
 
- // Funktion zum Aktualisieren des Sensor-Titels im HTML
-function updateSensorTitle(sensorId) {
+function updateSensorTitle() {
   const badge = document.getElementById("active-sensor-badge");
   const title = document.getElementById("visualization-title");
 
+  const active = Array.from(liveSimulations.keys()).join(", ");
+
   if (badge && title) {
     badge.classList.remove("d-none");
-    badge.textContent = sensorId;
-    title.textContent = `Ausgewählter Sensor: ${sensorId}`;
+    badge.textContent = active;
+    title.textContent = `Aktive Sensoren: ${active || "-"}`;
   }
 }
+
+function resetGraph() {
+  liveSimulations.forEach(intervalId => clearInterval(intervalId));
+  liveSimulations.clear();
+
+  Plotly.newPlot('plot', [], {
+    title: 'Sensorverlauf (Live)',
+    xaxis: { title: 'Zeit' },
+    yaxis: { title: 'Sensorwert (Ohm)' },
+    margin: { t: 40 }
+  });
+
+  document.getElementById("visualization-title").textContent = "Ausgewählter Sensor: -";
+  document.getElementById("active-sensor-badge").textContent = "";
+
+
+};
+
+
 
 
