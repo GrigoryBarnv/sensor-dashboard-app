@@ -225,3 +225,23 @@
   color: white;
   border-color: rgb(196, 196, 213);
 }
+
+
+
+#sensor-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.sensor-value-card {
+  background-color: #1f1f1f;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 1.2rem;
+  color: white;
+  border: 2px solid #444;
+  min-width: 120px;
+  text-align: center;
+}

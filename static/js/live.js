@@ -206,8 +206,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const sensorId = button.getAttribute("data-sensor-id");
 
 
-
-
       // 4. Klickverhalten verarbeiten und Plot aktualisieren 
       if (activeSensors.has(sensorId)) {
         // Sensor ist schon aktiv → entferne ihn
@@ -293,10 +291,11 @@ function fetchSensorData(sensorId) {
 
       renderPlot(data.time, data.values, data.sensor_id);
       updateSensorTitle(data.sensor_id);
+      
     });
 }
 
-
+e
  // Funktion zum Zeichnen des Plots mit Plotly
 function renderPlot(timeArray, valueArray, sensorId) {
   const trace = {
