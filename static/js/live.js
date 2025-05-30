@@ -108,6 +108,10 @@ const translations = {
 };
 
 
+const buttons = document.querySelectorAll(".sensor-button");
+
+const liveSimulations = new Map();
+
 
 
 //die Funktion zum aktualisieren der Tooltips, damit die Sprache passend ist ohne neu laden
@@ -165,12 +169,6 @@ function setLanguage(lang) {
   }
   updateSensorTooltips(lang);
 }
-
-
-
-  const buttons = document.querySelectorAll(".sensor-button");
- 
-  const liveSimulations = new Map();
 
 document.addEventListener("DOMContentLoaded", () => {
   const liveBtn = document.getElementById("btn-live");
@@ -263,12 +261,16 @@ function simulateLivePlot(sensorId, timeArray, valueArray) {
   liveSimulations.set(sensorId, intervalId);
 }
 
+
+
 function getTraceIndex(sensorId) {
   const plotDiv = document.getElementById("plot");
   if (!plotDiv.data) return -1;
   return plotDiv.data.findIndex(trace => trace.name === sensorId);
 }
 
+
+// funktion 
 function updateSensorTitle() {
   const badge = document.getElementById("active-sensor-badge");
   const title = document.getElementById("visualization-title");
@@ -296,9 +298,17 @@ function resetGraph() {
   document.getElementById("visualization-title").textContent = "Ausgewählter Sensor: -";
   document.getElementById("active-sensor-badge").textContent = "";
 
-
 };
 
+// add a window to show the graph
+window.addEventListener("load", () => {
+  const graphWindow = document.createElement("div");
+  graphWindow.classList.add("graph-window");
+  graphWindow.innerHTML = `
+    <div class="graph-container">
+);
 
+  document.body.appendChild(graphWindow);
+}); 
 
 
