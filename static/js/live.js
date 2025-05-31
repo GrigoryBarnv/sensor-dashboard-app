@@ -300,15 +300,84 @@ function resetGraph() {
 
 };
 
-// add a window to show the graph
-window.addEventListener("load", () => {
-  const graphWindow = document.createElement("div");
-  graphWindow.classList.add("graph-window");
-  graphWindow.innerHTML = `
-    <div class="graph-container">
-);
+// 1. Aktuelle Sensorwerte UNTER dem Plot anzeigen (mit Farbe, max. 4)
+// Ergänze in simulateLivePlot()
+function simulateLivePlot(sensorId, timeArray, valueArray) {
+  const existingTraceIndex = getTraceIndex(sensorId);
+  let i = 0;
 
-  document.body.appendChild(graphWindow);
-}); 
+  if (existingTraceIndex === -1) {
+    const newTrace = {
+      x: [],
+      y: [],
+      type: 'scatter',
+      mode: 'lines+markers',
+      marker: { color: sensorColors[sensorId] || 'black' },
+      name: sensorId
+    };
+    Plotly.addTraces('plot', newTrace);
+  }
 
+  const intervalId = setInterval(() => {
+    if (i >= timeArray.length) {
+      clearInterval(intervalId);
+      liveSimulations.delete(sensorId);
+      updateSensorTitle();
+      return;
+    }
 
+    const traceIndex = getTraceIndex(sensorId);
+    if (traceIndex !== -1) {
+      Plotly.extendTraces('plot', {
+        x: [[timeArray[i]]],
+        y: [[valueArray[i]]]
+      }, [traceIndex]);
+
+      // ➕ UPDATE DOM-Bereich "sensor-values"
+      updateSensorValues(sensorId, valueArray[i]);
+    }
+
+    i++;
+  }, 1000);
+
+  liveSimulations.set(sensorId, intervalId);
+}
+
+function updateSensorValues(sensorId, latestValue) {
+  const container = document.getElementById("sensor-values");
+  let sensorBox = document.querySelector(`[data-sensor-box='${sensorId}']`);
+
+  if (!sensorBox) {
+    sensorBox = document.createElement("div");
+    sensorBox.className = "sensor-box px-3 py-2 me-2 mb-2 text-center";
+    sensorBox.style.backgroundColor = "white";
+    sensorBox.style.border = `2px solid ${sensorColors[sensorId] || 'gray'}`;
+    sensorBox.style.color = sensorColors[sensorId] || 'gray';
+    sensorBox.style.minWidth = "100px";
+    sensorBox.style.borderRadius = "8px";
+    sensorBox.style.fontWeight = "bold";
+    sensorBox.dataset.sensorBox = sensorId;
+    container.appendChild(sensorBox);
+  }
+
+  sensorBox.textContent = `${sensorId}: ${latestValue.toFixed(2)} Ω`;
+}
+
+// 2. Sensor-Buttons färben und Verhalten bei erneutem Klick
+buttons.forEach(button => {
+  button.addEventListener("click", () => {
+    const sensorId = button.getAttribute("data-sensor-id");
+
+    if (liveSimulations.has(sensorId)) {
+      // Bereits aktiv – nichts tun (verhindert Duplikat)
+      return;
+    }
+
+    // Hinzufügen
+    startSensorLive(sensorId);
+
+    button.classList.add("btn-active");
+    button.style.backgroundColor = sensorColors[sensorId] || 'gray';
+    button.style.color = 'white';
+  });
+});
