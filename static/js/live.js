@@ -184,14 +184,6 @@ document.addEventListener("DOMContentLoaded", () => {
   setLanguage(savedLang);
   updateSensorTooltips(savedLang);
 
-  const buttons = document.querySelectorAll(".sensor-button");
-  buttons.forEach(button => {
-    button.addEventListener("click", () => {
-      const sensorId = button.getAttribute("data-sensor-id");
-      if (sensorId) startSensorLive(sensorId);
-    });
-  });
-
   const refreshBtn = document.getElementById("refresh-button");
   if (refreshBtn) {
     refreshBtn.addEventListener("click", resetGraph);
@@ -270,7 +262,7 @@ function getTraceIndex(sensorId) {
 }
 
 
-// funktion 
+// funktion  zum aktualisieren des Sensor-Titels
 function updateSensorTitle() {
   const badge = document.getElementById("active-sensor-badge");
   const title = document.getElementById("visualization-title");
@@ -278,11 +270,18 @@ function updateSensorTitle() {
   const active = Array.from(liveSimulations.keys()).join(", ");
 
   if (badge && title) {
-    badge.classList.remove("d-none");
-    badge.textContent = active;
-    title.textContent = `Aktive Sensoren: ${active || "-"}`;
+    if (active.length > 0) {
+      badge.classList.remove("d-none");
+      badge.textContent = active;
+      title.textContent = `Aktive Sensoren: ${active}`;
+    } else {
+      badge.classList.add("d-none");
+      badge.textContent = "";
+      title.textContent = "Ausgewählter Sensor";
+    }
   }
 }
+
 
 function resetGraph() {
   liveSimulations.forEach(intervalId => clearInterval(intervalId));
@@ -362,19 +361,41 @@ function updateSensorValues(sensorId, latestValue) {
   sensorBox.textContent = `${sensorId}: ${latestValue.toFixed(2)} Ω`;
 }
 
-// 2. Sensor-Buttons färben und Verhalten bei erneutem Klick
 buttons.forEach(button => {
   button.addEventListener("click", () => {
     const sensorId = button.getAttribute("data-sensor-id");
 
+    // SENSOR DEAKTIVIEREN, falls bereits aktiv
     if (liveSimulations.has(sensorId)) {
-      // Bereits aktiv – nichts tun (verhindert Duplikat)
-      return;
+      // Stoppe Intervall
+      clearInterval(liveSimulations.get(sensorId));
+      liveSimulations.delete(sensorId);
+
+      // Entferne Plot-Linie
+      const traceIndex = getTraceIndex(sensorId);
+      if (traceIndex !== -1) {
+        Plotly.deleteTraces('plot', traceIndex);
+      }
+
+      // Entferne Sensorwert-Box
+      const box = document.querySelector(`[data-sensor-box='${sensorId}']`);
+      if (box) box.remove();
+
+      // Button zurücksetzen
+      button.classList.remove("btn-active");
+      button.style.backgroundColor = '';
+      button.style.color = '';
+
+      // Aktive Sensoren aktualisieren
+      updateSensorTitle();
+
+      return; // Fertig!
     }
 
-    // Hinzufügen
+    // SENSOR AKTIVIEREN
     startSensorLive(sensorId);
 
+    // Button einfärben
     button.classList.add("btn-active");
     button.style.backgroundColor = sensorColors[sensorId] || 'gray';
     button.style.color = 'white';
