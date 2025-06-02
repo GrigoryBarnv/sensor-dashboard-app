@@ -342,9 +342,8 @@ function simulateLivePlot(sensorId, timeArray, valueArray) {
 
   liveSimulations.set(sensorId, intervalId);
 }
-
 function updateSensorValues(sensorId, latestValue) {
-  const container = document.getElementById("sensor-values");
+  const container = document.getElementById("sensor-value-output"); // ⬅️ Neuer Container
   let sensorBox = document.querySelector(`[data-sensor-box='${sensorId}']`);
 
   if (!sensorBox) {
