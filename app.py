@@ -25,4 +25,5 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
-# comments to this section
+
+# add coments in english
