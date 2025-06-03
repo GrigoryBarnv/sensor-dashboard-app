@@ -365,24 +365,25 @@ function simulateLivePlot(sensorId, timeArray, valueArray) {
   liveSimulations.set(sensorId, intervalId);
 }
 function updateSensorValues(sensorId, latestValue) {
-  const container = document.getElementById("sensor-value-output"); // ⬅️ Neuer Container
+  const container = document.getElementById("sensor-value-output");
   let sensorBox = document.querySelector(`[data-sensor-box='${sensorId}']`);
 
   if (!sensorBox) {
     sensorBox = document.createElement("div");
-    sensorBox.className = "sensor-box px-3 py-2 me-2 mb-2 text-center";
-    sensorBox.style.backgroundColor = "white";
-    sensorBox.style.border = `2px solid ${sensorColors[sensorId] || 'gray'}`;
-    sensorBox.style.color = sensorColors[sensorId] || 'gray';
-    sensorBox.style.minWidth = "100px";
-    sensorBox.style.borderRadius = "8px";
-    sensorBox.style.fontWeight = "bold";
+    sensorBox.className = "sensor-box-modern";
     sensorBox.dataset.sensorBox = sensorId;
     container.appendChild(sensorBox);
   }
 
-  sensorBox.textContent = `${sensorId}: ${latestValue.toFixed(2)} Ω`;
+  // Format the box content
+  sensorBox.innerHTML = `
+    <div class="sensor-label">Sensor ${sensorId.replace("MQ", "")}</div>
+    <div class="sensor-value" style="color: ${sensorColors[sensorId] || 'black'};">
+      ${latestValue.toFixed(2)}
+    </div>
+  `;
 }
+
 
 buttons.forEach(button => {
   button.addEventListener("click", () => {
