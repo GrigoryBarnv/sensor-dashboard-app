@@ -189,12 +189,19 @@ document.addEventListener("DOMContentLoaded", () => {
     refreshBtn.addEventListener("click", resetGraph);
   }
 
-  Plotly.newPlot('plot', [], {
-    title: 'Sensorverlauf (Live)',
-    xaxis: { title: 'Zeit' },
-    yaxis: { title: 'Sensorwert (Ohm)' },
-    margin: { t: 40 }
-  });
+  Plotly.newPlot("plot", [], {
+  title: "Sensorverlauf (Live)",
+  xaxis: { title: "Zeit" },
+  yaxis: { title: "Sensorwert (Ohm)" },
+  margin: { t: 40 },
+  showlegend: true, // 👈 always show legend
+  legend: {
+    x: 1.05,          // move to right side
+    y: 1,
+    orientation: 'v'
+  }
+});
+
 });
 
 
