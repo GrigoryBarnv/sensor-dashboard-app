@@ -297,6 +297,22 @@ function resetGraph() {
   document.getElementById("visualization-title").textContent = "Ausgewählter Sensor: -";
   document.getElementById("active-sensor-badge").textContent = "";
 
+    // Remove sensor value boxes
+  const sensorValueContainer = document.getElementById("sensor-value-output");
+  if (sensorValueContainer) {
+    sensorValueContainer.innerHTML = "";
+  }
+
+  // Reset button styles
+  const buttons = document.querySelectorAll(".sensor-button");
+  buttons.forEach(button => {
+    button.classList.remove("btn-active");
+    button.style.backgroundColor = '';
+    button.style.color = '';
+  });
+
+
+
 };
 
 // 1. Aktuelle Sensorwerte UNTER dem Plot anzeigen (mit Farbe, max. 4)
