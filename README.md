@@ -2,7 +2,7 @@
 #  Sensor Dashboard WebApp (Flask + Plotly)
 
 Ein interaktives Dashboard zur Visualisierung von Sensordaten mit **Flask**, **Plotly** und **modernem UI-Styling**.  
-Sie können verschiedene Sensoren auswählen, deren Werte als Live-Plots anzeigen und das Design passt sich automatisch an dein CSS an.
+Sie können verschiedene Sensoren auswählen, deren Werte als Live-Plots anzeigt werden.
 
 ---
 
