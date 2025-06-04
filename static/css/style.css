@@ -276,3 +276,21 @@
   color: #333;
   margin-bottom: 4px;
 }
+
+
+#refresh-button-box .card-body {
+  padding: 1rem 1.5rem;
+}
+
+#refresh-explainer {
+  font-size: 1rem;
+  margin-right: 1rem;
+  flex-grow: 1;
+}
+
+#refresh-button {
+  font-size: 1rem;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 8px;
+}
