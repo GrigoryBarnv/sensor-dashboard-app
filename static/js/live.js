@@ -271,23 +271,14 @@ function getTraceIndex(sensorId) {
 
 // funktion  zum aktualisieren des Sensor-Titels
 function updateSensorTitle() {
-  const badge = document.getElementById("active-sensor-badge");
   const title = document.getElementById("visualization-title");
-
   const active = Array.from(liveSimulations.keys()).join(", ");
 
-  if (badge && title) {
-    if (active.length > 0) {
-      badge.classList.remove("d-none");
-      badge.textContent = active;
-      title.textContent = `Aktive Sensoren: ${active}`;
-    } else {
-      badge.classList.add("d-none");
-      badge.textContent = "";
-      title.textContent = "Ausgewählter Sensor";
-    }
+  if (title) {
+    title.textContent = `Aktive Sensoren: ${active || "-"}`;
   }
 }
+
 
 
 function resetGraph() {
