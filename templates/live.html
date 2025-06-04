@@ -157,7 +157,7 @@
                         <div id="chart-container" class="chart-container">
                             <div id="plot" style="width: 100%; height: 400px;"></div>
                             <div id="sensor-values" class="d-flex flex-wrap gap-3 mt-4"></div>
-                          
+
                         </div>
 
                         <!-- Hinweis bei Nicht-Auswahl -->
@@ -169,65 +169,67 @@
                     </div>
 
                     <div id="refresh-button-box" class="card mt-3">
-<div id="refresh-button-box" class="card mt-3">
-  <div class="card-body d-flex justify-content-between align-items-center">
-    <p id="refresh-explainer" class="mb-0" data-i18n="refreshInfo">
-      Klicken Sie auf den Button, um den Graphen zurückzusetzen und alle Sensoren zu entfernen.
-    </p>
-    <button id="refresh-button" class="btn btn-warning btn-lg">🔄 Reset</button>
-  </div>
-</div>
-
-
-                    <div id="sensor-value-box" class="card mt-3">
-                        <div class="card-body">
-                            <h5 class="mb-3">Live-Sensorwerte</h5>
-                            <div id="sensor-value-output" class="d-flex flex-wrap gap-3"></div>
+                        <div id="refresh-button-box" class="card mt-3">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <p id="refresh-explainer" class="mb-0" data-i18n="refreshInfo">
+                                    Klicken Sie auf den Button, um den Graphen zurückzusetzen und alle Sensoren zu
+                                    entfernen.
+                                </p>
+                                <button id="refresh-button" class="btn btn-warning btn-lg">🔄 Reset</button>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="card mt-3">
-                        <div class="card-body">
-                            <h5 data-i18n="aboutSensors">Über die MQ-Gassensoren</h5>
-                            <p data-i18n="clickSensor">Klicken Sie auf einen Sensor, um dessen Datenvisualisierung
-                                anzuzeigen.</p>
-                            <p data-i18n="supportedTypes">Unterstützte Sensor-Typen:</p>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <ul>
-                                        <li data-i18n="mq2"><strong>MQ2:</strong> Methan, Butan, LPG</li>
-                                        <li data-i18n="mq3_1"><strong>MQ3_1:</strong> Ethanol</li>
-                                        <li data-i18n="mq3_10"><strong>MQ3_10:</strong> Ethanol</li>
-                                        <li data-i18n="mq4"><strong>MQ4:</strong> Methan, CNG</li>
-                                        <li data-i18n="mq5"><strong>MQ5:</strong> Natürliche Gase, LPG</li>
-                                        <li data-i18n="mq6"><strong>MQ6:</strong> LPG, Butan</li>
-                                    </ul>
+
+                        <div id="sensor-value-box" class="card mt-3">
+                            <div class="card-body">
+                                <h5 class="mb-3">Live-Sensorwerte</h5>
+                                <div id="sensor-value-output" class="d-flex flex-wrap gap-3"></div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-3">
+                            <div class="card-body">
+                                <h5 data-i18n="aboutSensors">Über die MQ-Gassensoren</h5>
+                                <p data-i18n="clickSensor">Klicken Sie auf einen Sensor, um dessen Datenvisualisierung
+                                    anzuzeigen.</p>
+                                <p data-i18n="supportedTypes">Unterstützte Sensor-Typen:</p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul>
+                                            <li data-i18n="mq2"><strong>MQ2:</strong> Methan, Butan, LPG</li>
+                                            <li data-i18n="mq3_1"><strong>MQ3_1:</strong> Ethanol</li>
+                                            <li data-i18n="mq3_10"><strong>MQ3_10:</strong> Ethanol</li>
+                                            <li data-i18n="mq4"><strong>MQ4:</strong> Methan, CNG</li>
+                                            <li data-i18n="mq5"><strong>MQ5:</strong> Natürliche Gase, LPG</li>
+                                            <li data-i18n="mq6"><strong>MQ6:</strong> LPG, Butan</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul>
+                                            <li data-i18n="mq8"><strong>MQ8:</strong> Wasserstoff</li>
+                                            <li data-i18n="mq9"><strong>MQ9:</strong> Kohlenstoffmonoxid</li>
+                                            <li data-i18n="mq135"><strong>MQ135:</strong> Ammoniak, Stickoxide, Benzol,
+                                                CO2
+                                            </li>
+                                            <li data-i18n="mq136"><strong>MQ136:</strong> Schwefelwasserstoff</li>
+                                            <li data-i18n="mq137"><strong>MQ137:</strong> Ammoniak</li>
+                                            <li data-i18n="mq138"><strong>MQ138:</strong> Toluol, Alkohol, Aceton,
+                                                Wasserstoff</li>
+                                        </ul>
+                                    </div>
+
                                 </div>
-                                <div class="col-md-6">
-                                    <ul>
-                                        <li data-i18n="mq8"><strong>MQ8:</strong> Wasserstoff</li>
-                                        <li data-i18n="mq9"><strong>MQ9:</strong> Kohlenstoffmonoxid</li>
-                                        <li data-i18n="mq135"><strong>MQ135:</strong> Ammoniak, Stickoxide, Benzol, CO2
-                                        </li>
-                                        <li data-i18n="mq136"><strong>MQ136:</strong> Schwefelwasserstoff</li>
-                                        <li data-i18n="mq137"><strong>MQ137:</strong> Ammoniak</li>
-                                        <li data-i18n="mq138"><strong>MQ138:</strong> Toluol, Alkohol, Aceton,
-                                            Wasserstoff</li>
-                                    </ul>
-                                </div>
+                                <p class="mt-3">
+                                    <small data-i18n="sensorHint">
+                                        Die Sensorwerte repräsentieren Daten. Niedrigere Werte deuten auf eine höhere
+                                        Gaskonzentration hin.
+                                    </small>
+                                </p>
 
                             </div>
-                            <p class="mt-3">
-                                <small data-i18n="sensorHint">
-                                    Die Sensorwerte repräsentieren Daten. Niedrigere Werte deuten auf eine höhere
-                                    Gaskonzentration hin.
-                                </small>
-                            </p>
-
                         </div>
                     </div>
                 </div>
-            </div>
         </main>
         <footer class="app-footer">
             <p data-i18n="footer">&copy; 2025 Sensor-Daten-Dashboard</p>
