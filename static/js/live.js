@@ -20,6 +20,8 @@ const sensorColors = {
 // Sprachdaten in einem Objekt speichern
 const translations = {
   de: {
+    refreshInfo: "Klicken Sie auf den Button, um den Graphen zurückzusetzen und alle Sensoren zu entfernen.",
+
     pageTitle: "Sensor-Daten-Dashboard",
     mainTitle: "Sensor Daten Dashboard",
     subtitle: "Interaktive Visualisierung von CSV-Sensordaten",
@@ -64,6 +66,8 @@ const translations = {
   },
 
   en: {
+    refreshInfo: "Push the button to refresh the plot and remove all active sensors.",
+
     pageTitle: "Sensor Data Dashboard",
     mainTitle: "Sensor Data Dashboard",
     subtitle: "Interactive visualization of CSV sensor data",
