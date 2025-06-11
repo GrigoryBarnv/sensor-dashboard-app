@@ -85,3 +85,7 @@ http://127.0.0.1:5000
 - PowerShell oder Windows Terminal
 - Internetzugang (für Paketinstallationen)
 
+
+
+![image](https://github.com/user-attachments/assets/7242700e-8f03-41a6-bade-ebde9f125cb9)
+
