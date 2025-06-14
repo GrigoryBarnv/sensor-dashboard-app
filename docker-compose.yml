@@ -1,11 +1,14 @@
+# docker-compose.yml version to use 
 version: '3.9'
 
+
+# define services, so Flask-Web-App can run
 services:
-  web:
-    build: .
+  web:     # service name
+    build: .  # use Dockerfile in current directory to build image
     ports:
-      - "5000:5000"
+      - "5000:5000" # container port:host port connect
     volumes:
-      - .:/app
-    environment:
+      - .:/app  # connect local Project directory to container directory /app, BIND 
+    environment: # set environment variables
       - FLASK_ENV=development
