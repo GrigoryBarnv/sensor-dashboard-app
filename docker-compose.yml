@@ -11,4 +11,4 @@ services:
     volumes:
       - .:/app  # connect local Project directory to container directory /app, BIND 
     environment: # set environment variables
-      - FLASK_ENV=development
+    - FLASK_ENV=development
