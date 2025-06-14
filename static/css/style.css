@@ -295,3 +295,16 @@
   border-radius: 8px;
 }
 
+
+.language-switch {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+}
+
+
+.app-header {
+  position: relative;
+  padding-top: 4rem;
+}
