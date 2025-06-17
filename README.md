@@ -83,16 +83,16 @@ http://127.0.0.1:5000
 
 docker compose up --build
 
-#### docker compose netz untersuchen 
+#### - docker compose netz untersuchen 
 docker network inspect sensor-dashboard-app_default
 
-#### logs anschauen 
+#### - logs anschauen 
 logs sensor-dashboard-app-simulator-1
 
-#### aktuele docker netze anzeigen 
+#### - aktuele docker netze anzeigen 
 docker network ls
 
-#### im WebBrowser die Simulationsdaten JSON Anträge prüfen 
+#### - im WebBrowser die Simulationsdaten JSON Anträge prüfen 
 http://localhost:5000/api/data
 
 
