@@ -14,10 +14,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 ENV FLASK_APP=app.py
 
 #allow external connections
-ENV FLASK_RUN_HOST=0.0.0.0
+env flask_run_host=0.0.0.0
 
 #app uses port 5000 inside the container
-EXPOSE 5000
+expose 5000
 
 #run the command flask run to run the app
-CMD ["flask", "run"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
