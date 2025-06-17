@@ -422,5 +422,17 @@ buttons.forEach(button => {
 });
 
 
+// Fetch and display log data in life box for future live data 
+function fetchLogData() {
+  fetch("/api/data")
+    .then(res => res.json())
+    .then(logs => {
+      const box = document.getElementById("json-log-box");
+      box.innerHTML = logs.map(entry => {
+        return `<div>${entry.received_at || "??"} → ${JSON.stringify(entry)}</div>`;
+      }).join("");
+    });
+}
 
-// coments in english everywhere and docker
+// repeat every 2 seconds
+setInterval(fetchLogData, 2000);

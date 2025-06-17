@@ -12,3 +12,12 @@ services:
       - .:/app  # connect local Project directory to container directory /app, BIND 
     environment: # set environment variables
     - FLASK_ENV=development
+
+
+#run the simulator in the different container
+  simulator:
+    build:
+      context: .
+    command: python simulator.py
+    depends_on:
+      - web
