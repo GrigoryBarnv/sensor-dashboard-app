@@ -107,5 +107,4 @@ http://localhost:5000/api/data
 
 
 
-![image](https://github.com/user-attachments/assets/7242700e-8f03-41a6-bade-ebde9f125cb9)
-
+![image](https://github.com/user-attachments/assets/7242700e-8f03-41a6-bade-ebde9f125cb9).
