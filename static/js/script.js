@@ -107,6 +107,8 @@ const translations = {
 };
 
 
+const activeSensors = new Map();
+
 
 
 //die Funktion zum aktualisieren der Tooltips, damit die Sprache passend ist ohne neu laden
@@ -228,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       } else {
         // Sensor neu hinzufügen
-        fetch(`/api/sensor/${sensorId}`)
+        fetch(`/api/sensor/${sensorId}?file=${encodeURIComponent(selectedFile)}`)
           .then(res => res.json())
           .then(data => {
             if (data.error) {
@@ -285,7 +287,8 @@ function redrawPlot(sensorMap) {
 
 //  Funktion zum Laden der Sensordaten aus der API mittels fetch
 function fetchSensorData(sensorId) {
-  const url = `/api/sensor/${sensorId}`;
+  const url = `/api/sensor/${sensorId}?file=${encodeURIComponent(selectedFile)}`;
+
 
   fetch(url)
     .then(res => res.json())
@@ -348,3 +351,59 @@ function updateSensorTitle(sensorId) {
 
 
 
+
+// function that adds an event listener to the dropdown menu to send later to visualization.py
+let selectedFile = "Example_Data.csv"; // default
+
+document.getElementById("csv-selector").addEventListener("change", function () {
+  selectedFile = this.value;
+  console.log("Selected file:", selectedFile); //for text purposes 
+});
+
+
+
+//
+function resetGraph() {
+  // Stop live simulations if any
+  if (typeof liveSimulations !== "undefined") {
+    liveSimulations.forEach(intervalId => clearInterval(intervalId));
+    liveSimulations.clear();
+  }
+
+  // Clear sensor data map
+  activeSensors.clear?.(); // Safe if declared with Map()
+
+  // Fully reset Plotly
+  Plotly.purge('plot');
+
+  // Optionally render an empty placeholder chart again
+  Plotly.newPlot('plot', [], {
+    title: 'Sensorverlauf',
+    xaxis: { title: 'Zeit' },
+    yaxis: { title: 'Sensorwert (Ohm)' },
+    margin: { t: 40 }
+  });
+
+  // Clear title and sensor badge
+  document.getElementById("visualization-title").textContent = "Ausgewählter Sensor";
+  const badge = document.getElementById("active-sensor-badge");
+  if (badge) {
+    badge.classList.add("d-none");
+    badge.textContent = "";
+  }
+
+  // Clear sensor value UI (if any)
+  const sensorValueContainer = document.getElementById("sensor-value-output");
+  if (sensorValueContainer) {
+    sensorValueContainer.innerHTML = "";
+  }
+
+  // Reset button styles
+  const buttons = document.querySelectorAll(".sensor-button");
+  buttons.forEach(button => {
+    button.classList.remove("active", "btn-active");
+    button.style.backgroundColor = '';
+    button.style.color = '';
+    button.dataset.active = "false";
+  });
+}

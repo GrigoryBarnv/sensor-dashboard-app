@@ -214,16 +214,26 @@ document.addEventListener("DOMContentLoaded", () => {
 function startSensorLive(sensorId) {
   if (liveSimulations.has(sensorId)) return; // already active
 
-  fetch(`/api/sensor/${sensorId}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.error) {
-        alert("Fehler: " + data.error);
-        return;
-      }
-      simulateLivePlot(sensorId, data.time, data.values);
-      updateSensorTitle();
-    });
+fetch('/api/sensor_data', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    sensorId: sensorId,
+    selectedFile: selectedFile
+  })
+})
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) {
+      alert("Fehler: " + data.error);
+      return;
+    }
+    simulateLivePlot(sensorId, data.time, data.values);
+    updateSensorTitle();
+  });
+
 }
 
 function simulateLivePlot(sensorId, timeArray, valueArray) {
@@ -422,17 +432,29 @@ buttons.forEach(button => {
 });
 
 
-// Fetch and display log data in life box for future live data 
-function fetchLogData() {
-  fetch("/api/data")
-    .then(res => res.json())
-    .then(logs => {
-      const box = document.getElementById("json-log-box");
-      box.innerHTML = logs.map(entry => {
-        return `<div>${entry.received_at || "??"} → ${JSON.stringify(entry)}</div>`;
-      }).join("");
-    });
-}
+// // Fetch and display log data in life box for future live data 
+// function fetchLogData() {
+//   fetch("/api/data")
+//     .then(res => res.json())
+//     .then(logs => {
+//       const box = document.getElementById("json-log-box");
+//       box.innerHTML = logs.map(entry => {
+//         return `<div>${entry.received_at || "??"} → ${JSON.stringify(entry)}</div>`;
+//       }).join("");
+//     });
+// }
 
-// repeat every 2 seconds
-setInterval(fetchLogData, 2000);
+// // repeat every 2 seconds
+// setInterval(fetchLogData, 2000);
+
+
+
+
+// function that adds an event listener to the dropdown menu to send later to visualization.py
+let selectedFile = "Avocado_Enrich2_Measure.CSV"; // default
+
+document.getElementById("csv-selector").addEventListener("change", function () {
+  selectedFile = this.value;
+  console.log("Selected file:", selectedFile); //for text purposes 
+});
+

@@ -129,6 +129,18 @@
 
             <div class="main-content-wrapper">
 
+                <div class="mb-3">
+                    <label for="csv-selector" class="form-label">Datensatz auswählen:</label>
+                    <select id="csv-selector" class="form-select">
+                     
+                        <option value="Avocado_Enrich2_Measure.CSV">Avocado</option>
+                        <option value="Banane_Enrich2_Measure.CSV">Banane</option>
+                        <option value="Erdbeere_Enrich5_Measure.CSV">Erdbeere</option>
+                        <option value="Tomate_Enrich2_Measure.CSV">Tomate</option>
+                    </select>
+                </div>
+
+
                 <!-- container for holding the visualization -->
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -159,6 +171,18 @@
                             </p>
                         </div>
                     </div>
+
+
+                    <!-- Refresh-Button-Box   -->
+                    <!-- <div id="refresh-button-box" class="card mt-3">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <p id="refresh-explainer" class="mb-0" data-i18n="refreshInfo">
+                                Klicken Sie auf den Button, um den Graphen zurückzusetzen und alle Sensoren zu
+                                entfernen.
+                            </p>
+                            <button id="refresh-button" class="btn btn-warning btn-lg">🔄 Reset</button>
+                        </div>
+                    </div> -->
 
                     <div class="card mt-3">
                         <div class="card-body">
