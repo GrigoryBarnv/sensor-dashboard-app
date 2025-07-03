@@ -4,6 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
+
+#  is function to extract sensor data from a CSV file
 def get_sensor_data(sensor_id, filename):
     try:
         # Load CSV file with ',' separator
