@@ -176,7 +176,6 @@ function setLanguage(lang) {
 
 document.addEventListener("DOMContentLoaded", () => {
   const buttons = document.querySelectorAll(".sensor-button");
-  const activeSensors = new Map();
   const savedLang = localStorage.getItem("lang") || "de";
   setLanguage(savedLang);
   updateSensorTooltips(savedLang);
@@ -353,11 +352,13 @@ function updateSensorTitle(sensorId) {
 
 
 // function that adds an event listener to the dropdown menu to send later to visualization.py
-let selectedFile = "Example_Data.csv"; // default
+let selectedFile = "Avocado_Enrich2_Measure.CSV"; // default
 
 document.getElementById("csv-selector").addEventListener("change", function () {
-  selectedFile = this.value;
+  selectedFile = this.value; 
   console.log("Selected file:", selectedFile); //for text purposes 
+
+  resetGraph(); // reset the graph 
 });
 
 

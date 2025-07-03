@@ -129,7 +129,17 @@
 
             <div class="main-content-wrapper">
 
-                <div class="mb-3">
+       
+
+                <!-- container for holding the visualization -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 id="visualization-title" data-i18n="selectedSensor">Ausgewählter Sensor</h4>
+                        <span id="active-sensor-badge" class="badge bg-primary d-none" data-i18n="sensor">Sensor</span>
+                    </div>
+
+
+                    <div class="mb-3">
                     <label for="csv-selector" class="form-label">Datensatz auswählen:</label>
                     <select id="csv-selector" class="form-select">
                      
@@ -138,14 +148,6 @@
                         <option value="Erdbeere_Enrich5_Measure.CSV">Erdbeere</option>
                         <option value="Tomate_Enrich2_Measure.CSV">Tomate</option>
                     </select>
-                </div>
-
-
-                <!-- container for holding the visualization -->
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 id="visualization-title" data-i18n="selectedSensor">Ausgewählter Sensor</h4>
-                        <span id="active-sensor-badge" class="badge bg-primary d-none" data-i18n="sensor">Sensor</span>
                     </div>
 
                     <div class="card-body visualization-container">

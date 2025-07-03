@@ -455,6 +455,7 @@ let selectedFile = "Avocado_Enrich2_Measure.CSV"; // default
 
 document.getElementById("csv-selector").addEventListener("change", function () {
   selectedFile = this.value;
-  console.log("Selected file:", selectedFile); //for text purposes 
+  console.log("Selected file:", selectedFile); //for text purposes
+  resetGraph(); 
 });
 
