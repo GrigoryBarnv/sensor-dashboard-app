@@ -17,7 +17,7 @@ const sensorColors = {
 
 
 
-// Sprachdaten in einem Objekt speichern
+// Language translations
 const translations = {
   de: {
     refreshInfo: "Klicken Sie auf den Button, um den Graphen zurückzusetzen und alle Sensoren zu entfernen.",
@@ -35,7 +35,7 @@ const translations = {
     supportedTypes: "Unterstützte Sensor-Typen:",
     sensorHint: "Die Sensorwerte repräsentieren Daten. Niedrigere Werte deuten auf eine höhere Gaskonzentration hin.",
     footer: "&copy; 2025 Sensor-Daten-Dashboard",
-    // Sensor Gase
+    // Sensor Gases
     MQ2: "Methan, Butan, LPG",
     MQ3_1: "Ethanol",
     MQ3_10: "Ethanol",
@@ -118,7 +118,8 @@ const liveSimulations = new Map();
 
 
 
-//die Funktion zum aktualisieren der Tooltips, damit die Sprache passend ist ohne neu laden
+
+// Function to aktualize the sensor tooltips with the selected language
 function updateSensorTooltips(lang) {
   const gases = translations[lang].sensorGases;
 
@@ -126,16 +127,16 @@ function updateSensorTooltips(lang) {
     const sensorId = button.getAttribute("data-sensor-id");
     const newTitle = gases[sensorId] || "-";
 
-    //  Zuerst alten Tooltip zerstören
+    //  clear all existing tooltips
     const oldTooltip = bootstrap.Tooltip.getInstance(button);
     if (oldTooltip) oldTooltip.dispose();
 
-    //  Alles Bereinigen, inkl. Bootstrap-internem Cache
+    //  clear all existing attributes of the button
     button.removeAttribute("data-bs-original-title");
     button.removeAttribute("aria-describedby");
     button.setAttribute("title", newTitle);
 
-    //  Tooltip neu erzeugen
+    //  create a new tooltip
     new bootstrap.Tooltip(button, {
       placement: 'top',
       trigger: 'hover',
@@ -147,11 +148,9 @@ function updateSensorTooltips(lang) {
 
 
 
-
-
-// Funktion zum setzen der Sprache
+// Funktion to set the language
 function setLanguage(lang) {
-  // Spracheinstellungen aktualisieren
+  // change the language to the selected language
   localStorage.setItem("lang", lang);
 
   document.querySelectorAll("[data-i18n]").forEach(el => {
@@ -160,7 +159,7 @@ function setLanguage(lang) {
       el.textContent = translations[lang][key];
     }
   });
-  // Sprachbutton-Styling aktualisieren
+  // change the language buttons inside html 
   const btnDe = document.getElementById("btn-de");
   const btnEn = document.getElementById("btn-en");
 
@@ -174,31 +173,41 @@ function setLanguage(lang) {
   updateSensorTooltips(lang);
 }
 
+
+
+
+// Event listener for the DOMContentLoaded event
 document.addEventListener("DOMContentLoaded", () => {
   const liveBtn = document.getElementById("btn-live");
 
+
+  // Add the live-active class to the live button
   liveBtn.classList.add("blinking", "live-active");
   liveBtn.innerHTML = '<span class="dot"></span> Live';
 
+  // Event listener for the live button
   liveBtn.addEventListener("click", () => {
     window.location.href = "/";
   });
 
+  // Set the language
   const savedLang = localStorage.getItem("lang") || "de";
   setLanguage(savedLang);
   updateSensorTooltips(savedLang);
 
+  // Event listener for the refresh button
   const refreshBtn = document.getElementById("refresh-button");
   if (refreshBtn) {
     refreshBtn.addEventListener("click", resetGraph);
   }
 
+  // Optionally render an empty placeholder chart
   Plotly.newPlot("plot", [], {
   title: "Sensorverlauf (Live)",
   xaxis: { title: "Zeit" },
   yaxis: { title: "Sensorwert (Ohm)" },
   margin: { t: 40 },
-  showlegend: true, // 👈 always show legend
+  showlegend: true, //  always show legend
   legend: {
     x: 1.05,          // move to right side
     y: 1,
@@ -210,32 +219,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
+// Function to start the live simulation
 function startSensorLive(sensorId) {
-  if (liveSimulations.has(sensorId)) return; // already active
+  if (liveSimulations.has(sensorId)) return; // already active -> quit
 
+
+//
 fetch('/api/sensor_data', {
   method: 'POST',
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json' // Set the content type to JSON
   },
   body: JSON.stringify({
     sensorId: sensorId,
     selectedFile: selectedFile
   })
 })
+  // then parse the response
   .then(res => res.json())
+  // then update the plot
   .then(data => {
     if (data.error) {
       alert("Fehler: " + data.error);
       return;
     }
-    simulateLivePlot(sensorId, data.time, data.values);
+    simulateLivePlot(sensorId, data.time, data.values); // changes the plot
     updateSensorTitle();
   });
 
 }
 
+// Function to simulate the live plot
 function simulateLivePlot(sensorId, timeArray, valueArray) {
   const existingTraceIndex = getTraceIndex(sensorId);
   let i = 0;
@@ -269,13 +283,13 @@ function simulateLivePlot(sensorId, timeArray, valueArray) {
     }
 
     i++;
-  }, 1000);
+  }, 1000); // 1000ms = 1 data point per second 
 
   liveSimulations.set(sensorId, intervalId);
 }
 
 
-
+// Function to get the index of a trace in the plot 
 function getTraceIndex(sensorId) {
   const plotDiv = document.getElementById("plot");
   if (!plotDiv.data) return -1;
@@ -283,7 +297,7 @@ function getTraceIndex(sensorId) {
 }
 
 
-// funktion  zum aktualisieren des Sensor-Titels
+// function to update the sensor title
 function updateSensorTitle() {
   const title = document.getElementById("visualization-title");
   const active = Array.from(liveSimulations.keys()).join(", ");
@@ -294,7 +308,7 @@ function updateSensorTitle() {
 }
 
 
-
+// Function to reset the graph 
 function resetGraph() {
   liveSimulations.forEach(intervalId => clearInterval(intervalId));
   liveSimulations.clear();
@@ -306,6 +320,7 @@ function resetGraph() {
     margin: { t: 40 }
   });
 
+  // Clear title and sensor badge
   document.getElementById("visualization-title").textContent = "Ausgewählter Sensor: -";
   document.getElementById("active-sensor-badge").textContent = "";
 
@@ -327,8 +342,8 @@ function resetGraph() {
 
 };
 
-// 1. Aktuelle Sensorwerte UNTER dem Plot anzeigen (mit Farbe, max. 4)
-// Ergänze in simulateLivePlot()
+// show the actual messured sensor value under the plot 
+// TODO add into simulateLivePlot()
 function simulateLivePlot(sensorId, timeArray, valueArray) {
   const existingTraceIndex = getTraceIndex(sensorId);
   let i = 0;
@@ -369,6 +384,10 @@ function simulateLivePlot(sensorId, timeArray, valueArray) {
 
   liveSimulations.set(sensorId, intervalId);
 }
+
+
+
+// Function to update the sensor value boxes
 function updateSensorValues(sensorId, latestValue) {
   const container = document.getElementById("sensor-value-output");
   let sensorBox = document.querySelector(`[data-sensor-box='${sensorId}']`);
@@ -389,50 +408,50 @@ function updateSensorValues(sensorId, latestValue) {
   `;
 }
 
-
+// Function to handle button clicks
 buttons.forEach(button => {
   button.addEventListener("click", () => {
     const sensorId = button.getAttribute("data-sensor-id");
 
-    // SENSOR DEAKTIVIEREN, falls bereits aktiv
+    // sensor deactivate if active
     if (liveSimulations.has(sensorId)) {
-      // Stoppe Intervall
+      // Stop Interval
       clearInterval(liveSimulations.get(sensorId));
       liveSimulations.delete(sensorId);
 
-      // Entferne Plot-Linie
+      // delete trace from plot
       const traceIndex = getTraceIndex(sensorId);
       if (traceIndex !== -1) {
         Plotly.deleteTraces('plot', traceIndex);
       }
 
-      // Entferne Sensorwert-Box
+      // delete sensor value box  
       const box = document.querySelector(`[data-sensor-box='${sensorId}']`);
       if (box) box.remove();
 
-      // Button zurücksetzen
+      // set buttons to initial state
       button.classList.remove("btn-active");
       button.style.backgroundColor = '';
       button.style.color = '';
 
-      // Aktive Sensoren aktualisieren
+      // update new sensors 
       updateSensorTitle();
 
-      return; // Fertig!
+      return; // exit the function
     }
 
-    // SENSOR AKTIVIEREN
+    // activate the sensors
     startSensorLive(sensorId);
 
-    // Button einfärben
+    // color the button
     button.classList.add("btn-active");
     button.style.backgroundColor = sensorColors[sensorId] || 'gray';
     button.style.color = 'white';
   });
 });
 
-
-// // Fetch and display log data in life box for future live data 
+// // TODO FOR THE LIFE SIMULATION 
+// // Fetch and display log data in life box for future live data  Simulation plot
 // function fetchLogData() {
 //   fetch("/api/data")
 //     .then(res => res.json())

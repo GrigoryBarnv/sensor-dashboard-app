@@ -16,7 +16,7 @@ const sensorColors = {
 
 
 
-// Sprachdaten in einem Objekt speichern
+// Language translations
 const translations = {
   de: {
     pageTitle: "Sensor-Daten-Dashboard",
@@ -113,8 +113,7 @@ const translations = {
 const activeSensors = new Map();
 
 
-
-//die Funktion zum aktualisieren der Tooltips, damit die Sprache passend ist ohne neu laden
+// Function to aktualize the sensor tooltips with the selected language
 function updateSensorTooltips(lang) {
   const gases = translations[lang].sensorGases;
 
@@ -122,16 +121,16 @@ function updateSensorTooltips(lang) {
     const sensorId = button.getAttribute("data-sensor-id");
     const newTitle = gases[sensorId] || "-";
 
-    //  Zuerst alten Tooltip zerstören
+    //  clear all existing tooltips
     const oldTooltip = bootstrap.Tooltip.getInstance(button);
     if (oldTooltip) oldTooltip.dispose();
 
-    //  Alles Bereinigen, inkl. Bootstrap-internem Cache
+    //  clear all existing attributes of the button
     button.removeAttribute("data-bs-original-title");
     button.removeAttribute("aria-describedby");
     button.setAttribute("title", newTitle);
 
-    //  Tooltip neu erzeugen
+    //  create a new tooltip
     new bootstrap.Tooltip(button, {
       placement: 'top',
       trigger: 'hover',
@@ -145,9 +144,9 @@ function updateSensorTooltips(lang) {
 
 
 
-// Funktion zum setzen der Sprache
+// function to change the language
 function setLanguage(lang) {
-  // Spracheinstellungen aktualisieren
+  // change the language
   localStorage.setItem("lang", lang);
 
   document.querySelectorAll("[data-i18n]").forEach(el => {
@@ -156,7 +155,7 @@ function setLanguage(lang) {
       el.textContent = translations[lang][key];
     }
   });
-  // Sprachbutton-Styling aktualisieren
+  // lang button style change
   const btnDe = document.getElementById("btn-de");
   const btnEn = document.getElementById("btn-en");
 
