@@ -404,7 +404,7 @@ function resetGraph() {
     sensorValueContainer.innerHTML = "";
   }
 
-  // Reset button styles
+  // Reset button styles and active state
   const buttons = document.querySelectorAll(".sensor-button");
   buttons.forEach(button => {
     button.classList.remove("active", "btn-active");
