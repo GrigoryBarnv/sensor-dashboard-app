@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, render_template, request
-from visualization import get_sensor_data  # deine bestehende Funktion
+from visualization import get_sensor_data  
 import time
 
 app = Flask(__name__)
@@ -29,6 +29,8 @@ def api_sensor(sensor_id):
 def test_page():
     return render_template("test.html")
 
+
+# # TODO For the live simulation data 
 # # POST endpoint to receive data from Jetson or simulator
 # @app.route("/api/data", methods=["POST"])
 # def receive_data():
