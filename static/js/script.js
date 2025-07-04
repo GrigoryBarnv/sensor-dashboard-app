@@ -107,6 +107,9 @@ const translations = {
 };
 
 
+
+
+
 const activeSensors = new Map();
 
 
@@ -174,29 +177,32 @@ function setLanguage(lang) {
 
 
 
-document.addEventListener("DOMContentLoaded", () => {
-  const buttons = document.querySelectorAll(".sensor-button");
-  const savedLang = localStorage.getItem("lang") || "de";
+
+// The content is executed after the Page is fully loaded
+
+//Prepare the buttons and language settings
+document.addEventListener("DOMContentLoaded", () => {  // run the code inside when the page is fully loaded 
+  const buttons = document.querySelectorAll(".sensor-button"); // assign all html elements with the class "sensor-button" to the variable "buttons"
+  const savedLang = localStorage.getItem("lang") || "de"; // get the language setting from local storage or set it to "de" by default
   setLanguage(savedLang);
-  updateSensorTooltips(savedLang);
+  updateSensorTooltips(savedLang); // update the tooltips (popup text when hovering over a sensor button)
+  const liveBtn = document.getElementById("btn-live"); // get the html el. with the id 
 
-  const liveBtn = document.getElementById("btn-live");
+  // Button always offline
+  liveBtn.classList.remove("blinking", "live-active");    // remove the blinking and live-active classes from css
+  liveBtn.innerHTML = '<span class="dot"></span> Offline'; // set the inner html of the button to "Offline"
 
-  // Immer OFFLINE anzeigen
-  liveBtn.classList.remove("blinking", "live-active");
-  liveBtn.innerHTML = '<span class="dot"></span> Offline';
-
-  // Klick auf Button → zur LIVE-Seite wechseln
+  // Klick on live button to go to the live page 
   liveBtn.addEventListener("click", () => {
     window.location.href = "/live";
   });
 
 
 
-  // 2. Tooltips aktivieren
+  // 2. Tooltips activate
   const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
   tooltipTriggerList.forEach(el => {
-    new bootstrap.Tooltip(el, {
+    new bootstrap.Tooltip(el, {  // initialize the tooltip on the element
       placement: 'top',
       trigger: 'hover',
       delay: { show: 100, hide: 100 },
@@ -204,44 +210,45 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 3. Klickverhalten
+  // 3. Klickbehaviour
   buttons.forEach(button => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", () => { //go through all buttons 
       
       const sensorId = button.getAttribute("data-sensor-id");
 
 
 
 
-      // 4. Klickverhalten verarbeiten und Plot aktualisieren 
+      // 4. change the plot
       if (activeSensors.has(sensorId)) {
-        // Sensor ist schon aktiv → entferne ihn
+        // delete the sensor if already active
         activeSensors.delete(sensorId);
         button.classList.remove("active");
         button.classList.remove("active");
-        button.style.backgroundColor = '';
+        button.style.backgroundColor = ''; // reset the background color so it looks turned off
         button.style.color = '';
         button.dataset.active = "false";
-
-        
         redrawPlot(activeSensors);
       
 
       } else {
-        // Sensor neu hinzufügen
-        fetch(`/api/sensor/${sensorId}?file=${encodeURIComponent(selectedFile)}`)
-          .then(res => res.json())
+        // when sensor is not active take the data from the server
+        fetch(`/api/sensor/${sensorId}?file=${encodeURIComponent(selectedFile)}`) // make a request to flask backend
+          .then(res => res.json()) //if the server answered make json
+
           .then(data => {
-            if (data.error) {
+
+
+            if (data.error) { //if data error show the warning and quit
               alert("Fehler: " + data.error);
               return;
             }
 
-            activeSensors.set(sensorId, data);
+            activeSensors.set(sensorId, data); // save the data in the map
             const color = sensorColors[sensorId] || 'black';
             button.style.backgroundColor = color;
-            button.style.color = 'white';  // Textfarbe auf Weiß setzen
-            button.dataset.active = "true";  // zum Zureucksetzen spaeter
+            button.style.color = 'white';  // Textcolor
+            button.dataset.active = "true";  // to deactivate later = shows that active button is clicked
 
             redrawPlot(activeSensors);
           });
@@ -249,17 +256,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     setLanguage(savedLang);
     updateSensorTooltips(savedLang);
-   
-
   });
 });
 
 
 
 
-// Plot aktualisieren wenn neue Sensordaten geladen wurden
+// plot new data when the different sensor data is chosen
 function redrawPlot(sensorMap) {
-  const traces = [];
+  const traces = []; // empty array to store the traces of the plot
 
   for (const [sensorId, data] of sensorMap.entries()) {
     const trace = {
@@ -284,7 +289,7 @@ function redrawPlot(sensorMap) {
 }
 
 
-//  Funktion zum Laden der Sensordaten aus der API mittels fetch
+//  get the data from the server
 function fetchSensorData(sensorId) {
   const url = `/api/sensor/${sensorId}?file=${encodeURIComponent(selectedFile)}`;
 
@@ -297,24 +302,24 @@ function fetchSensorData(sensorId) {
         return;
       }
 
-      renderPlot(data.time, data.values, data.sensor_id);
+      renderPlot(data.time, data.values, data.sensor_id);  // changes the plot
       updateSensorTitle(data.sensor_id);
     });
 }
 
 
-// Funktion zum Zeichnen des Plots mit Plotly
+// draw the plot with the data
 function renderPlot(timeArray, valueArray, sensorId) {
   const trace = {
     x: timeArray,
     y: valueArray,
     type: 'scatter',
-    mode: 'lines+markers',
+    mode: 'lines+markers', // how to display the points
     marker: { color: sensorColors[sensorId] || 'black' },
     name: sensorId
   };
 
-  // Initialisiere Plot, wenn leer
+  // initial plot if empty
   const plotDiv = document.getElementById('plot');
   if (plotDiv.data === undefined || plotDiv.data.length === 0) {
     const layout = {
@@ -326,7 +331,7 @@ function renderPlot(timeArray, valueArray, sensorId) {
 
     Plotly.newPlot('plot', [trace], layout);
   } else {
-    // Prüfen ob Sensor schon geplottet ist
+    // if the senser is already active exit
     const exists = plotDiv.data.some(d => d.name === sensorId);
     if (!exists) {
       Plotly.addTraces('plot', trace);
