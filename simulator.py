@@ -39,6 +39,7 @@ def random_value(sensor):
     # Optional: Je Sensor anderer Wertebereich, hier Beispiel
     return round(random.uniform(20, 350), 2)
 
+
 def simulate_sensor_data():
     sec = 0
     while True:
@@ -47,7 +48,7 @@ def simulate_sensor_data():
         data = {"time": time_str}
         for sensor in sensors:
             data[sensor] = random_value(sensor)
-        print(json.dumps(data))
+        print(json.dumps(data, ensure_ascii=False))
         time.sleep(2)
         sec += 2
 
