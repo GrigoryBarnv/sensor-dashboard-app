@@ -28,6 +28,9 @@ import random
 import time
 import json
 from datetime import timedelta
+import requests
+
+
 
 # Sensor-Namen wie im Beispiel
 sensors = [
@@ -49,6 +52,7 @@ def simulate_sensor_data():
         for sensor in sensors:
             data[sensor] = random_value(sensor)
         print(json.dumps(data, ensure_ascii=False))
+        requests.post("http://web:5000/api/data", json=data)
         time.sleep(2)
         sec += 2
 
