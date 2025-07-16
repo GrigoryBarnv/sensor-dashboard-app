@@ -47,7 +47,7 @@ def test_page():
 # def get_latest_data():
 #     return jsonify(latest_data_log)
 
-#
+###
 
 
 @app.route("/api/sensor_data", methods=["POST"])
