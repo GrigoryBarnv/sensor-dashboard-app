@@ -2,20 +2,31 @@ from flask import Flask, jsonify, render_template, request
 from visualization import get_sensor_data  
 import time
 
+# create the Flask app and global variables
 app = Flask(__name__)
-
 latest_data_log = [] # simple list to keep logs (timestamp + 12 x sensor values)
 
+
+# route to show the homepage
 @app.route("/")
 def home():
-    return render_template("index.html")  # templates/index.html muss existieren
+    """
+    Render the home page of the Sensor Dashboard application.
 
+    This route serves the main index page of the application, which provides 
+    an interactive dashboard for visualizing sensor data. The HTML template 
+    for this page is located at 'templates/index.html'.
+    """
+    return render_template("index.html")  # templates/index.html must exist
+
+
+# route to show the live page
 @app.route("/live")
 def live():
     return render_template("live.html")
 
 
-# API endpoint to retrieve sensor data for offline Plotting 
+# API endpoint for frontend to retrieve full CSV sensor data for offline Plotting 
 @app.route("/api/sensor/<sensor_id>")
 def api_sensor(sensor_id):
     filename = request.args.get("file")
@@ -55,6 +66,9 @@ def api_sensor_data():
 @app.route("/test")
 def test_page():
     return render_template("test.html")
+
+
+#FOR THE SIMULATION OF REAL TIME DATA SENDING TO THE FRONTEND
 
 
 
