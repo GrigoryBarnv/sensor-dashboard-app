@@ -14,6 +14,8 @@ def home():
 def live():
     return render_template("live.html")
 
+
+# API endpoint to retrieve sensor data for offline Plotting 
 @app.route("/api/sensor/<sensor_id>")
 def api_sensor(sensor_id):
     filename = request.args.get("file")
@@ -25,32 +27,14 @@ def api_sensor(sensor_id):
 
 
 
-@app.route("/test")
-def test_page():
-    return render_template("test.html")
-
-
-# # TODO For the live simulation data 
-# # POST endpoint to receive data from Jetson or simulator
-# @app.route("/api/data", methods=["POST"])
-# def receive_data():
-#     global latest_data_log
-#     data = request.get_json()
-#     data["received_at"] = time.strftime("%H:%M:%S")  # add readable timestamp
-#     latest_data_log.insert(0, data)
-#     latest_data_log = latest_data_log[:20]  # only keep latest 20
-#     return jsonify({"status": "received"})
-
     
 # GET endpoint for frontend polling
 @app.route("/api/data", methods=["GET"])
 def get_latest_data():
     return jsonify(latest_data_log)
 
-#####
-
-# POST endpoint to receive data from Jetson or simulator
-@app.route("/api/sensor_data", methods=["POST"])
+# POST endpoint for the life data simulation , retrieve file Avacado.... and sensor id to send to simulate live.js
+app.route("/api/sensor_data", methods=["POST"])
 def api_sensor_data():
     # Parse incoming JSON data from the POST request
     data = request.get_json()
@@ -66,6 +50,11 @@ def api_sensor_data():
 
     # Return the processed data (or error) as a JSON response to the frontend
     return jsonify(result)
+
+# for test page purposes
+@app.route("/test")
+def test_page():
+    return render_template("test.html")
 
 
 

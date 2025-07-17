@@ -146,17 +146,17 @@
                         <span id="active-sensor-badge" class="badge bg-primary d-none" data-i18n="sensor">Sensor</span>
                     </div>
 
-                    
-                        <div class="mb-3">
-                            <label for="csv-selector" class="form-label">Datensatz auswählen:</label>
-                            <select id="csv-selector" class="form-select">
 
-                                <option value="Avocado_Enrich2_Measure.CSV">Avocado</option>
-                                <option value="Banane_Enrich2_Measure.CSV">Banane</option>
-                                <option value="Erdbeere_Enrich5_Measure.CSV">Erdbeere</option>
-                                <option value="Tomate_Enrich2_Measure.CSV">Tomate</option>
-                            </select>
-                        </div>
+                    <div class="mb-3">
+                        <label for="csv-selector" class="form-label">Datensatz auswählen:</label>
+                        <select id="csv-selector" class="form-select">
+
+                            <option value="Avocado_Enrich2_Measure.CSV">Avocado</option>
+                            <option value="Banane_Enrich2_Measure.CSV">Banane</option>
+                            <option value="Erdbeere_Enrich5_Measure.CSV">Erdbeere</option>
+                            <option value="Tomate_Enrich2_Measure.CSV">Tomate</option>
+                        </select>
+                    </div>
 
 
                     <div class="card-body visualization-container">
@@ -259,11 +259,18 @@
                                 </small>
                             </p>
 
+                                <!-- THE REAL TIME SIMULATION WINDOW below -->
+                                <div class = "card-body" id="my-placeholder"
+                                    style="width:600px; height:400px; border:2px dashed #aaa; display:flex; align-items:center; justify-content:center;">
+                                    <span style="color:#888; font-size:1.2em;">Your plot goes here</span>
+                                </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </main>
+
         <footer class="app-footer">
             <p data-i18n="footer">&copy; 2025 Sensor-Daten-Dashboard</p>
         </footer>

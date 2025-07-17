@@ -478,3 +478,6 @@ document.getElementById("csv-selector").addEventListener("change", function () {
   resetGraph(); 
 });
 
+
+
+//FUNCTION THAT ARE SUPPORTING THE LIFE SIMULATION 
