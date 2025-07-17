@@ -86,4 +86,4 @@ def get_latest_live_data():
 
 #run the app
 if __name__ == "__main__":
-    app.run(debug=True) # this starts the app and it l
+    app.run(debug=True) # this starts the app and it ld
