@@ -6,6 +6,8 @@ from datetime import timedelta
 import requests
 
 
+print("Script started!")
+
 
 # Sensor-Namen wie im Beispiel
 sensors = [
@@ -15,6 +17,7 @@ sensors = [
 
 def random_value(sensor):
     # Optional: Je Sensor anderer Wertebereich, hier Beispiel
+    
     return round(random.uniform(20, 350), 2)
 
 
@@ -26,8 +29,11 @@ def simulate_sensor_data():
         data = {"time": time_str}
         for sensor in sensors:
             data[sensor] = random_value(sensor)
-        print(json.dumps(data, ensure_ascii=False))
-        requests.post("http://web:5000/api/data", json=data)
+        # Send data to backend
+        # Print what was sent and the server's response (optional)
+        print("Sending to /api/live-stream-data:", data)
+        resp = requests.post("http://web:5000/api/live-stream-data", json=data)
+        print("Response status:", resp.status_code)
         time.sleep(2)
         sec += 2
 

@@ -480,4 +480,52 @@ document.getElementById("csv-selector").addEventListener("change", function () {
 
 
 
-//FUNCTION THAT ARE SUPPORTING THE LIFE SIMULATION 
+//FUNCTION THAT ARE SUPPORTING THE LIFE SIMULATION
+//
+//
+// List your sensors (same order as Python)
+const sensors = [
+    "MQ2", "MQ3_1", "MQ3_10", "MQ4", "MQ5", "MQ6",
+    "MQ8", "MQ9", "MQ135", "MQ136", "MQ137", "MQ138"
+];
+
+// Function to update the output window with latest sensor data
+function updateOutputWindow(data) {
+    const el = document.getElementById('live-output');
+    if (!el) return;
+
+    if (!data || data.length === 0) {
+        el.textContent = "No data received yet.";
+        return;
+    }
+
+    // Get the newest entry (you might want data[0] or data[data.length-1] depending on your backend)
+    const latest = data[0];
+
+    // Build a pretty output string (show only time and sensor values, not as raw JSON if preferred)
+    let out = `Time: ${latest.time || latest.received_at || "-"}\n`;
+    sensors.forEach(sensor => {
+        if (latest[sensor] !== undefined) {
+            out += `${sensor}: ${latest[sensor]}\n`;
+        }
+    });
+
+    el.textContent = out;
+}
+
+// Fetch data from the backend and update output window
+function fetchAndDisplay() {
+    fetch('/api/live-stream-data')
+        .then(response => response.json())
+        .then(data => updateOutputWindow(data))
+        .catch(() => {
+            const el = document.getElementById('live-output');
+            if (el) el.textContent = "Error fetching data.";
+        });
+}
+
+// Update every second (1000 ms)
+setInterval(fetchAndDisplay, 1000);
+
+// Optional: fetch immediately on page load too
+fetchAndDisplay();

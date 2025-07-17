@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, render_template, request
 from visualization import get_sensor_data  
 import time
+import requests
 
 # create the Flask app and global variables
 app = Flask(__name__)
@@ -39,13 +40,13 @@ def api_sensor(sensor_id):
 
 
     
-# GET endpoint for frontend polling
+# GET endpoint for frontend polling for getting the live simulation data from CSV
 @app.route("/api/data", methods=["GET"])
 def get_latest_data():
     return jsonify(latest_data_log)
 
 # POST endpoint for the life data simulation , retrieve file Avacado.... and sensor id to send to simulate live.js
-app.route("/api/sensor_data", methods=["POST"])
+@app.route("/api/sensor_data", methods=["POST"])
 def api_sensor_data():
     # Parse incoming JSON data from the POST request
     data = request.get_json()
@@ -62,16 +63,27 @@ def api_sensor_data():
     # Return the processed data (or error) as a JSON response to the frontend
     return jsonify(result)
 
-# for test page purposes
-@app.route("/test")
-def test_page():
-    return render_template("test.html")
-
 
 #FOR THE SIMULATION OF REAL TIME DATA SENDING TO THE FRONTEND
 
+# POST endpoint for simulator.py to send data
+@app.route("/api/live-stream-data", methods=["POST"])
+def receive_live_data():
+    global latest_data_log
+    data = request.get_json()
+    print("RECIEVED from simulatir:", data)
+    data["received_at"] = time.strftime("%H:%M:%S")
+    latest_data_log.insert(0, data)
+    latest_data_log = latest_data_log[:1]
+    return jsonify({"status": "received"})
+
+# GET endpoint for frontend to fetch latest live data
+@app.route("/api/live-stream-data", methods=["GET"])
+def get_latest_live_data():
+    return jsonify(latest_data_log)
 
 
+
+#run the app
 if __name__ == "__main__":
-    app.run(debug=True)
-
+    app.run(debug=True) # this starts the app and it l
