@@ -513,16 +513,49 @@ function updateOutputWindow(data) {
     el.textContent = out;
 }
 
-// Fetch data from the backend and update output window
+
+
+// Function to plot log history from live simulator  (e.g. for MQ135)
+function plotSimulationHistory(data, sensor = "MQ135") {
+    if (!data || data.length === 0) {
+        Plotly.newPlot('live-history-plot', [], { title: "Simulationverlauf" });
+        return;
+    }
+    // Show up to 60 last points
+    const logs = data.slice(0, 60).reverse(); // latest first in data[0]
+    const times = logs.map(e => e.time || e.received_at || "-");
+    const values = logs.map(e => e[sensor] ?? null);
+
+    const trace = {
+        x: times,
+        y: values,
+        type: "scatter",
+        mode: "lines+markers",
+        name: sensor,
+        line: { color: 'orange' }
+    };
+    Plotly.newPlot('live-history-plot', [trace], {
+        title: `Letzte Werte für ${sensor}`,
+        xaxis: { title: "Zeit" },
+        yaxis: { title: `${sensor} (Ohm)` }
+    });
+}
+
+
 function fetchAndDisplay() {
     fetch('/api/live-stream-data')
         .then(response => response.json())
-        .then(data => updateOutputWindow(data))
+        .then(data => {
+            updateOutputWindow(data);
+            plotSimulationHistory(data, "MQ135"); // or pick other sensor
+        })
         .catch(() => {
             const el = document.getElementById('live-output');
             if (el) el.textContent = "Error fetching data.";
         });
 }
+
+
 
 // Update every second (1000 ms)
 setInterval(fetchAndDisplay, 1000);

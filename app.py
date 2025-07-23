@@ -69,12 +69,13 @@ def api_sensor_data():
 # POST endpoint for simulator.py to send data
 @app.route("/api/live-stream-data", methods=["POST"])
 def receive_live_data():
+    MAX_LOG_ENTRIES = 60  # or any number you want
     global latest_data_log
     data = request.get_json()
     print("RECIEVED from simulatir:", data)
     data["received_at"] = time.strftime("%H:%M:%S")
     latest_data_log.insert(0, data)
-    latest_data_log = latest_data_log[:1]
+    latest_data_log = latest_data_log[:MAX_LOG_ENTRIES]
     return jsonify({"status": "received"})
 
 # GET endpoint for frontend to fetch latest live data
