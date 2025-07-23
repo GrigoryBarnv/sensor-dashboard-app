@@ -514,15 +514,14 @@ function updateOutputWindow(data) {
 }
 
 
-
-// Function to plot log history from live simulator  (e.g. for MQ135)
+// Function to plot log history from live simulator (e.g., for MQ135)
 function plotSimulationHistory(data, sensor = "MQ135") {
     if (!data || data.length === 0) {
         Plotly.newPlot('live-history-plot', [], { title: "Simulationverlauf" });
         return;
     }
-    // Show up to 60 last points
-    const logs = data.slice(0, 60).reverse(); // latest first in data[0]
+    // Show up to 60 last points (oldest to newest)
+    const logs = data.slice(0, 60).reverse(); // If newest is first, reverse to oldest first
     const times = logs.map(e => e.time || e.received_at || "-");
     const values = logs.map(e => e[sensor] ?? null);
 
@@ -541,13 +540,13 @@ function plotSimulationHistory(data, sensor = "MQ135") {
     });
 }
 
-
-function fetchAndDisplay() {
+// Function to fetch data and update both the text window and plot
+function fetchAndDisplayLiveSimulation() {
     fetch('/api/live-stream-data')
         .then(response => response.json())
         .then(data => {
-            updateOutputWindow(data);
-            plotSimulationHistory(data, "MQ135"); // or pick other sensor
+            updateOutputWindow(data);         // Your existing function
+            plotSimulationHistory(data, "MQ135"); // Can use other sensor as needed
         })
         .catch(() => {
             const el = document.getElementById('live-output');
@@ -555,10 +554,7 @@ function fetchAndDisplay() {
         });
 }
 
+// Call this function every X ms as before:
+setInterval(fetchAndDisplayLiveSimulation, 1000);
+fetchAndDisplayLiveSimulation();
 
-
-// Update every second (1000 ms)
-setInterval(fetchAndDisplay, 1000);
-//
-// Optional: fetch immediately on page load too
-fetchAndDisplay();
