@@ -526,6 +526,6 @@ function fetchAndDisplay() {
 
 // Update every second (1000 ms)
 setInterval(fetchAndDisplay, 1000);
-
+//
 // Optional: fetch immediately on page load too
 fetchAndDisplay();
