@@ -12,3 +12,6 @@ while True:
     # Du kannst hier die Werte weiterverarbeiten:
     werte = line.split(",")
     print("Zeit:", werte[0], "Sensorwerte:", werte[1:])
+
+
+# nothing 
