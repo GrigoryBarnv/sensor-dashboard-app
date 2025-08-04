@@ -479,8 +479,8 @@ document.getElementById("csv-selector").addEventListener("change", function () {
 });
 
 
-
-//FUNCTION THAT ARE SUPPORTING THE LIFE SIMULATION
+// ##############EVERYTHING BELOW IS FOR THE LIFE SIMULATION############################
+// FUNCTION THAT ARE SUPPORTING THE LIFE SIMULATION
 //
 //
 // List your sensors (same order as Python)
@@ -558,4 +558,5 @@ function fetchAndDisplayLiveSimulation() {
 setInterval(fetchAndDisplayLiveSimulation, 1000);
 fetchAndDisplayLiveSimulation();
 
-//ssd-ssssssss
+
+//####### END OF THE LIFE SIMULATION CODE ########

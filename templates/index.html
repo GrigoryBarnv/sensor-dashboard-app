@@ -5,9 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sensor-Daten-Dashboard</title>
-    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap-agent-dark-theme.min.css') }}" rel="stylesheet">
+
+
 </head>
 
 <body>
@@ -129,7 +131,7 @@
 
             <div class="main-content-wrapper">
 
-       
+
 
                 <!-- container for holding the visualization -->
                 <div class="card">
@@ -140,14 +142,14 @@
 
 
                     <div class="mb-3">
-                    <label for="csv-selector" class="form-label">Datensatz auswählen:</label>
-                    <select id="csv-selector" class="form-select">
-                     
-                        <option value="Avocado_Enrich2_Measure.CSV">Avocado</option>
-                        <option value="Banane_Enrich2_Measure.CSV">Banane</option>
-                        <option value="Erdbeere_Enrich5_Measure.CSV">Erdbeere</option>
-                        <option value="Tomate_Enrich2_Measure.CSV">Tomate</option>
-                    </select>
+                        <label for="csv-selector" class="form-label">Datensatz auswählen:</label>
+                        <select id="csv-selector" class="form-select">
+
+                            <option value="Avocado_Enrich2_Measure.CSV">Avocado</option>
+                            <option value="Banane_Enrich2_Measure.CSV">Banane</option>
+                            <option value="Erdbeere_Enrich5_Measure.CSV">Erdbeere</option>
+                            <option value="Tomate_Enrich2_Measure.CSV">Tomate</option>
+                        </select>
                     </div>
 
                     <div class="card-body visualization-container">
@@ -237,8 +239,8 @@
 
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/plotly-latest.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 
