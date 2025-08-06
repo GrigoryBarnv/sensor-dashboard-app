@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Sensor Plot</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    .sensor-button {
+      margin: 4px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2 id="visualization-title">Ausgewählter Sensor: -</h2>
+  <div id="active-sensor-badge"></div>
+  <div>
+    <button class="sensor-button" data-sensor-id="MQ2">MQ2</button>
+    <button class="sensor-button" data-sensor-id="MQ3_1">MQ3_1</button>
+    <button class="sensor-button" data-sensor-id="MQ3_10">MQ3_10</button>
+    <button class="sensor-button" data-sensor-id="MQ4">MQ4</button>
+    <button class="sensor-button" data-sensor-id="MQ5">MQ5</button>
+    <button class="sensor-button" data-sensor-id="MQ6">MQ6</button>
+    <button class="sensor-button" data-sensor-id="MQ8">MQ8</button>
+    <button class="sensor-button" data-sensor-id="MQ9">MQ9</button>
+    <button class="sensor-button" data-sensor-id="MQ135">MQ135</button>
+    <button class="sensor-button" data-sensor-id="MQ136">MQ136</button>
+    <button class="sensor-button" data-sensor-id="MQ137">MQ137</button>
+    <button class="sensor-button" data-sensor-id="MQ138">MQ138</button>
+    <button id="refresh-button" class="sensor-button" style="background-color: lightgray;">🔄 Refresh Graph</button>
+  </div>
+  <div id="plot" style="width:100%;height:600px;"></div>
+
+  <script>
+    const sensorColors = {
+      MQ2: "red", MQ3_1: "orange", MQ3_10: "gold",
+      MQ4: "green", MQ5: "blue", MQ6: "purple",
+      MQ8: "teal", MQ9: "pink", MQ135: "brown",
+      MQ136: "cyan", MQ137: "gray", MQ138: "magenta"
+    };
+
+    const liveSimulations = new Map();
+
+    function simulateLivePlot(sensorId, timeArray, valueArray) {
+      const existingTraceIndex = getTraceIndex(sensorId);
+      let i = 0;
+
+      if (existingTraceIndex === -1) {
+        const newTrace = {
+          x: [],
+          y: [],
+          type: 'scatter',
+          mode: 'lines+markers',
+          marker: { color: sensorColors[sensorId] || 'black' },
+          name: sensorId
+        };
+        Plotly.addTraces('plot', newTrace);
+      }
+
+      const intervalId = setInterval(() => {
+        if (i >= timeArray.length) {
+          clearInterval(intervalId);
+          liveSimulations.delete(sensorId);
+          return;
+        }
+
+        const traceIndex = getTraceIndex(sensorId);
+        if (traceIndex !== -1) {
+          Plotly.extendTraces('plot', {
+            x: [[timeArray[i]]],
+            y: [[valueArray[i]]]
+          }, [traceIndex]);
+        }
+
+        i++;
+      }, 1000);
+
+      liveSimulations.set(sensorId, intervalId);
+    }
+
+    function getTraceIndex(sensorId) {
+      const plotDiv = document.getElementById('plot');
+      if (!plotDiv.data) return -1;
+      return plotDiv.data.findIndex(trace => trace.name === sensorId);
+    }
+
+    function startSensorLive(sensorId) {
+      // prevent duplicate intervals
+      if (liveSimulations.has(sensorId)) return;
+
+      fetch(`/api/sensor/${sensorId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) {
+            alert("Fehler: " + data.error);
+            return;
+          }
+
+          simulateLivePlot(sensorId, data.time, data.values);
+          updateSensorTitle(sensorId);
+        });
+    }
+
+    function updateSensorTitle(sensorId) {
+      const badge = document.getElementById("active-sensor-badge");
+      const title = document.getElementById("visualization-title");
+
+      if (badge && title) {
+        badge.classList.remove("d-none");
+        badge.textContent = sensorId;
+        title.textContent = `Aktive Sensoren: ${Array.from(liveSimulations.keys()).join(", ")}`;
+      }
+    }
+
+    function resetGraph() {
+      liveSimulations.forEach(intervalId => clearInterval(intervalId));
+      liveSimulations.clear();
+      Plotly.newPlot('plot', [], {
+        title: 'Sensorverlauf (Live)',
+        xaxis: { title: 'Zeit' },
+        yaxis: { title: 'Sensorwert (Ohm)' },
+        margin: { t: 40 }
+      });
+      document.getElementById("visualization-title").textContent = "Ausgewählter Sensor: -";
+      document.getElementById("active-sensor-badge").textContent = "";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      Plotly.newPlot('plot', [], {
+        title: 'Sensorverlauf (Live)',
+        xaxis: { title: 'Zeit' },
+        yaxis: { title: 'Sensorwert (Ohm)' },
+        margin: { t: 40 }
+      });
+
+      const buttons = document.querySelectorAll(".sensor-button");
+      buttons.forEach(button => {
+        button.addEventListener("click", () => {
+          const sensorId = button.getAttribute("data-sensor-id");
+          if (sensorId) startSensorLive(sensorId);
+        });
+      });
+
+      const refreshBtn = document.getElementById("refresh-button");
+      refreshBtn.addEventListener("click", resetGraph);
+    });
+  </script>
+</body>
+</html>

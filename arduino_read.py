@@ -1,8 +1,11 @@
 import serial
 import time
 
-ser = serial.Serial('COM10', 115200, timeout=2)
+
+
+ser = serial.Serial('/dev/ttyACM0', 115200, timeout=2)
 time.sleep(2)  # kurz warten, bis Arduino bereit
+
 
 def prompt_and_send(prompt_text):
     value = input(prompt_text)
@@ -29,7 +32,10 @@ try:
     while True:
         if ser.in_waiting:
             print(ser.readline().decode('utf-8', errors='replace').strip())
+        time.sleep(0.1)
 except KeyboardInterrupt:
-    print("\nBeende Skript und schließe Port.")
-finally:
+    print("\nMessung beendet (KeyboardInterrupt).")
     ser.close()
+
+
+
