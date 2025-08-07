@@ -14,7 +14,7 @@ def start_measurement(inputs):
         # ser = serial.Serial('/dev/ttyACM0', 115200, timeout=2)  # Adjust for Linux/Jetson
         time.sleep(2) # Wait for Arduino to initialize
 
-
+    # Create a live log to store the output from Arduino
     # list containing the 7 values from the webbrowser
     prompts = [
         inputs['produktname'],
