@@ -1,7 +1,8 @@
 from flask import Flask, jsonify, render_template, request
 from visualization import get_sensor_data  
 import time
-import requests
+import threading
+import arduino_read  # Import the Arduino reading module
 
 # create the Flask app and global variables
 app = Flask(__name__)
@@ -64,8 +65,18 @@ def api_sensor_data():
     return jsonify(result)
 
 
-#FOR THE SIMULATION OF REAL TIME DATA SENDING TO THE FRONTEND
 
+
+
+
+
+######################################################
+######################################################
+######################################################
+#FOR THE SIMULATION OF REAL TIME DATA SENDING TO THE FRONTEND
+######################################################
+######################################################
+######################################################
 # POST endpoint for simulator.py to send data
 @app.route("/api/live-stream-data", methods=["POST"])
 def receive_live_data():
@@ -78,10 +89,52 @@ def receive_live_data():
     latest_data_log = latest_data_log[:MAX_LOG_ENTRIES]
     return jsonify({"status": "received"})
 
-# GET endpoint for frontend to fetch latest live data
-@app.route("/api/live-stream-data", methods=["GET"])
+
+# already this route is in use later in code ARDUINO BLOCK 
+# # GET endpoint for frontend to fetch latest live data
+# @app.route("/api/live-stream-data", methods=["GET"])
+# def get_latest_live_data():
+#     return jsonify(latest_data_log)
+
+######################################################
+######################################################
+######################################################
+#FOR THE SIMULATION OF REAL TIME DATA SENDING TO THE FRONTEND
+######################################################
+######################################################
+
+
+
+
+
+##########################################
+#START FOR THE ARDUINO MEASUREMENT OUTPUT IN LOG BOX 
+##########################################
+##########################################
+
+
+# POST endpoint to start the Arduino measurement and read the data from the Arduino
+@app.route('/api/start_measurement', methods=['POST'])
+def start_measurement():
+    data = request.get_json()
+    arduino_read.clear_log()
+    t = threading.Thread(target=arduino_read.start_measurement, args=(data,))
+    t.daemon = True
+    t.start()
+    return jsonify({"status": "started"})
+
+# GET endpoint to retrieve the latest live data from the Arduino
+@app.route('/api/live-stream-data', methods=['GET'])
 def get_latest_live_data():
-    return jsonify(latest_data_log)
+    return jsonify(arduino_read.get_log())
+
+
+
+
+##########################################
+#END FOR THE ARDUINO MEASUREMENT OUTPUT IN LOG BOX 
+##########################################
+##########################################
 
 
 

@@ -40,7 +40,7 @@
                     <div class="sensor-panel mb-4">
                         <h4 class="mb-3" data-i18n="selectSensor">Sensor auswählen</h4>
 
-<div class="sensor-buttons">
+                        <div class="sensor-buttons">
 
                             <button class="btn btn-outline-primary sensor-button m-1 px-3 py-2" style="width: 47%;"
                                 data-sensor-id="MQ2">
@@ -262,12 +262,16 @@
 
                             <!-- THE REAL TIME SIMULATION WINDOW below -->
                             <div>
-                                <div id="live-output"
-                                    style="white-space:pre;font-family:monospace;background:#181a1b;color:#fff;padding:12px;border-radius:8px;min-height:160px">
-                                </div>
-
-
-                                <!-- THE REAL TIME SIMULATION WINDOW below -->
+                                <div>
+                                    <input id="name" placeholder="Produktname (Buchstabe)">
+                                    <input id="nummer" placeholder="Produktnummer">
+                                    <input id="datum" placeholder="Datum (mmdd)">
+                                    <input id="clean" placeholder="CLEAN Dauer (Min)">
+                                    <input id="enrich" placeholder="ENRICH Dauer (Min)">
+                                    <input id="measure" placeholder="MEASURE Dauer (Min)">
+                                    <input id="starten" placeholder="Starten? (yes)">
+                                    <button onclick="startMessung()">Messung starten</button>
+                                </div> <!-- THE REAL TIME SIMULATION WINDOW below -->
                                 <div id="live-output"
                                     style="white-space:pre;font-family:monospace;background:#181a1b;color:#fff;padding:12px;border-radius:8px;min-height:160px">
                                 </div>

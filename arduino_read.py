@@ -1,41 +1,58 @@
+
+# arduino_read.py
+
 import serial
 import time
 
+ser = None
+live_log = []
+
+def start_measurement(inputs):
+    global ser, live_log
+    if ser is None:
+        ser = serial.Serial('COM10', 115200, timeout=2)  # Adjust COM-Port for Windows
+        # ser = serial.Serial('/dev/ttyACM0', 115200, timeout=2)  # Adjust for Linux/Jetson
+        time.sleep(2) # Wait for Arduino to initialize
 
 
-ser = serial.Serial('/dev/ttyACM0', 115200, timeout=2)
-time.sleep(2)  # kurz warten, bis Arduino bereit
+    # list containing the 7 values from the webbrowser
+    prompts = [
+        inputs['produktname'],
+        inputs['produktnummer'],
+        inputs['datum'],
+        inputs['clean'],
+        inputs['enrich'],
+        inputs['measure'],
+        inputs['starten']
+    ]
 
 
-def prompt_and_send(prompt_text):
-    value = input(prompt_text)
-    ser.write((value + '\n').encode())
-    time.sleep(0.2)  # kleine Pause nach Senden
-    # Lies alle Antworten, bis wieder eine Eingabe verlangt wird:
-    while ser.in_waiting:
-        print(ser.readline().decode('utf-8', errors='replace').strip())
-    return value
+    # Send each value to the Arduino with 0.2 seconds delay
+    for val in prompts:
+        ser.write((val + '\n').encode())
+        time.sleep(0.2) # Short pause after sending to allow Arduino to process
+        while ser.in_waiting:
+            out = ser.readline().decode('utf-8', errors = 'replace').strip()
+            live_log.append(out)
 
-# Schritt für Schritt die 7 Eingaben:
-prompt_and_send("1. Buchstabe Produktname (z.B. T): ")
-prompt_and_send("2. Produktnummer (z.B. 01): ")
-prompt_and_send("3. Datum (mmdd, z.B. 0804): ")
-prompt_and_send("4. CLEAN Dauer (Minuten, z.B. 0): ")
-prompt_and_send("5. ENRICH Dauer (Minuten, z.B. 0): ")
-prompt_and_send("6. MEASURE Dauer (Minuten, z.B. 5): ")
-prompt_and_send("7. Starten? (yes): ")
-
-print("\nAlle Eingaben gesendet. Die Messung läuft!\n")
-
-# Zeigt fortlaufend die Arduino-Ausgaben (Messwerte etc.)
-try:
-    while True:
-        if ser.in_waiting:
-            print(ser.readline().decode('utf-8', errors='replace').strip())
-        time.sleep(0.1)
-except KeyboardInterrupt:
-    print("\nMessung beendet (KeyboardInterrupt).")
-    ser.close()
+    try: 
+        while True:
+            if ser.in_waiting:
+                out = ser.readline().decode('utf-8', errors='replace').strip()
+                live_log.append(out)
+            time.sleep(0.1)
+    except Exception:
+        print("\nMeasurement stopped due to an error in arduino_read.py")
+        ser.close()
 
 
-
+# Function to get the last 60 lines from arduino 
+def get_log():
+    global live_log
+    if live_log:
+        return [live_log[-1]]
+    else:
+        return []
+def clear_log():
+    global live_log
+    live_log = []

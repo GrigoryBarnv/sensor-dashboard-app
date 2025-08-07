@@ -203,17 +203,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Optionally render an empty placeholder chart
   Plotly.newPlot("plot", [], {
-  title: "Sensorverlauf (Live)",
-  xaxis: { title: "Zeit" },
-  yaxis: { title: "Sensorwert (Ohm)" },
-  margin: { t: 40 },
-  showlegend: true, //  always show legend
-  legend: {
-    x: 1.05,          // move to right side
-    y: 1,
-    orientation: 'v'
-  }
-});
+    title: "Sensorverlauf (Live)",
+    xaxis: { title: "Zeit" },
+    yaxis: { title: "Sensorwert (Ohm)" },
+    margin: { t: 40 },
+    showlegend: true, //  always show legend
+    legend: {
+      x: 1.05,          // move to right side
+      y: 1,
+      orientation: 'v'
+    }
+  });
 
 });
 
@@ -224,28 +224,28 @@ function startSensorLive(sensorId) {
   if (liveSimulations.has(sensorId)) return; // already active -> quit
 
 
-//
-fetch('/api/sensor_data', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json' // Set the content type to JSON
-  },
-  body: JSON.stringify({
-    sensorId: sensorId,
-    selectedFile: selectedFile
+  //
+  fetch('/api/sensor_data', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json' // Set the content type to JSON
+    },
+    body: JSON.stringify({
+      sensorId: sensorId,
+      selectedFile: selectedFile
+    })
   })
-})
-  // then parse the response
-  .then(res => res.json())
-  // then update the plot
-  .then(data => {
-    if (data.error) {
-      alert("Fehler: " + data.error);
-      return;
-    }
-    simulateLivePlot(sensorId, data.time, data.values); // changes the plot
-    updateSensorTitle();
-  });
+    // then parse the response
+    .then(res => res.json())
+    // then update the plot
+    .then(data => {
+      if (data.error) {
+        alert("Fehler: " + data.error);
+        return;
+      }
+      simulateLivePlot(sensorId, data.time, data.values); // changes the plot
+      updateSensorTitle();
+    });
 
 }
 
@@ -324,7 +324,7 @@ function resetGraph() {
   document.getElementById("visualization-title").textContent = "Ausgewählter Sensor: -";
   document.getElementById("active-sensor-badge").textContent = "";
 
-    // Remove sensor value boxes
+  // Remove sensor value boxes
   const sensorValueContainer = document.getElementById("sensor-value-output");
   if (sensorValueContainer) {
     sensorValueContainer.innerHTML = "";
@@ -475,8 +475,12 @@ let selectedFile = "Avocado_Enrich2_Measure.CSV"; // default
 document.getElementById("csv-selector").addEventListener("change", function () {
   selectedFile = this.value;
   console.log("Selected file:", selectedFile); //for text purposes
-  resetGraph(); 
+  resetGraph();
 });
+
+
+
+
 
 
 // ##############EVERYTHING BELOW IS FOR THE LIFE SIMULATION############################
@@ -485,78 +489,163 @@ document.getElementById("csv-selector").addEventListener("change", function () {
 //
 // List your sensors (same order as Python)
 const sensors = [
-    "MQ2", "MQ3_1", "MQ3_10", "MQ4", "MQ5", "MQ6",
-    "MQ8", "MQ9", "MQ135", "MQ136", "MQ137", "MQ138"
+  "MQ2", "MQ3_1", "MQ3_10", "MQ4", "MQ5", "MQ6",
+  "MQ8", "MQ9", "MQ135", "MQ136", "MQ137", "MQ138"
 ];
 
 // Function to update the output window with latest sensor data
 function updateOutputWindow(data) {
-    const el = document.getElementById('live-output');
-    if (!el) return;
+  const el = document.getElementById('live-output');
+  if (!el) return;
 
-    if (!data || data.length === 0) {
-        el.textContent = "No data received yet.";
-        return;
+  if (!data || data.length === 0) {
+    el.textContent = "No data received yet.";
+    return;
+  }
+
+  // Get the newest entry (you might want data[0] or data[data.length-1] depending on your backend)
+  const latest = data[0];
+
+  // Build a pretty output string (show only time and sensor values, not as raw JSON if preferred)
+  let out = `Time: ${latest.time || latest.received_at || "-"}\n`;
+  sensors.forEach(sensor => {
+    if (latest[sensor] !== undefined) {
+      out += `${sensor}: ${latest[sensor]}\n`;
     }
+  });
 
-    // Get the newest entry (you might want data[0] or data[data.length-1] depending on your backend)
-    const latest = data[0];
-
-    // Build a pretty output string (show only time and sensor values, not as raw JSON if preferred)
-    let out = `Time: ${latest.time || latest.received_at || "-"}\n`;
-    sensors.forEach(sensor => {
-        if (latest[sensor] !== undefined) {
-            out += `${sensor}: ${latest[sensor]}\n`;
-        }
-    });
-
-    el.textContent = out;
+  el.textContent = out;
 }
 
 
 // Function to plot log history from live simulator (e.g., for MQ135)
 function plotSimulationHistory(data, sensor = "MQ135") {
-    if (!data || data.length === 0) {
-        Plotly.newPlot('live-history-plot', [], { title: "Simulationverlauf" });
-        return;
-    }
-    // Show up to 60 last points (oldest to newest)
-    const logs = data.slice(0, 60).reverse(); // If newest is first, reverse to oldest first
-    const times = logs.map(e => e.time || e.received_at || "-");
-    const values = logs.map(e => e[sensor] ?? null);
+  if (!data || data.length === 0) {
+    Plotly.newPlot('live-history-plot', [], { title: "Simulationverlauf" });
+    return;
+  }
+  // Show up to 60 last points (oldest to newest)
+  const logs = data.slice(0, 60).reverse(); // If newest is first, reverse to oldest first
+  const times = logs.map(e => e.time || e.received_at || "-");
+  const values = logs.map(e => e[sensor] ?? null);
 
-    const trace = {
-        x: times,
-        y: values,
-        type: "scatter",
-        mode: "lines+markers",
-        name: sensor,
-        line: { color: 'orange' }
-    };
-    Plotly.newPlot('live-history-plot', [trace], {
-        title: `Letzte Werte für ${sensor}`,
-        xaxis: { title: "Zeit" },
-        yaxis: { title: `${sensor} (Ohm)` }
+  const trace = {
+    x: times,
+    y: values,
+    type: "scatter",
+    mode: "lines+markers",
+    name: sensor,
+    line: { color: 'orange' }
+  };
+  Plotly.newPlot('live-history-plot', [trace], {
+    title: `Letzte Werte für ${sensor}`,
+    xaxis: { title: "Zeit" },
+    yaxis: { title: `${sensor} (Ohm)` }
+  });
+}
+//####### END OF THE BLOCK LIFE SIMULATION CODE ########
+
+
+
+
+//###################################################
+//###################################################
+// START OF THE BLOCK FOR MANAGING THE 7 DIFFERENT INPUTS TO SEND DATA TO THE BACKEND
+//###################################################
+//###################################################
+//###################################################
+
+function startMessung() {
+
+  // Get the 7 values from the input fields 
+  const data = {
+    produktname: document.getElementById('name').value,
+    produktnummer: document.getElementById('nummer').value,
+    datum: document.getElementById('datum').value,
+    clean: document.getElementById('clean').value,
+    enrich: document.getElementById('enrich').value,
+    measure: document.getElementById('measure').value,
+    starten: document.getElementById('starten').value
+
+  };
+
+  //validate the input fields before sending the data
+  if (!data.produktname || !data.produktnummer || !data.datum || !data.clean || !data.enrich || !data.measure || !data.starten) {
+    alert("Please fill in all fields");
+    return;
+  }
+
+  // POST the data to the backend
+  fetch('/api/start_measurement', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+    .then(res => res.json())
+    .then(response => {
+      if (response.status === "started") {
+        document.getElementById('live-output').textContent = "Measurement started...";
+      } else {
+        document.getElementById('live-output').textContent = "Error:" + (response.error || "Unknown error");
+
+      }
+
     });
 }
 
-// Function to fetch data and update both the text window and plot
+
+
+// //this was before thhis block before 
+// // Function to fetch data and update both the text window and plot
+// function fetchAndDisplayLiveSimulation() {
+//   fetch('/api/live-stream-data')
+//     .then(response => response.json())
+//     .then(data => {
+//       updateOutputWindow(data);         // Your existing function
+//       plotSimulationHistory(data, "MQ135"); // Can use other sensor as needed
+//     })
+//     .catch(() => {
+//       const el = document.getElementById('live-output');
+//       if (el) el.textContent = "Error fetching data.";
+//     });
+// }
+
+// // Call this function every X ms as before:
+// setInterval(fetchAndDisplayLiveSimulation, 1000);
+// fetchAndDisplayLiveSimulation();
+
+
 function fetchAndDisplayLiveSimulation() {
     fetch('/api/live-stream-data')
         .then(response => response.json())
         .then(data => {
-            updateOutputWindow(data);         // Your existing function
-            plotSimulationHistory(data, "MQ135"); // Can use other sensor as needed
+            // Show the latest value on the web page
+            document.getElementById('live-output').textContent = JSON.stringify(data, null, 2);
         })
         .catch(() => {
-            const el = document.getElementById('live-output');
-            if (el) el.textContent = "Error fetching data.";
+            document.getElementById('live-output').textContent = "Error fetching data.";
         });
 }
 
-// Call this function every X ms as before:
-setInterval(fetchAndDisplayLiveSimulation, 1000);
+// Call the function once immediately
 fetchAndDisplayLiveSimulation();
+// Then repeat it every 1 second (1000 ms)
+setInterval(fetchAndDisplayLiveSimulation, 1000);
 
 
-//####### END OF THE LIFE SIMULATION CODE ########
+
+
+//###################################################
+//###################################################
+//###################################################
+//END OF THE BLOCK FOR MANAGING THE 7 DIFFERENT INPUTS TO SEND DATA TO THE BACKEND
+//###################################################
+//###################################################
+//###################################################
+
+
+
+
+
+
+
