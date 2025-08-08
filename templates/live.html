@@ -2,17 +2,25 @@
 <html lang="de" data-bs-theme="dark">
 
 <head>
+    <!-- Zeichensatz der Seite auf UTF-8 setzen, um Sonderzeichen (z. B. Umlaute) korrekt darzustellen -->
     <meta charset="UTF-8">
+
+    <!-- Responsives Design aktivieren: passt die Darstellung an die Bildschirmgröße (z. B. Smartphone) an -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Titel der Webseite, wird im Browser-Tab angezeigt -->
     <title>Sensor-Daten-Dashboard</title>
+
+    <!-- Verknüpfung zur eigenen CSS-Datei für individuelle Styles -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+    <!-- Verknüpfung zur Bootstrap-Basis-CSS für Grundlayout und Standard-Komponenten -->
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Verknüpfung zu einer angepassten Bootstrap-Theme-Datei mit dunklem Design -->
     <link href="{{ url_for('static', filename='css/bootstrap-agent-dark-theme.min.css') }}" rel="stylesheet">
-
-
-
-
 </head>
+
 
 <body>
 
