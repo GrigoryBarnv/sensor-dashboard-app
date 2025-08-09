@@ -1,5 +1,11 @@
 
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+  //START OF THE BLOCK 1 FOR LANGUAGE TRANSLATIONS AND SENSOR COLORS
+////////////////////////////////////////////////
+////////////////////////////////////////////////
 
+// set the color for each sensor
 const sensorColors = {
   MQ2: "red",
   MQ3_1: "orange",
@@ -112,15 +118,21 @@ const translations = {
   }
 };
 
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+  //END OF THE BLOCK 1 FOR LANGUAGE TRANSLATIONS
+////////////////////////////////////////////////
+////////////////////////////////////////////////
 
+// ###################################################
+// make a list of all buttons with the class "sensor-button"
 const buttons = document.querySelectorAll(".sensor-button");
-
+// save the life simulation intervals in a Map for easy access
 const liveSimulations = new Map();
 
 
 
-
-// Function to aktualize the sensor tooltips with the selected language
+//1. Funktion to update the language of the Tooltips of sensorbuttons(when hovering over the sensor buttons)
 function updateSensorTooltips(lang) {
   const gases = translations[lang].sensorGases;
 
@@ -148,22 +160,22 @@ function updateSensorTooltips(lang) {
 }
 
 
-
-// Funktion to set the language
+  // 2. Function to set the language
 function setLanguage(lang) {
-  // change the language to the selected language
+  // Change the language to the selected language
   localStorage.setItem("lang", lang);
-
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
+    //look up the translation key in the translations object
     if (translations[lang][key]) {
       el.textContent = translations[lang][key];
     }
-  });
-  // change the language buttons inside html 
+  }); // language buttons content updated 
+  
+  //change the language buttons inside html
   const btnDe = document.getElementById("btn-de");
   const btnEn = document.getElementById("btn-en");
-
+  //make the look active button 
   if (lang === "de") {
     btnDe.classList.add("active-language");
     btnEn.classList.remove("active-language");
@@ -171,11 +183,18 @@ function setLanguage(lang) {
     btnEn.classList.add("active-language");
     btnDe.classList.remove("active-language");
   }
+
+  // Update tooltips language for sensors
   updateSensorTooltips(lang);
+
 }
 
-
-
+//
+// Event listeners for language buttonsddd
+// Event listeners for language buttonsddd
+// Event listeners for language buttonsddd
+// Event listeners for language buttonsddd
+// Event listeners for language buttonsddd
 
 // Event listener for the DOMContentLoaded event
 document.addEventListener("DOMContentLoaded", () => {
