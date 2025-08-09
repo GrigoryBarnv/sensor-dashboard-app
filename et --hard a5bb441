@@ -1,0 +1,100 @@
+[33mfba3b5e[m[33m ([m[1;36mHEAD -> [m[1;32msimulation-environment[m[33m)[m HEAD@{0}: reset: moving to HEAD~2
+[33m6f33cc1[m[33m ([m[1;31morigin/simulation-environment[m[33m)[m HEAD@{1}: pull origin simulation-environment --rebase: Fast-forward
+[33mfba3b5e[m[33m ([m[1;36mHEAD -> [m[1;32msimulation-environment[m[33m)[m HEAD@{2}: reset: moving to HEAD~2
+[33m6f33cc1[m[33m ([m[1;31morigin/simulation-environment[m[33m)[m HEAD@{3}: commit: new comments on js
+[33ma5bb441[m HEAD@{4}: commit: new comments on html
+[33mfba3b5e[m[33m ([m[1;36mHEAD -> [m[1;32msimulation-environment[m[33m)[m HEAD@{5}: commit: new comments
+[33m2e16cb4[m HEAD@{6}: commit: changes from logs
+[33m636feef[m HEAD@{7}: commit: changes from the day
+[33mc29bbaa[m HEAD@{8}: commit (merge): Take remote version of arduino_read.py, resolve conflict
+[33m92657ec[m HEAD@{9}: checkout: moving from master to simulation-environment
+[33m0109a96[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{10}: commit: oleg
+[33m3bc5375[m HEAD@{11}: commit: arduino new
+[33mdaffcdb[m HEAD@{12}: checkout: moving from simulation-environment to master
+[33m92657ec[m HEAD@{13}: commit: arduino new
+[33m7ac1104[m HEAD@{14}: commit: arduino
+[33mb789115[m HEAD@{15}: commit: works simulator but with interuptions FIX
+[33mea5d4ce[m HEAD@{16}: commit: works simulator but with interuptions FIX
+[33meef105c[m HEAD@{17}: commit: works simulator but with interuptions FIX
+[33mb15ae6e[m HEAD@{18}: commit: update
+[33m877feb4[m HEAD@{19}: commit: update
+[33md6b8d9f[m HEAD@{20}: commit: update
+[33m6a44a7d[m HEAD@{21}: commit: update
+[33mbec4598[m HEAD@{22}: commit: update
+[33m0f00da9[m HEAD@{23}: commit: final update
+[33m73c8679[m HEAD@{24}: commit: final update
+[33m6433385[m HEAD@{25}: commit: sim upd
+[33m072e604[m HEAD@{26}: commit: app py update
+[33mdaffcdb[m HEAD@{27}: checkout: moving from master to simulation-environment
+[33mdaffcdb[m HEAD@{28}: commit: new push
+[33m524655d[m HEAD@{29}: commit: new push
+[33m5a6db7d[m HEAD@{30}: commit: new push
+[33m8aa66c1[m HEAD@{31}: commit: new push
+[33m0961098[m HEAD@{32}: commit: new push
+[33m365495e[m HEAD@{33}: commit: new push
+[33m7206dac[m HEAD@{34}: commit: final change for tomorrow
+[33m95d92e1[m HEAD@{35}: commit: live.js page update
+[33m01ddf34[m HEAD@{36}: commit: new comments
+[33me4810ae[m HEAD@{37}: commit: new updates before fixed
+[33mca3ba2c[m HEAD@{38}: commit: last push
+[33m45d1906[m HEAD@{39}: commit: changes vizualization
+[33m1ac6ff6[m HEAD@{40}: commit: changes py
+[33mc8dd026[m HEAD@{41}: commit: changes to chose funktion
+[33m5449d72[m HEAD@{42}: reset: moving to origin/master
+[33m5449d72[m HEAD@{43}: commit: origin readme change
+[33m43133d6[m HEAD@{44}: commit: readme update
+[33m3008e04[m HEAD@{45}: commit: readme update
+[33m22972a2[m HEAD@{46}: commit: working simulator but wrong time
+[33m3d79bbc[m HEAD@{47}: commit: app.py update and simulation log live box
+[33mae2484d[m HEAD@{48}: commit: requirements
+[33m63d8620[m HEAD@{49}: commit: changed nes
+[33m1c408d2[m HEAD@{50}: commit: changed nes
+[33me697661[m HEAD@{51}: commit: changed ne
+[33m945202d[m HEAD@{52}: commit: changed new
+[33m91ea253[m HEAD@{53}: commit: changed again
+[33m0b5ecb1[m HEAD@{54}: commit: changed
+[33mdc8e120[m HEAD@{55}: commit: change
+[33m56a8a1b[m HEAD@{56}: commit: update comments
+[33m04ea5d5[m HEAD@{57}: commit: update yaml
+[33mfd907cb[m HEAD@{58}: commit: up
+[33ma6e57a7[m HEAD@{59}: commit: docker yaml
+[33m044a0fb[m HEAD@{60}: commit: docker comments
+[33ma2da2d3[m HEAD@{61}: commit: docker initial
+[33m65050ea[m HEAD@{62}: commit: button locations update
+[33m55eaaab[m HEAD@{63}: commit: tablett view update
+[33mbe7e7c0[m HEAD@{64}: pull origin master --rebase (finish): returning to refs/heads/master
+[33mbe7e7c0[m HEAD@{65}: pull origin master --rebase (pick): new button
+[33mf800749[m HEAD@{66}: pull origin master --rebase (pick): flask resolved
+[33mb77350b[m HEAD@{67}: pull origin master --rebase (start): checkout b77350bf0e33a24f5b9fa45673323eeae1cf63b7
+[33m85cc67e[m HEAD@{68}: commit: new button
+[33mccce8fd[m HEAD@{69}: commit: flask resolved
+[33m60de002[m HEAD@{70}: commit: formated
+[33me2b90b1[m HEAD@{71}: commit: reset function change
+[33m6d8d021[m HEAD@{72}: commit: reset button
+[33mf9734ad[m HEAD@{73}: commit: update sensor view
+[33m7d1cae7[m HEAD@{74}: commit: css change
+[33m278f353[m HEAD@{75}: pull --no-rebase origin master: Merge made by the 'ort' strategy.
+[33ma65099e[m HEAD@{76}: commit: updated css styling for actual value buttons
+[33m8b12e7f[m HEAD@{77}: commit: removed css from js file
+[33m30a8598[m HEAD@{78}: commit: updated plot legend for 1 sensor
+[33mf45de4e[m HEAD@{79}: commit: updated reset button
+[33m46ad45e[m HEAD@{80}: commit: correct comments overall
+[33mbdef4b8[m HEAD@{81}: commit: correct function no duplicates
+[33m35f9d74[m HEAD@{82}: commit: new function live box
+[33mcb429e7[m HEAD@{83}: commit: new html box for JS actuall live function
+[33m1059b35[m HEAD@{84}: commit: actuall sensor panel
+[33m8cdc80a[m HEAD@{85}: commit: view digram with actual values
+[33m542a209[m HEAD@{86}: commit: test Mode von Live Messung funktionierend
+[33mc411335[m HEAD@{87}: commit: css update
+[33m962731d[m HEAD@{88}: commit: live sensor update
+[33m22c5aee[m HEAD@{89}: commit: new comments
+[33m9542504[m HEAD@{90}: commit: erste Version test Modus, noch unklar
+[33m4ca6589[m HEAD@{91}: commit: 2 Seiten live und offline
+[33m98c5193[m HEAD@{92}: commit: live messung
+[33m174b4e4[m HEAD@{93}: commit: Die Version mit mehreren Sprachen und alle Elemente zentriert
+[33m998c362[m HEAD@{94}: commit: Neue Funktionen: Sensorfarben fixed
+[33m608b6fd[m HEAD@{95}: commit: Neue Funktionen: Sensorfarben und Auswahlstatus umgesetzt
+[33ma629d27[m HEAD@{96}: pull origin master: Fast-forward
+[33m49f38f6[m HEAD@{97}: checkout: moving from master to master
+[33m49f38f6[m HEAD@{98}: commit: Initial commit
+[33ma0822c0[m HEAD@{99}: commit (initial): Ignore sensor_try.ipynb

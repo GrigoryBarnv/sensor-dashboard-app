@@ -1,5 +1,5 @@
 
-// set the color for each sensor
+
 const sensorColors = {
   MQ2: "red",
   MQ3_1: "orange",
@@ -112,68 +112,40 @@ const translations = {
   }
 };
 
-// make a list of all buttons with the class "sensor-button"
+
 const buttons = document.querySelectorAll(".sensor-button");
 
-// save the life simulation intervals in a Map for easy access
 const liveSimulations = new Map();
 
 
-// // Function to aktualize the sensor tooltips with the selected language
-// function updateSensorTooltips(lang) {
-//   const gases = translations[lang].sensorGases;
 
-//   document.querySelectorAll(".sensor-button").forEach(button => {
-//     const sensorId = button.getAttribute("data-sensor-id");
-//     const newTitle = gases[sensorId] || "-";
 
-//     //  clear all existing tooltips
-//     const oldTooltip = bootstrap.Tooltip.getInstance(button);
-//     if (oldTooltip) oldTooltip.dispose();
-
-//     //  clear all existing attributes of the button
-//     button.removeAttribute("data-bs-original-title");
-//     button.removeAttribute("aria-describedby");
-//     button.setAttribute("title", newTitle);
-
-//     //  create a new tooltip
-//     new bootstrap.Tooltip(button, {
-//       placement: 'top',
-//       trigger: 'hover',
-//       delay: { show: 100, hide: 100 },
-//       customClass: 'custom-tooltip'
-//     });
-//   });
-// }
-
-//Funktion to update the language of the Tooltips of sensorbuttons(when hovering over the sensor buttons)
+// Function to aktualize the sensor tooltips with the selected language
 function updateSensorTooltips(lang) {
-  // Get the sensor gases for the selected language
   const gases = translations[lang].sensorGases;
-  // Update the title of each sensor button
+
   document.querySelectorAll(".sensor-button").forEach(button => {
     const sensorId = button.getAttribute("data-sensor-id");
     const newTitle = gases[sensorId] || "-";
 
-    // Clear all existing tooltips
+    //  clear all existing tooltips
     const oldTooltip = bootstrap.Tooltip.getInstance(button);
     if (oldTooltip) oldTooltip.dispose();
-    // Clear all existing attributes of the button
-    button.removeAttribute("data-bs-original-tittle");
+
+    //  clear all existing attributes of the button
+    button.removeAttribute("data-bs-original-title");
     button.removeAttribute("aria-describedby");
-    // Set the new title attribute
     button.setAttribute("title", newTitle);
 
-    // Create a new bootstrap tooltip
+    //  create a new tooltip
     new bootstrap.Tooltip(button, {
       placement: 'top',
       trigger: 'hover',
-      delay: { show: 100, hide: 100},
-      customClass: 'custom-tooltip' 
+      delay: { show: 100, hide: 100 },
+      customClass: 'custom-tooltip'
     });
   });
 }
-
 
 
 
