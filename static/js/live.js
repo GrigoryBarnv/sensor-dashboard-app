@@ -190,11 +190,6 @@ function setLanguage(lang) {
 }
 
 //
-// Event listeners for language buttonsddd
-// Event listeners for language buttonsddd
-// Event listeners for language buttonsddd
-// Event listeners for language buttonsddd
-// Event listeners for language buttonsddd
 
 // Event listener for the DOMContentLoaded event
 document.addEventListener("DOMContentLoaded", () => {
