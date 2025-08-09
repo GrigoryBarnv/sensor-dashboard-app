@@ -259,6 +259,8 @@ document.addEventListener("DOMContentLoaded", () => {
 // }
 
 
+
+//// // 4. Function to start the live simulation
 function startSensorLive(sensorId) {
   if (liveSimulations.has(sensorId)) return; // already active -> quit
   fetch('/api/sensor_data', { // POST request to fetch sensor data
