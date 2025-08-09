@@ -189,33 +189,27 @@ function setLanguage(lang) {
 
 }
 
-//
 
+// 3. Function to handle the DOM Content Loaded Event
 // Event listener for the DOMContentLoaded event
 document.addEventListener("DOMContentLoaded", () => {
   const liveBtn = document.getElementById("btn-live");
-
-
   // Add the live-active class to the live button
   liveBtn.classList.add("blinking", "live-active");
   liveBtn.innerHTML = '<span class="dot"></span> Live';
-
   // Event listener for the live button
   liveBtn.addEventListener("click", () => {
     window.location.href = "/";
   });
-
   // Set the language
   const savedLang = localStorage.getItem("lang") || "de";
   setLanguage(savedLang);
   updateSensorTooltips(savedLang);
-
   // Event listener for the refresh button
   const refreshBtn = document.getElementById("refresh-button");
   if (refreshBtn) {
     refreshBtn.addEventListener("click", resetGraph);
   }
-
   // Optionally render an empty placeholder chart
   Plotly.newPlot("plot", [], {
     title: "Sensorverlauf (Live)",
@@ -229,8 +223,8 @@ document.addEventListener("DOMContentLoaded", () => {
       orientation: 'v'
     }
   });
-
 });
+
 
 
 
