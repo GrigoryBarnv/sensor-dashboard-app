@@ -228,35 +228,72 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-// Function to start the live simulation
+// // 4. Function to start the live simulation
+// function startSensorLive(sensorId) {
+//   if (liveSimulations.has(sensorId)) return; // already active -> quit
+
+
+//   //
+//   fetch('/api/sensor_data', {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json' // Set the content type to JSON
+//     },
+//     body: JSON.stringify({
+//       sensorId: sensorId,
+//       selectedFile: selectedFile
+//     })
+//   })
+//     // then parse the response
+//     .then(res => res.json())
+//     // then update the plot
+//     .then(data => {
+//       if (data.error) {
+//         alert("Fehler: " + data.error);
+//         return;
+//       }
+//       simulateLivePlot(sensorId, data.time, data.values); // changes the plot
+//       updateSensorTitle();
+//     });
+
+// }
+
+
 function startSensorLive(sensorId) {
   if (liveSimulations.has(sensorId)) return; // already active -> quit
-
-
-  //
-  fetch('/api/sensor_data', {
+  fetch('/api/sensor_data', { // POST request to fetch sensor data
     method: 'POST',
-    headers: {
+    headers: { // sending the content type as JSON
       'Content-Type': 'application/json' // Set the content type to JSON
     },
-    body: JSON.stringify({
-      sensorId: sensorId,
-      selectedFile: selectedFile
+    body: JSON.stringify({ // send the request body with sensorId and selectedFile
+      sensorID: sensorId, // wich sensor to get data for
+      selectedFile: selectedFile //from which file to get the data
     })
   })
     // then parse the response
     .then(res => res.json())
-    // then update the plot
-    .then(data => {
+    .then(data => { // now there is a data to upload the plot})
       if (data.error) {
         alert("Fehler: " + data.error);
         return;
       }
+
+      // Call the function to simulate the live plot with the fetched data
       simulateLivePlot(sensorId, data.time, data.values); // changes the plot
       updateSensorTitle();
-    });
+    }); // close then block
+} // close function
 
-}
+
+
+
+
+
+
+
+
+
 
 // Function to simulate the live plot
 function simulateLivePlot(sensorId, timeArray, valueArray) {
