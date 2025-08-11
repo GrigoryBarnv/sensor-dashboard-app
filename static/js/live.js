@@ -677,8 +677,25 @@ function fetchAndDisplayLiveSimulation() {
 
 // Call the function once immediately
 fetchAndDisplayLiveSimulation();
-// Then repeat it every 1 second (1000 ms)
-setInterval(fetchAndDisplayLiveSimulation, 1000);
+// // Then repeat it every 1 second (1000 ms)
+// setInterval(fetchAndDisplayLiveSimulation, 1000);
+
+
+
+///FIX !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// FROM HERE IS [11/Aug/2025 15:06:59] "GET /api/arduino_status HTTP/1.1" 404 - this error comming from the server
+// repeat only every 2 second and only when connected to Arduino
+let liveTimer = null;
+function startLivePolling() {
+  if (liveTimer) return;
+  fetchAndDisplayLiveSimulation();
+  liveTimer = setInterval(fetchAndDisplayLiveSimulation, 1000);
+}
+function stopLivePolling() {
+  clearInterval(liveTimer);
+  liveTimer = null;
+}
+
 
 
 
@@ -696,4 +713,104 @@ setInterval(fetchAndDisplayLiveSimulation, 1000);
 
 
 
+//###################################################
+//###################################################
+// START OF THE BLOCK FOR CONNECTING TO ARDUINO TERMINAL
+//###################################################
+//###################################################
 
+
+
+// --- Helpers to color the connect button ---
+function setConnectBtnState(connected, portText) {
+  const btn = document.getElementById('btn-connect-arduino');
+  if (!btn) return;
+  btn.classList.remove('btn-success', 'btn-danger', 'btn-secondary');
+  btn.classList.add(connected ? 'btn-success' : 'btn-danger');
+  btn.textContent = connected ? `Connected ${portText ? `(${portText})` : ''}` : 'Connect to Arduino Terminal';
+}
+
+// --- Poll Arduino status periodically ---
+async function pollArduinoStatus() {
+  try {
+    const res = await fetch('/api/arduino_status');
+    const data = await res.json();
+    setConnectBtnState(!!data.connected, data.port);
+  } catch {
+    setConnectBtnState(false);
+  }
+}
+setInterval(pollArduinoStatus, 5000);
+pollArduinoStatus(); // initial
+
+// --- Click handler to connect on demand ---
+(() => {
+  const btn = document.getElementById('btn-connect-arduino');
+  if (!btn) return;
+
+  const defaultLabel = btn.textContent;
+
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    btn.textContent = 'Connecting...';
+
+    try {
+      const res = await fetch('/api/connect_arduino_terminal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // optionally send a specific port: body: JSON.stringify({ port: "COM10" })
+        body: JSON.stringify({})
+      });
+      const data = await res.json();
+
+      if (res.ok && data.status === 'connected') {
+        document.getElementById('live-output').textContent =
+          `✅ Connected to Arduino${data.port ? ' on ' + data.port : ''}.`;
+        setConnectBtnState(true, data.port);
+      } else {
+        document.getElementById('live-output').textContent =
+          `❌ Error: ${data.error || data.status || 'Unknown error'}`;
+        setConnectBtnState(false);
+      }
+    } catch (e) {
+      console.error(e);
+      document.getElementById('live-output').textContent = '❌ Connection failed.';
+      setConnectBtnState(false);
+    } finally {
+      btn.disabled = false;
+      if (!btn.classList.contains('btn-success') && !btn.classList.contains('btn-danger')) {
+        btn.textContent = defaultLabel;
+      }
+    }
+  });
+})();
+
+//###################################################
+//###################################################
+// END OF THE BLOCK FOR CONNECTING TO ARDUINO TERMINAL
+//###################################################
+//###################################################
+
+
+
+
+///// START BUTTON STOP ARDUINO ////////////
+document.getElementById("btn-stop-arduino").addEventListener("click", () => {
+    fetch('/api/stop_arduino', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(response => {
+        if (response.status === "stopped") {
+            document.getElementById('live-output').textContent = "Arduino stopped.";
+        } else {
+            document.getElementById('live-output').textContent = "Error: " + (response.error || response.status);
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        document.getElementById('live-output').textContent = "Stop request failed.";
+    });
+});
+//////////////// END BUTTON STOP ARDUINO ////////////

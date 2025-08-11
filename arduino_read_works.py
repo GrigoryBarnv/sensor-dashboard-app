@@ -18,7 +18,9 @@ def prompt_and_send(prompt_text):
     while ser.in_waiting:
         print(ser.readline().decode('utf-8', errors='replace').strip())
     return value
+                                
 
+                                
 # Step by step: send all 7 required inputs
 prompt_and_send("1. Product name letter (e.g. T): ")
 prompt_and_send("2. Product number (e.g. 01): ")

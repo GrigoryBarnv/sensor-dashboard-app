@@ -3,6 +3,7 @@ from visualization import get_sensor_data
 import time
 import threading
 import arduino_read  # Import the Arduino reading module
+from arduino_connect import connect  # Import the Arduino connection module
 
 # create the Flask app and global variables
 app = Flask(__name__)
@@ -73,7 +74,7 @@ def api_sensor_data():
 ######################################################
 ######################################################
 ######################################################
-#FOR THE SIMULATION OF REAL TIME DATA SENDING TO THE FRONTEND
+# START FOR THE SIMULATION OF REAL TIME DATA SENDING TO THE FRONTEND
 ######################################################
 ######################################################
 ######################################################
@@ -90,6 +91,15 @@ def receive_live_data():
     return jsonify({"status": "received"})
 
 
+
+#POST endpoint to connect to Arduino terminal
+@app.route('/api/connect_arduino_terminal', methods=['POST'])
+def connect_arduino_terminal():
+    body = request.get_json(silent=True) or {}
+    port = body.get("port", "COM10")  # override if needed
+    result = connect(port=port)
+    return jsonify(result), (200 if result["status"] == "connected" else 500)
+
 # already this route is in use later in code ARDUINO BLOCK 
 # # GET endpoint for frontend to fetch latest live data
 # @app.route("/api/live-stream-data", methods=["GET"])
@@ -99,7 +109,7 @@ def receive_live_data():
 ######################################################
 ######################################################
 ######################################################
-#FOR THE SIMULATION OF REAL TIME DATA SENDING TO THE FRONTEND
+#END FOR THE SIMULATION OF REAL TIME DATA SENDING TO THE FRONTEND
 ######################################################
 ######################################################
 
@@ -128,6 +138,18 @@ def start_measurement():
 def get_latest_live_data():
     return jsonify(arduino_read.get_log())
 
+
+## a route sending stop to arduino 
+@app.route('/api/stop_arduino', methods=['POST'])
+def stop_arduino():
+    global ser
+    if ser is None or not ser.is_open:
+        return jsonify({"status": "error", "error": "not_connected"})
+
+    # Send stop command
+    ser.write(b"stop\n")
+    time.sleep(0.2)  # Give Arduino a moment
+    return jsonify({"status": "stopped"})
 
 
 

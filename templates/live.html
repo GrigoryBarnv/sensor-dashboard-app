@@ -256,9 +256,23 @@
                                 </small>
                             </p>
 
-
                             <!-- THE REAL TIME SIMULATION WINDOW below -->
                             <div>
+                                <!-- button to connect to arduino terminal -->
+                                <div style="margin-bottom: 12px;">
+                                    <button id="btn-connect-arduino" onclick="connectToArduinoTerminal()">Click to
+                                        connect to Arduino
+                                        Terminal</button>
+                                </div>
+                                
+                                <!-- button to stop the arduino -->
+                                <div>
+                                    <button id="btn-stop-arduino" style="background-color:red;color:white;">
+                                        Stop Arduino
+                                    </button>
+                                </div>
+
+
                                 <div>
                                     <input id="name" placeholder="Produktname (Buchstabe)">
                                     <input id="nummer" placeholder="Produktnummer">
@@ -267,10 +281,10 @@
                                     <input id="enrich" placeholder="ENRICH Dauer (Min)">
                                     <input id="measure" placeholder="MEASURE Dauer (Min)">
                                     <input id="starten" placeholder="Starten? (yes)">
-                                    <button onclick="startMessung()">Messung starten</button>
+                                    <button onclick="startMessung()">Messung starten</button>0
 
                                 </div>
-                                
+
                                 <!-- THE REAL TIME SIMULATION Terminal window -->
                                 <div id="live-output"
                                     style="white-space:pre;font-family:monospace;background:#181a1b;color:#fff;padding:12px;border-radius:8px;min-height:160px">
