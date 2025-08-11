@@ -139,7 +139,7 @@ def get_latest_live_data():
     return jsonify(arduino_read.get_log())
 
 
-## a route sending stop to arduino 
+## a route sending stop to arduino d
 @app.route('/api/stop_arduino', methods=['POST'])
 def stop_arduino():
     global ser
