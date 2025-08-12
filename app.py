@@ -142,15 +142,14 @@ def get_latest_live_data():
 ## a route sending stop to arduino d
 @app.route('/api/stop_arduino', methods=['POST'])
 def stop_arduino():
-    global ser
-    if ser is None or not ser.is_open:
-        return jsonify({"status": "error", "error": "not_connected"})
+    result = arduino_read.stop()
+    return jsonify(result)
 
-    # Send stop command
-    ser.write(b"stop\n")
-    time.sleep(0.2)  # Give Arduino a moment
-    return jsonify({"status": "stopped"})
 
+## ////FUNKRION FOR CHECKING CONNECTION TO ARDUINO TERMINAL
+# @app.route("/api/arduino_status", methods=["GET"])
+# def arduino_status():
+#     return jsonify(arduino_read.get_status())
 
 
 ##########################################

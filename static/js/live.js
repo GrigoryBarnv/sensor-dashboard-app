@@ -269,7 +269,7 @@ function startSensorLive(sensorId) {
       'Content-Type': 'application/json' // Set the content type to JSON
     },
     body: JSON.stringify({ // send the request body with sensorId and selectedFile
-      sensorID: sensorId, // wich sensor to get data for
+      sensorId: sensorId, // wich sensor to get data for
       selectedFile: selectedFile //from which file to get the data
     })
   })
@@ -681,20 +681,20 @@ fetchAndDisplayLiveSimulation();
 // setInterval(fetchAndDisplayLiveSimulation, 1000);
 
 
-
-///FIX !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// FROM HERE IS [11/Aug/2025 15:06:59] "GET /api/arduino_status HTTP/1.1" 404 - this error comming from the server
-// repeat only every 2 second and only when connected to Arduino
-let liveTimer = null;
-function startLivePolling() {
-  if (liveTimer) return;
-  fetchAndDisplayLiveSimulation();
-  liveTimer = setInterval(fetchAndDisplayLiveSimulation, 1000);
-}
-function stopLivePolling() {
-  clearInterval(liveTimer);
-  liveTimer = null;
-}
+//// does not do anything ???? 
+// ///FIX !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// // FROM HERE IS [11/Aug/2025 15:06:59] "GET /api/arduino_status HTTP/1.1" 404 - this error comming from the server
+// // repeat only every 2 second and only when connected to Arduino
+// let liveTimer = null;
+// function startLivePolling() {
+//   if (liveTimer) return;
+//   fetchAndDisplayLiveSimulation();
+//   liveTimer = setInterval(fetchAndDisplayLiveSimulation, 1000);
+// }
+// function stopLivePolling() {
+//   clearInterval(liveTimer);
+//   liveTimer = null;
+// }
 
 
 
@@ -720,8 +720,7 @@ function stopLivePolling() {
 //###################################################
 
 
-
-// --- Helpers to color the connect button ---
+// --- helpers (you already have this) ---
 function setConnectBtnState(connected, portText) {
   const btn = document.getElementById('btn-connect-arduino');
   if (!btn) return;
@@ -730,26 +729,14 @@ function setConnectBtnState(connected, portText) {
   btn.textContent = connected ? `Connected ${portText ? `(${portText})` : ''}` : 'Connect to Arduino Terminal';
 }
 
-// --- Poll Arduino status periodically ---
-async function pollArduinoStatus() {
-  try {
-    const res = await fetch('/api/arduino_status');
-    const data = await res.json();
-    setConnectBtnState(!!data.connected, data.port);
-  } catch {
-    setConnectBtnState(false);
-  }
-}
-setInterval(pollArduinoStatus, 5000);
-pollArduinoStatus(); // initial
-
-// --- Click handler to connect on demand ---
-(() => {
+// --- connect button + optional status polling ---
+document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('btn-connect-arduino');
   if (!btn) return;
 
   const defaultLabel = btn.textContent;
 
+  // Click handler to connect on demand
   btn.addEventListener('click', async () => {
     btn.disabled = true;
     btn.textContent = 'Connecting...';
@@ -758,7 +745,7 @@ pollArduinoStatus(); // initial
       const res = await fetch('/api/connect_arduino_terminal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // optionally send a specific port: body: JSON.stringify({ port: "COM10" })
+        // if you want to force a COM port: body: JSON.stringify({ port: "COM10" })
         body: JSON.stringify({})
       });
       const data = await res.json();
@@ -767,6 +754,8 @@ pollArduinoStatus(); // initial
         document.getElementById('live-output').textContent =
           `✅ Connected to Arduino${data.port ? ' on ' + data.port : ''}.`;
         setConnectBtnState(true, data.port);
+        // if you want to start live polling once connected:
+        // startLivePolling?.();
       } else {
         document.getElementById('live-output').textContent =
           `❌ Error: ${data.error || data.status || 'Unknown error'}`;
@@ -783,7 +772,32 @@ pollArduinoStatus(); // initial
       }
     }
   });
-})();
+
+  // OPTIONAL: poll /api/arduino_status only if the route exists
+  // (prevents console spam if you haven't implemented the backend route)
+  let statusTimer = null;
+
+  async function pollArduinoStatus() {
+    try {
+      const res = await fetch('/api/arduino_status', { cache: 'no-store' });
+      if (!res.ok) return;                 // quietly skip 404/500
+      const data = await res.json();
+      setConnectBtnState(Boolean(data.connected), data.port || '');
+    } catch {
+      // network error -> just show as disconnected
+      setConnectBtnState(false);
+    }
+  }
+
+  // enable this block only if you implemented the Flask route /api/arduino_status
+  // statusTimer = setInterval(pollArduinoStatus, 5000);
+  // pollArduinoStatus();
+
+  // tidy up on page unload
+  window.addEventListener('beforeunload', () => {
+    if (statusTimer) clearInterval(statusTimer);
+  });
+});
 
 //###################################################
 //###################################################
