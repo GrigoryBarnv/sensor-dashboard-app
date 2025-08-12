@@ -4,7 +4,7 @@ import time
 import threading
 import re
 
-DEFAULT_PORT = "COM10"  # adjust for your OS
+DEFAULT_PORT = "COM10"   # adjust for your OS
 BAUD = 115200
 READ_TIMEOUT = 2
 MAX_LOG_ENTRIES = 300
@@ -18,48 +18,110 @@ _reader_thread = None
 # Matches a line with index + 12 numeric values
 MEAS_RE = re.compile(r'^\s*\d+\s*(?:,\s*-?\d+(?:\.\d+)?){12}\s*$')
 
+# --- synthetic timer state ---
+_tick_seconds = None  # None until first measurement line arrives
 
-def _append(line: str):
-    """Store and optionally print a line from Arduino."""
+
+
+##TEST
+# ✅ Add the sensor names list here
+SENSORS = [
+    "MQ2","MQ3_1","MQ3_10","MQ4","MQ5","MQ6",
+    "MQ8","MQ9","MQ135","MQ136","MQ137","MQ138"
+]
+
+def _reset_timer():
+    """Restart synthetic timer at next measurement line."""
+    global _tick_seconds
+    _tick_seconds = None
+
+
+def _next_time_str():
+    """First measurement => 00:00:01, then +2 seconds each row."""
+    global _tick_seconds
+    if _tick_seconds is None:
+        _tick_seconds = 1
+    else:
+        _tick_seconds += 2
+    h = _tick_seconds // 3600
+    m = (_tick_seconds % 3600) // 60
+    s = _tick_seconds % 60
+    return f"{h:02d}:{m:02d}:{s:02d}"
+
+
+def _append_entry(entry: dict):
+    """Store an entry and keep the buffer bounded."""
     with _lock:
-        live_log.append({"raw": line})
+        live_log.append(entry)
         if len(live_log) > MAX_LOG_ENTRIES:
-            live_log.pop(0)
-    print(line)  # always print to console
+            del live_log[:-MAX_LOG_ENTRIES]
 
 
 def _reader():
-    """Background thread to read serial lines."""
+    """Background thread to read serial lines and attach time to measurements."""
     global ser
     while not _stop_flag.is_set():
         try:
             if ser and ser.is_open and ser.in_waiting:
                 line = ser.readline().decode('utf-8', errors='replace').strip()
-                if line:
-                    _append(line)
+                if not line:
+                    continue
+
+                if MEAS_RE.match(line):
+                    # Example line: "123, v1, v2, ... v12"
+                    parts = [p.strip() for p in line.split(',')]
+                    if len(parts) >= 13:
+                        # parts[0] = index, parts[1:13] = 12 sensor values
+                        try:
+                            values = [float(v) for v in parts[1:13]]
+                        except ValueError:
+                            _append_entry({"raw": line})
+                            continue
+
+                        t = _next_time_str()
+                        entry = {"time": t}
+                        for i, s in enumerate(SENSORS):
+                            entry[s] = values[i]
+                        # optional raw for debugging
+                        entry["raw"] = line
+
+                        print(f"{t} -> {entry}")  # console debug
+                        _append_entry(entry)
+                    else:
+                        _append_entry({"raw": line})
+                else:
+                    # non-measurement chatter (phases, prompts, etc.)
+                    print(line)
+                    _append_entry({"raw": line})
             else:
                 time.sleep(0.05)
         except Exception as e:
-            _append(f"[reader error] {e}")
+            msg = f"[reader error] {e}"
+            print(msg)
+            _append_entry({"raw": msg})
             time.sleep(0.2)
 
 
+
 def start_measurement(inputs: dict):
-    """Start Arduino measurement with prompts."""
+    """Start Arduino measurement with prompts and reset timer."""
     global ser, _reader_thread
-    stop()  # ensure no previous session
+    stop()         # ensure no previous session
     clear_log()
+    _reset_timer() # <<< restart synthetic timer
     _stop_flag.clear()
 
     try:
         ser = serial.Serial(DEFAULT_PORT, baudrate=BAUD, timeout=READ_TIMEOUT)
-        time.sleep(2)  # allow Arduino reset
+        time.sleep(2)  # let Arduino reset
 
-        # Read any initial startup lines
+        # Drain any initial output
         while ser.in_waiting:
-            _append(ser.readline().decode('utf-8', errors='replace').strip())
+            line = ser.readline().decode('utf-8', errors='replace').strip()
+            print(line)
+            _append_entry({"raw": line})
 
-        # Send setup prompts
+        # Send the 7 prompts
         prompts = [
             inputs.get('produktname', ''),
             inputs.get('produktnummer', ''),
@@ -73,26 +135,23 @@ def start_measurement(inputs: dict):
             ser.write((str(val) + '\n').encode())
             time.sleep(0.5)
             while ser.in_waiting:
-                _append(ser.readline().decode('utf-8', errors='replace').strip())
+                line = ser.readline().decode('utf-8', errors='replace').strip()
+                print(line)
+                _append_entry({"raw": line})
 
-        _append("✅ All values sent. Arduino is now running.")
+        msg = "✅ All values sent. Arduino is now running."
+        print(msg)
+        _append_entry({"raw": msg})
 
         # Start reader thread
         _reader_thread = threading.Thread(target=_reader, daemon=True)
         _reader_thread.start()
 
     except Exception as e:
-        _append(f"[start error] {e}")
+        err = f"[start error] {e}"
+        print(err)
+        _append_entry({"raw": err})
         stop()
-
-## FUNKRION FOR CHECKING CONNECTION TO ARDUINO TERMINAL
-# def get_status():
-#     try:
-#         ok = bool(ser and ser.is_open)
-#         return {"connected": ok, "port": DEFAULT_PORT if ok else None}
-#     except Exception:
-#         return {"connected": False, "port": None}
-
 
 
 def stop():
@@ -102,8 +161,11 @@ def stop():
     time.sleep(0.1)
     try:
         if ser and ser.is_open:
-            ser.write(b"stop\n")
-            time.sleep(0.2)
+            try:
+                ser.write(b"stop\n")
+                time.sleep(0.2)
+            except Exception:
+                pass
             ser.close()
     except Exception as e:
         return {"status": "error", "error": str(e)}
@@ -113,7 +175,7 @@ def stop():
 
 
 def get_log():
-    """Return last entries."""
+    """Return last entries (includes {'time': ...} for measurement rows)."""
     with _lock:
         return list(live_log[-60:])
 
