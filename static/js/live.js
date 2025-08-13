@@ -348,26 +348,43 @@ function getTraceIndex(sensorId) {
 // function to update the sensor title
 function updateSensorTitle() {
   const title = document.getElementById("visualization-title");
-  const active = Array.from(liveSimulations.keys()).join(", ");
-
-  if (title) {
-    title.textContent = `Aktive Sensoren: ${active || "-"}`;
-  }
+  const active = Array.from(activeSensors).join(", ");
+  if (title) title.textContent = `Aktive Sensoren: ${active || "-"}`;
 }
 
 
-// Function to reset the graph 
-function resetGraph() {
-  // stop legacy per-sensor intervals
-  liveSimulations.forEach(intervalId => clearInterval(intervalId));
-  liveSimulations.clear();
 
-  // NEW: clear session state so time starts fresh on next data
+// Function to reset the graph 
+// Function to reset the graph
+function resetGraph() {
+  // 1) Stop any legacy per-sensor timers
+  if (liveSimulations && liveSimulations.forEach) {
+    liveSimulations.forEach(id => clearInterval(id));
+    liveSimulations.clear();
+  }
+
+  // 2) Clear session state so the next stream starts at 00 again
   activeSensors.clear();
   lastSeenTime.clear();
   sensors.forEach(s => { dataStore[s] = { x: [], y: [] }; });
 
-  // redraw empty plot
+  // 3) Reset UI bits
+  const valueBox = document.getElementById("sensor-value-output");
+  if (valueBox) valueBox.innerHTML = "";
+
+  document.querySelectorAll(".sensor-button").forEach(btn => {
+    btn.classList.remove("btn-active");
+    btn.style.backgroundColor = "";
+    btn.style.color = "";
+  });
+
+  // Title/badge
+  const badge = document.getElementById("active-sensor-badge");
+  if (badge) badge.textContent = "";
+  updateSensorTitle(); // will show "Aktive Sensoren: -"
+
+  // 4) Recreate an empty plot
+  try { Plotly.purge('plot'); } catch (_) {}
   Plotly.newPlot('plot', [], {
     title: 'Sensorverlauf (Live)',
     xaxis: { title: 'Zeit' },
@@ -377,19 +394,13 @@ function resetGraph() {
     legend: { x: 1.05, y: 1, orientation: 'v' }
   });
 
-  // UI cleanup
-  document.getElementById("visualization-title").textContent = "Ausgewählter Sensor: -";
-  document.getElementById("active-sensor-badge").textContent = "";
-
-  const sensorValueContainer = document.getElementById("sensor-value-output");
-  if (sensorValueContainer) sensorValueContainer.innerHTML = "";
-
-  document.querySelectorAll(".sensor-button").forEach(button => {
-    button.classList.remove("btn-active");
-    button.style.backgroundColor = '';
-    button.style.color = '';
-  });
+  // (optional) clear live-history mini plot/output if you use them
+  const hist = document.getElementById('live-history-plot');
+  if (hist) Plotly.newPlot('live-history-plot', [], { title: 'Simulationverlauf' });
+  const out = document.getElementById('live-output');
+  if (out) out.textContent = '';
 }
+
 
 
 // show the actual messured sensor value under the plot 
@@ -494,13 +505,12 @@ buttons.forEach(button => {
     }
 
 
-    // --- Activate (show full history accumulated so far) ---
+    // --- Activate ---
     if (!activeSensors.has(sensorId)) {
       activeSensors.add(sensorId);
 
-      // build full trace from stored history
       const trace = {
-        x: dataStore[sensorId].x.slice(),   // full history
+        x: dataStore[sensorId].x.slice(),
         y: dataStore[sensorId].y.slice(),
         type: 'scatter',
         mode: 'lines',
@@ -508,6 +518,11 @@ buttons.forEach(button => {
         line: { color: sensorColors[sensorId] || 'black' }
       };
       Plotly.addTraces('plot', trace);
+
+      // make sure a box exists right away
+      updateSensorValues(sensorId,
+        dataStore[sensorId].y.length ? dataStore[sensorId].y.at(-1) : 0
+      );
 
       // style button
       button.classList.add("btn-active");
@@ -517,6 +532,7 @@ buttons.forEach(button => {
       updateSensorTitle();
       return;
     }
+
   });
 });
 
@@ -597,32 +613,6 @@ function updateOutputWindow(data) {
 }
 
 
-// Function to plot log history from live simulator (e.g., for MQ135)
-function plotSimulationHistory(data, sensor = "MQ135") {
-  if (!data || data.length === 0) {
-    Plotly.newPlot('live-history-plot', [], { title: "Simulationverlauf" });
-    return;
-  }
-  // Show up to 60 last points (oldest to newest)
-  const logs = data.slice(0, 60).reverse(); // If newest is first, reverse to oldest first
-  const times = logs.map(e => e.time || e.received_at || "-");
-  const values = logs.map(e => e[sensor] ?? null);
-
-  const trace = {
-    x: times,
-    y: values,
-    type: "scatter",
-    mode: "lines+markers",
-    name: sensor,
-    line: { color: 'orange' }
-  };
-  Plotly.newPlot('live-history-plot', [trace], {
-    title: `Letzte Werte für ${sensor}`,
-    xaxis: { title: "Zeit" },
-    yaxis: { title: `${sensor} (Ohm)` }
-  });
-}
-//####### END OF THE BLOCK LIFE SIMULATION CODE ########
 
 
 
@@ -674,28 +664,7 @@ function startMessung() {
 
 }
 
-
-
-// //this was before thhis block before 
-// // Function to fetch data and update both the text window and plot
-// function fetchAndDisplayLiveSimulation() {
-//   fetch('/api/live-stream-data')
-//     .then(response => response.json())
-//     .then(data => {
-//       updateOutputWindow(data);         // Your existing function
-//       plotSimulationHistory(data, "MQ135"); // Can use other sensor as needed
-//     })
-//     .catch(() => {
-//       const el = document.getElementById('live-output');
-//       if (el) el.textContent = "Error fetching data.";
-//     });
-// }
-
-// // Call this function every X ms as before:
-// setInterval(fetchAndDisplayLiveSimulation, 1000);
-// fetchAndDisplayLiveSimulation();
-
-
+// fuc
 function fetchAndDisplayLiveSimulation() {
   fetch('/api/live-stream-data')
     .then(response => response.json())
@@ -730,6 +699,11 @@ function fetchAndDisplayLiveSimulation() {
                 y: [[row[s]]]
               }, [idx]);
             }
+
+            // Update the sensor value box if it exists
+            if (activeSensors.has(s)) {
+              updateSensorValues(s, row[s]);
+            }
           }
         });
       }
@@ -744,22 +718,6 @@ function fetchAndDisplayLiveSimulation() {
 setInterval(fetchAndDisplayLiveSimulation, 1000);
 fetchAndDisplayLiveSimulation();
 
-
-
-//// does not do anything ???? 
-// ///FIX !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// // FROM HERE IS [11/Aug/2025 15:06:59] "GET /api/arduino_status HTTP/1.1" 404 - this error comming from the server
-// // repeat only every 2 second and only when connected to Arduino
-// let liveTimer = null;
-// function startLivePolling() {
-//   if (liveTimer) return;
-//   fetchAndDisplayLiveSimulation();
-//   liveTimer = setInterval(fetchAndDisplayLiveSimulation, 1000);
-// }
-// function stopLivePolling() {
-//   clearInterval(liveTimer);
-//   liveTimer = null;
-// }
 
 
 
