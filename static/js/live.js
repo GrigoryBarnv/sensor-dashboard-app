@@ -1,5 +1,4 @@
-
-////////////////////////////////////////////////
+88 8888////////////////////////////////////////////////8
 ////////////////////////////////////////////////
 //START OF THE BLOCK 1 FOR LANGUAGE TRANSLATIONS AND SENSOR COLORS
 ////////////////////////////////////////////////
@@ -159,7 +158,6 @@ function updateSensorTooltips(lang) {
   });
 }
 
-
 // 2. Function to set the language
 function setLanguage(lang) {
   // Change the language to the selected language
@@ -183,14 +181,12 @@ function setLanguage(lang) {
     btnEn.classList.add("active-language");
     btnDe.classList.remove("active-language");
   }
-
   // Update tooltips language for sensors
   updateSensorTooltips(lang);
 
 }
 
-
-// 3. Function to handle the DOM Content Loaded Event
+// 3. Function to make the button blincking and set lang and update plot
 // Event listener for the DOMContentLoaded event
 document.addEventListener("DOMContentLoaded", () => {
   const liveBtn = document.getElementById("btn-live");
@@ -227,39 +223,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
-// // 4. Function to start the live simulation
-// function startSensorLive(sensorId) {
-//   if (liveSimulations.has(sensorId)) return; // already active -> quit
-
-
-//   //
-//   fetch('/api/sensor_data', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json' // Set the content type to JSON
-//     },
-//     body: JSON.stringify({
-//       sensorId: sensorId,
-//       selectedFile: selectedFile
-//     })
-//   })
-//     // then parse the response
-//     .then(res => res.json())
-//     // then update the plot
-//     .then(data => {
-//       if (data.error) {
-//         alert("Fehler: " + data.error);
-//         return;
-//       }
-//       simulateLivePlot(sensorId, data.time, data.values); // changes the plot
-//       updateSensorTitle();
-//     });
-
-// }
-
-
-
 //// // 4. Function to start the live simulation
 function startSensorLive(sensorId) {
   if (liveSimulations.has(sensorId)) return; // already active -> quit
@@ -288,16 +251,7 @@ function startSensorLive(sensorId) {
 } // close function
 
 
-
-
-
-
-
-
-
-
-
-// Function to simulate the live plot
+// 5. Function to simulate the live plot and update the plot points before the timestemps are gone
 function simulateLivePlot(sensorId, timeArray, valueArray) {
   const existingTraceIndex = getTraceIndex(sensorId);
   let i = 0;
@@ -321,7 +275,6 @@ function simulateLivePlot(sensorId, timeArray, valueArray) {
       updateSensorTitle();
       return;
     }
-
     const traceIndex = getTraceIndex(sensorId);
     if (traceIndex !== -1) {
       Plotly.extendTraces('plot', {
@@ -329,23 +282,18 @@ function simulateLivePlot(sensorId, timeArray, valueArray) {
         y: [[valueArray[i]]]
       }, [traceIndex]);
     }
-
     i++;
   }, 1000); // 1000ms = 1 data point per second 
 
   liveSimulations.set(sensorId, intervalId);
 }
-
-
-// Function to get the index of a trace in the plot 
+// 5.1 Function to get the index of a trace in the plot, checks if the plot has data pltted
 function getTraceIndex(sensorId) {
   const plotDiv = document.getElementById("plot");
   if (!plotDiv.data) return -1;
   return plotDiv.data.findIndex(trace => trace.name === sensorId);
 }
-
-
-// function to update the sensor title
+//5.2function to update the sensor title above the plot to show wich are active 
 function updateSensorTitle() {
   const title = document.getElementById("visualization-title");
   const active = Array.from(activeSensors).join(", ");
@@ -353,36 +301,31 @@ function updateSensorTitle() {
 }
 
 
-
-// Function to reset the graph 
-// Function to reset the graph
+ 
+//6. Function to reset the graph and clean all the fields and boxes! 
+// stop timers , clear data , empty UI, mae empty frsh plot
 function resetGraph() {
   // 1) Stop any legacy per-sensor timers
   if (liveSimulations && liveSimulations.forEach) {
     liveSimulations.forEach(id => clearInterval(id));
     liveSimulations.clear();
   }
-
   // 2) Clear session state so the next stream starts at 00 again
   activeSensors.clear();
   lastSeenTime.clear();
   sensors.forEach(s => { dataStore[s] = { x: [], y: [] }; });
-
   // 3) Reset UI bits
   const valueBox = document.getElementById("sensor-value-output");
   if (valueBox) valueBox.innerHTML = "";
-
   document.querySelectorAll(".sensor-button").forEach(btn => {
     btn.classList.remove("btn-active");
     btn.style.backgroundColor = "";
     btn.style.color = "";
   });
-
   // Title/badge
   const badge = document.getElementById("active-sensor-badge");
   if (badge) badge.textContent = "";
   updateSensorTitle(); // will show "Aktive Sensoren: -"
-
   // 4) Recreate an empty plot
   try { Plotly.purge('plot'); } catch (_) {}
   Plotly.newPlot('plot', [], {
@@ -393,7 +336,6 @@ function resetGraph() {
     showlegend: true,
     legend: { x: 1.05, y: 1, orientation: 'v' }
   });
-
   // (optional) clear live-history mini plot/output if you use them
   const hist = document.getElementById('live-history-plot');
   if (hist) Plotly.newPlot('live-history-plot', [], { title: 'Simulationverlauf' });
