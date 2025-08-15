@@ -1,4 +1,3 @@
-88 8888////////////////////////////////////////////////8
 ////////////////////////////////////////////////
 //START OF THE BLOCK 1 FOR LANGUAGE TRANSLATIONS AND SENSOR COLORS
 ////////////////////////////////////////////////
@@ -302,6 +301,7 @@ function updateSensorTitle() {
 
 
  
+
 //6. Function to reset the graph and clean all the fields and boxes! 
 // stop timers , clear data , empty UI, mae empty frsh plot
 function resetGraph() {
@@ -344,9 +344,8 @@ function resetGraph() {
 }
 
 
-
+// 7. Function to simulate the live plot and plot the datapoints
 // show the actual messured sensor value under the plot 
-// TODO add into simulateLivePlot()
 function simulateLivePlot(sensorId, timeArray, valueArray) {
   const existingTraceIndex = getTraceIndex(sensorId);
   let i = 0;
@@ -388,9 +387,8 @@ function simulateLivePlot(sensorId, timeArray, valueArray) {
   liveSimulations.set(sensorId, intervalId);
 }
 
-
-
-// Function to update the sensor value boxes
+//7.1 Function to update the sensor value boxes to show the actual messured sensor value
+//show the numbers under the chart
 function updateSensorValues(sensorId, latestValue) {
   const container = document.getElementById("sensor-value-output");
   let sensorBox = document.querySelector(`[data-sensor-box='${sensorId}']`);
@@ -410,7 +408,8 @@ function updateSensorValues(sensorId, latestValue) {
     </div>
   `;
 }
-// Function to handle button clicks
+
+//8. Function to handle button clicks PART 1 to deactivate the sensors by clicking again
 buttons.forEach(button => {
   button.addEventListener("click", () => {
     const sensorId = button.getAttribute("data-sensor-id");
@@ -434,7 +433,7 @@ buttons.forEach(button => {
       const box = document.querySelector(`[data-sensor-box='${sensorId}']`);
       if (box) box.remove();
 
-      // ✅ remove from activeSensors here
+      //  remove from activeSensors here
       activeSensors.delete(sensorId);
 
       // reset button styles
@@ -445,9 +444,7 @@ buttons.forEach(button => {
       updateSensorTitle();
       return;
     }
-
-
-    // --- Activate ---
+    // --- Activate --- PART 2
     if (!activeSensors.has(sensorId)) {
       activeSensors.add(sensorId);
 
@@ -474,33 +471,13 @@ buttons.forEach(button => {
       updateSensorTitle();
       return;
     }
-
   });
 });
 
 
-// // TODO FOR THE LIFE SIMULATION 
-// // Fetch and display log data in life box for future live data  Simulation plot
-// function fetchLogData() {
-//   fetch("/api/data")
-//     .then(res => res.json())
-//     .then(logs => {
-//       const box = document.getElementById("json-log-box");
-//       box.innerHTML = logs.map(entry => {
-//         return `<div>${entry.received_at || "??"} → ${JSON.stringify(entry)}</div>`;
-//       }).join("");
-//     });
-// }
-
-// // repeat every 2 seconds
-// setInterval(fetchLogData, 2000);
-
-
-
-
+//REMOVE IF NOT READING CSV 
 // function that adds an event listener to the dropdown menu to send later to visualization.py
 let selectedFile = "Avocado_Enrich2_Measure.CSV"; // default
-
 document.getElementById("csv-selector").addEventListener("change", function () {
   selectedFile = this.value;
   console.log("Selected file:", selectedFile); //for text purposes
@@ -508,29 +485,20 @@ document.getElementById("csv-selector").addEventListener("change", function () {
 });
 
 
-
-
-
-
-// ##############EVERYTHING BELOW IS FOR THE LIFE SIMULATION############################
-// FUNCTION THAT ARE SUPPORTING THE LIFE SIMULATION
-//
-//
+//constant for recieving the data correctly
 // List your sensors (same order as Python)
 const sensors = [
   "MQ2", "MQ3_1", "MQ3_10", "MQ4", "MQ5", "MQ6",
   "MQ8", "MQ9", "MQ135", "MQ136", "MQ137", "MQ138"
 ];
-
 // ✅ Persistent store of all points since measurement start
 const dataStore = {};   // { MQ2: { x:[], y:[] }, ... }
 const activeSensors = new Set(); // sensors currently plotted
 const lastSeenTime = new Set();  // optional: to skip duplicate ticks
-
 // init store for all sensors
 sensors.forEach(s => { dataStore[s] = { x: [], y: [] }; });
 
-// Function to update the output window with latest sensor data
+// 9. Function to udate the output terminal window with latest sensor data
 function updateOutputWindow(data) {
   const el = document.getElementById('live-output');
   if (!el) return;
@@ -539,35 +507,30 @@ function updateOutputWindow(data) {
     el.textContent = "No data received yet.";
     return;
   }
-
-  // Get the newest entry (you might want data[0] or data[data.length-1] depending on your backend)
+  // Get the newest entry 
   const latest = data[0];
-
-  // Build a pretty output string (show only time and sensor values, not as raw JSON if preferred)
+  //if the latest data has a value for the sensor  add a line like MQ2: 123.1 to out
   let out = `Time: ${latest.time || latest.received_at || "-"}\n`;
   sensors.forEach(sensor => {
     if (latest[sensor] !== undefined) {
       out += `${sensor}: ${latest[sensor]}\n`;
     }
   });
-
+  // put all that text to html element 
   el.textContent = out;
 }
-
-
-
-
-
 
 //###################################################
 //###################################################
 // START OF THE BLOCK FOR MANAGING THE 7 DIFFERENT INPUTS TO SEND DATA TO THE BACKEND
 //###################################################
 //###################################################
-//###################################################
 
+
+// 10. Function to send the input data to the backend( Arduino ) and return error if smth wrong
 function startMessung() {
 
+  // get the 7 values from the input fields 
   // Get the 7 values from the input fields 
   const data = {
     produktname: document.getElementById('name').value,
@@ -580,13 +543,14 @@ function startMessung() {
 
   };
 
+
   //validate the input fields before sending the data
   if (!data.produktname || !data.produktnummer || !data.datum || !data.clean || !data.enrich || !data.measure || !data.starten) {
     alert("Please fill in all fields");
     return;
   }
 
-  // POST the data to the backend
+  // post the data to the backend
   fetch('/api/start_measurement', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -606,18 +570,18 @@ function startMessung() {
 
 }
 
-// fuc
+// 11. Function to fetch and display live plot, take the value and make the graph longer every tick 
 function fetchAndDisplayLiveSimulation() {
   fetch('/api/live-stream-data')
     .then(response => response.json())
     .then(data => {
-      // Show raw JSON (your existing UI)
+      // show raw json (your existing ui)
       const out = document.getElementById('live-output');
       if (out) out.textContent = JSON.stringify(data.slice(0, 5), null, 2); // preview top rows
 
       if (!Array.isArray(data) || data.length === 0) return;
 
-      // We assume newest is FIRST (your insert at index 0). Reverse to oldest -> newest.
+      // we assume newest is first (your insert at index 0). reverse to oldest -> newest.
       const rows = data.slice().reverse();
 
       for (const row of rows) {
@@ -633,7 +597,7 @@ function fetchAndDisplayLiveSimulation() {
             dataStore[s].x.push(t);
             dataStore[s].y.push(row[s]);
 
-            // If this sensor is currently active, extend its trace
+            // if this sensor is currently active, extend its trace
             const idx = getTraceIndex(s);
             if (idx !== -1) {
               Plotly.extendTraces('plot', {
@@ -642,7 +606,7 @@ function fetchAndDisplayLiveSimulation() {
               }, [idx]);
             }
 
-            // Update the sensor value box if it exists
+            // update the sensor value box if it exists
             if (activeSensors.has(s)) {
               updateSensorValues(s, row[s]);
             }
@@ -685,7 +649,7 @@ fetchAndDisplayLiveSimulation();
 //###################################################
 
 
-// --- helpers (you already have this) ---
+// 12 . update the look of arduino connect button green or red if connected or not and logic
 function setConnectBtnState(connected, portText) {
   const btn = document.getElementById('btn-connect-arduino');
   if (!btn) return;
@@ -693,12 +657,10 @@ function setConnectBtnState(connected, portText) {
   btn.classList.add(connected ? 'btn-success' : 'btn-danger');
   btn.textContent = connected ? `Connected ${portText ? `(${portText})` : ''}` : 'Connect to Arduino Terminal';
 }
-
 // --- connect button + optional status polling ---
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('btn-connect-arduino');
   if (!btn) return;
-
   const defaultLabel = btn.textContent;
 
   // Click handler to connect on demand
@@ -738,10 +700,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // OPTIONAL: poll /api/arduino_status only if the route exists
   // (prevents console spam if you haven't implemented the backend route)
   let statusTimer = null;
-
   async function pollArduinoStatus() {
     try {
       const res = await fetch('/api/arduino_status', { cache: 'no-store' });
@@ -758,7 +718,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // statusTimer = setInterval(pollArduinoStatus, 5000);
   // pollArduinoStatus();
 
-  // tidy up on page unload
+  // stop on page reload the constant running in the bachground fuinction
   window.addEventListener('beforeunload', () => {
     if (statusTimer) clearInterval(statusTimer);
   });
@@ -772,8 +732,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+//13. function to stop the arduino
 
-///// START BUTTON STOP ARDUINO ////////////
 document.getElementById("btn-stop-arduino").addEventListener("click", () => {
   fetch('/api/stop_arduino', {
     method: 'POST',
@@ -792,4 +752,3 @@ document.getElementById("btn-stop-arduino").addEventListener("click", () => {
       document.getElementById('live-output').textContent = "Stop request failed.";
     });
 });
-//////////////// END BUTTON STOP ARDUINO ////////////
