@@ -307,3 +307,22 @@
   position: relative;
   padding-top: 4rem;
 }
+
+
+
+
+
+/* Add styling to the input fields for the Arduino fields */
+
+#alphabet-popup .d-flex {
+  display: flex;
+  flex-wrap: wrap;       /* allow wrapping to next line */
+  justify-content: center;
+  max-width: 400px;      /* adjust so ~13 letters per row */
+  margin: auto;
+}
+
+#alphabet-popup button {
+  flex: 0 0 40px;        /* fixed width for each button */
+  margin: 4px;
+}

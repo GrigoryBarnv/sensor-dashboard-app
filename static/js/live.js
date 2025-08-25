@@ -535,7 +535,8 @@ function startMessung() {
   const data = {
     produktname: document.getElementById('name').value,
     produktnummer: document.getElementById('nummer').value,
-    datum: document.getElementById('datum').value,
+    monat: document.getElementById("monat").value,   // send separately
+    tag: document.getElementById("tag").value,       // send separately
     clean: document.getElementById('clean').value,
     enrich: document.getElementById('enrich').value,
     measure: document.getElementById('measure').value,
@@ -545,7 +546,7 @@ function startMessung() {
 
 
   //validate the input fields before sending the data
-  if (!data.produktname || !data.produktnummer || !data.datum || !data.clean || !data.enrich || !data.measure || !data.starten) {
+  if (!data.produktname || !data.produktnummer || !data.clean || !data.enrich || !data.measure || !data.starten) {
     alert("Please fill in all fields");
     return;
   }
@@ -631,21 +632,17 @@ fetchAndDisplayLiveSimulation();
 
 //###################################################
 //###################################################
-//###################################################
 //END OF THE BLOCK FOR MANAGING THE 7 DIFFERENT INPUTS TO SEND DATA TO THE BACKEND
 //###################################################
 //###################################################
-//###################################################
 
 
 
 
 
 
-//###################################################
 //###################################################
 // START OF THE BLOCK FOR CONNECTING TO ARDUINO TERMINAL
-//###################################################
 //###################################################
 
 
@@ -752,3 +749,105 @@ document.getElementById("btn-stop-arduino").addEventListener("click", () => {
       document.getElementById('live-output').textContent = "Stop request failed.";
     });
 });
+
+
+
+
+//###################################################
+// FUNCTIONS TO MANAGE THE INPUT INTERACTION FOR THE START COMMANDS
+//###################################################
+
+
+//1. Reference to popup container  --- ( Please enter the first letter of the productname: ) ---c
+const popup = document.getElementById("alphabet-popup");
+const container = popup.querySelector(".d-flex");
+// Generate buttons for letters A–Z dynamically
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(letter => {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = letter; // Button label
+  btn.className = "btn btn-outline-light m-1";
+  // When user clicks a letter
+  btn.onclick = () => {
+    document.getElementById("name").value = letter; // Set the input value
+    popup.style.display = "none"; // Hide the popup after selection
+  };
+  container.appendChild(btn);
+});
+// Show popup when clicking the input field
+document.getElementById("name").addEventListener("click", (e) => {
+  const rect = e.target.getBoundingClientRect(); // Get position of input field
+  popup.style.top = rect.bottom + "px"; // Position popup below input
+  popup.style.left = rect.left + "px";  // Align popup horizontally
+  popup.style.display = "block";        // Show popup
+});
+
+
+
+//2. Reference to popup container ---   Enter the product number ( 02 or 22)  --- 
+const select = document.getElementById("nummer");
+for (let i = 1; i <= 99; i++) {
+  const option = document.createElement("option");
+  option.value = i.toString().padStart(2, "0"); // 01, 02 …
+  option.textContent = option.value;
+  select.appendChild(option);
+}
+
+
+// 3. Reference to entering container    ---   Enter the date (mmdd): ---
+ // Fill Tag (1–31)
+  const tagSelect = document.getElementById("tag");
+  for (let i = 1; i <= 31; i++) {
+    const option = document.createElement("option");
+    option.value = i.toString().padStart(2, "0"); // 01, 02 …
+    option.textContent = i.toString();
+    tagSelect.appendChild(option);
+  }
+
+  // Fill Monate (Jan–Dez)
+  const monate = [
+    "Januar", "Februar", "März", "April", "Mai", "Juni",
+    "Juli", "August", "September", "Oktober", "November", "Dezember"
+  ];
+  const monatSelect = document.getElementById("monat");
+  monate.forEach((m, index) => {
+    const option = document.createElement("option");
+    option.value = (index + 1).toString().padStart(2, "0"); // 01–12
+    option.textContent = m;
+    monatSelect.appendChild(option);
+  });
+
+
+// 4.  Reference to entering container --- Enter Clean duratuion (minutes): ---
+const cleanSelect = document.getElementById("clean");
+for (let i = 0; i <= 60; i++) {
+  const option = document.createElement("option");
+  option.value = i.toString();
+  option.textContent = i.toString();
+  cleanSelect.appendChild(option);
+}
+
+
+// 5. Reference to entering container ---  Enter Enrich duration (minutes)---
+
+const enrichSelect = document.getElementById("enrich");
+for (let i = 0; i <= 60; i++) {
+  const option = document.createElement("option");
+  option.value = i.toString();
+  option.textContent = i.toString();
+  enrichSelect.appendChild(option);
+}
+// 6. Reference to entering container ---  Enter Measurement duration (minutes): ---
+const measureSelect = document.getElementById("measure");
+for (let i = 0; i <= 60; i++) {
+  const option = document.createElement("option");
+  option.value = i.toString();
+  option.textContent = i.toString();
+  measureSelect.appendChild(option);
+}
+
+// 7. Reference to entering container ---  Enter Start (Ready to start with the measurement) ? ---
+
+//###################################################
+// END OF FUNCTIONS TO MANAGE THE INPUT INTERACTION FOR THE START COMMANDS
+//###################################################
