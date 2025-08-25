@@ -279,11 +279,10 @@
                                         <form id="arduino-inputs">
                                             <!-- Input field for product name -->
                                             <div class="mb-3">
-                                                <label for="name" class="form-label">Product Name (1 Letter)</label>
-                                                <!-- readonly so user must click and choose from popup -->
-                                                <input id="name" class="form-control" readonly
-                                                    placeholder="Click to select a letter">
+                                                <label for="name" class="form-label">Produktname (1 Buchstabe)</label>
+                                                <select id="name" class="form-select"></select>
                                             </div>
+
 
                                             <!-- Virtual alphabet keyboard (hidden by default) -->
                                             <div id="alphabet-popup" class="card p-3"

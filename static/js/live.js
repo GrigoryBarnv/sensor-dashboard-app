@@ -546,7 +546,7 @@ function startMessung() {
 
 
   //validate the input fields before sending the data
-  if (!data.produktname || !data.produktnummer || !data.clean || !data.enrich || !data.measure || !data.starten) {
+  if (!data.produktname || !data.produktnummer || !data.clean || !data.enrich || !data.measure || !data.starten || !data.tag || !data.monat) {
     alert("Please fill in all fields");
     return;
   }
@@ -759,27 +759,13 @@ document.getElementById("btn-stop-arduino").addEventListener("click", () => {
 
 
 //1. Reference to popup container  --- ( Please enter the first letter of the productname: ) ---c
-const popup = document.getElementById("alphabet-popup");
-const container = popup.querySelector(".d-flex");
-// Generate buttons for letters A–Z dynamically
+// Fill A–Z in <select id="name">
+const nameSelect = document.getElementById("name");
 "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(letter => {
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.textContent = letter; // Button label
-  btn.className = "btn btn-outline-light m-1";
-  // When user clicks a letter
-  btn.onclick = () => {
-    document.getElementById("name").value = letter; // Set the input value
-    popup.style.display = "none"; // Hide the popup after selection
-  };
-  container.appendChild(btn);
-});
-// Show popup when clicking the input field
-document.getElementById("name").addEventListener("click", (e) => {
-  const rect = e.target.getBoundingClientRect(); // Get position of input field
-  popup.style.top = rect.bottom + "px"; // Position popup below input
-  popup.style.left = rect.left + "px";  // Align popup horizontally
-  popup.style.display = "block";        // Show popup
+  const option = document.createElement("option");
+  option.value = letter;
+  option.textContent = letter;
+  nameSelect.appendChild(option);
 });
 
 
@@ -837,6 +823,7 @@ for (let i = 0; i <= 60; i++) {
   option.textContent = i.toString();
   enrichSelect.appendChild(option);
 }
+
 // 6. Reference to entering container ---  Enter Measurement duration (minutes): ---
 const measureSelect = document.getElementById("measure");
 for (let i = 0; i <= 60; i++) {
