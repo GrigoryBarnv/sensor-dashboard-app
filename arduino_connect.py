@@ -3,9 +3,14 @@ import time
 import serial
 
 # Minimal: try to open the port and report status
-def connect(port: str = "COM10", baud: int = 115200, timeout: int = 2):
+# 1. for windows
+# def connect(port: str = "COM10", baud: int = 115200, timeout: int = 2):
+
+
+# 2. for Linux
+def connect(port: str = "/dev/ttyACM0", baud: int = 115200, timeout: int = 2):
     """
-    Try to open the Arduino serial port. 
+    Try to open the Arduino serial port.
     Returns {"status": "connected", "port": "..."} on success,
     otherwise {"status": "error", "error": "...", "port": "..."}.
     """

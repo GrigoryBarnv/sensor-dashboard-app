@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, render_template, request
-from visualization import get_sensor_data  
+from visualization import get_sensor_data
 import time
 import threading
 import arduino_read  # Import the Arduino reading module
@@ -7,7 +7,7 @@ from arduino_connect import connect  # Import the Arduino connection module
 
 # create the Flask app and global variables
 app = Flask(__name__)
-latest_data_log = [] # simple list to keep logs (timestamp + 12 x sensor values)
+latest_data_log = []  # simple list to keep logs (timestamp + 12 x sensor values)
 
 
 # route to show the homepage
@@ -16,8 +16,8 @@ def home():
     """
     Render the home page of the Sensor Dashboard application.
 
-    This route serves the main index page of the application, which provides 
-    an interactive dashboard for visualizing sensor data. The HTML template 
+    This route serves the main index page of the application, which provides
+    an interactive dashboard for visualizing sensor data. The HTML template
     for this page is located at 'templates/index.html'.
     """
     return render_template("index.html")  # templates/index.html must exist
@@ -29,7 +29,7 @@ def live():
     return render_template("live.html")
 
 
-# API endpoint for frontend to retrieve full CSV sensor data for offline Plotting 
+# API endpoint for frontend to retrieve full CSV sensor data for offline Plotting
 @app.route("/api/sensor/<sensor_id>")
 def api_sensor(sensor_id):
     filename = request.args.get("file")
@@ -40,20 +40,21 @@ def api_sensor(sensor_id):
     return jsonify(result)
 
 
-
-    
 # GET endpoint for frontend polling for getting the live simulation data from CSV
 @app.route("/api/data", methods=["GET"])
 def get_latest_data():
     return jsonify(latest_data_log)
+
 
 # POST endpoint for the life data simulation , retrieve file Avacado.... and sensor id to send to simulate live.js
 @app.route("/api/sensor_data", methods=["POST"])
 def api_sensor_data():
     # Parse incoming JSON data from the POST request
     data = request.get_json()
-    sensor_id = data.get("sensorId")         # Get the selected sensor ID (e.g., "mq135")
-    filename = data.get("selectedFile")      # Get the selected CSV filename (e.g., "Tomate_Enrich2_Measure.CSV")
+    sensor_id = data.get("sensorId")  # Get the selected sensor ID (e.g., "mq135")
+    filename = data.get(
+        "selectedFile"
+    )  # Get the selected CSV filename (e.g., "Tomate_Enrich2_Measure.CSV")
 
     # Check if both sensor ID and filename were provided
     if not sensor_id or not filename:
@@ -64,11 +65,6 @@ def api_sensor_data():
 
     # Return the processed data (or error) as a JSON response to the frontend
     return jsonify(result)
-
-
-
-
-
 
 
 ######################################################
@@ -91,16 +87,20 @@ def receive_live_data():
     return jsonify({"status": "received"})
 
 
-
-#POST endpoint to connect to Arduino terminal
-@app.route('/api/connect_arduino_terminal', methods=['POST'])
+# POST endpoint to connect to Arduino terminal
+@app.route("/api/connect_arduino_terminal", methods=["POST"])
 def connect_arduino_terminal():
     body = request.get_json(silent=True) or {}
-    port = body.get("port", "COM10")  # override if needed
+    # for windows
+    # port = body.get("port", "COM10")  # override if needed
+
+    # for linux
+    port = body.get("port", "/dev/ttyACM0")  # override if needed
     result = connect(port=port)
     return jsonify(result), (200 if result["status"] == "connected" else 500)
 
-# already this route is in use later in code ARDUINO BLOCK 
+
+# already this route is in use later in code ARDUINO BLOCK
 # # GET endpoint for frontend to fetch latest live data
 # @app.route("/api/live-stream-data", methods=["GET"])
 # def get_latest_live_data():
@@ -109,22 +109,19 @@ def connect_arduino_terminal():
 ######################################################
 ######################################################
 ######################################################
-#END FOR THE SIMULATION OF REAL TIME DATA SENDING TO THE FRONTEND
+# END FOR THE SIMULATION OF REAL TIME DATA SENDING TO THE FRONTEND
 ######################################################
 ######################################################
-
-
-
 
 
 ##########################################
-#START FOR THE ARDUINO MEASUREMENT OUTPUT IN LOG BOX 
+# START FOR THE ARDUINO MEASUREMENT OUTPUT IN LOG BOX
 ##########################################
 ##########################################
 
 
 # POST endpoint to start the Arduino measurement and read the data from the Arduino
-@app.route('/api/start_measurement', methods=['POST'])
+@app.route("/api/start_measurement", methods=["POST"])
 def start_measurement():
     data = request.get_json()
     arduino_read.clear_log()
@@ -133,14 +130,15 @@ def start_measurement():
     t.start()
     return jsonify({"status": "started"})
 
+
 # GET endpoint to retrieve the latest live data from the Arduino
-@app.route('/api/live-stream-data', methods=['GET'])
+@app.route("/api/live-stream-data", methods=["GET"])
 def get_latest_live_data():
     return jsonify(arduino_read.get_log())
 
 
 ## a route sending stop to arduino d
-@app.route('/api/stop_arduino', methods=['POST'])
+@app.route("/api/stop_arduino", methods=["POST"])
 def stop_arduino():
     result = arduino_read.stop()
     return jsonify(result)
@@ -153,12 +151,11 @@ def stop_arduino():
 
 
 ##########################################
-#END FOR THE ARDUINO MEASUREMENT OUTPUT IN LOG BOX 
+# END FOR THE ARDUINO MEASUREMENT OUTPUT IN LOG BOX
 ##########################################
 ##########################################
 
 
-
-#run the app
+# run the app
 if __name__ == "__main__":
-    app.run(debug=True) # this starts the app and it ld
+    app.run(debug=True)  # this starts the app and it ld

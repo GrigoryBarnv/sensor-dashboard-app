@@ -4,7 +4,11 @@ import time
 import threading
 import re
 
-DEFAULT_PORT = "COM10"  # adjust for your OS
+# for Windows
+# DEFAULT_PORT = "COM10"  # adjust for your OS
+
+# for Linux
+DEFAULT_PORT = "/dev/ttyACM0"
 BAUD = 115200  # how fast the Arduino sends data
 READ_TIMEOUT = 2  # seconds to wait for a line
 MAX_LOG_ENTRIES = 300  # max number of entries in live_log
