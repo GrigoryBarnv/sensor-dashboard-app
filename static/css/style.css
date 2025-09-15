@@ -150,6 +150,23 @@
     font-size: 0.9rem;
     color: #888;
   }
+
+  .footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .footer-logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .footer-text {
+    text-align: left;
+  }
   
   /* Active sensor badge */
   #active-sensor-badge {
