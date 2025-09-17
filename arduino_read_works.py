@@ -2,11 +2,11 @@ import serial
 import time
 
 
-# 1.Open the seriol port for Arduino Windows port is different
-# ser = serial.Serial('COM10', 115200, timeout=2)  # COM-Port anpassen!
+# For Windows (uncomment the line below and comment the Linux line)
+ser = serial.Serial('COM10', 115200, timeout=2)  # Adjust COM port if needed!
 
-# 2.Open the serial port for Jetson/Linux port is different
-ser = serial.Serial("/dev/ttyACM0", 115200, timeout=2)
+# For Linux/Jetson (uncomment the line below and comment the Windows line)
+# ser = serial.Serial("/dev/ttyACM0", 115200, timeout=2)
 time.sleep(2)  # Wait briefly until Arduino is ready
 
 
