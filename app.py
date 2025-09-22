@@ -33,7 +33,6 @@ def login_required(f):
 
 # route to show the homepage
 @app.route("/")
-@login_required
 def home():
     """
     Render the home page of the Sensor Dashboard application.
@@ -81,14 +80,12 @@ def logout():
 
 # route to show the live page
 @app.route("/live")
-@login_required
 def live():
     return render_template("live.html")
 
 
 # API endpoint for frontend to retrieve full CSV sensor data for offline Plotting 
 @app.route("/api/sensor/<sensor_id>")
-@login_required
 def api_sensor(sensor_id):
     filename = request.args.get("file")
     if not filename:
@@ -102,13 +99,11 @@ def api_sensor(sensor_id):
     
 # GET endpoint for frontend polling for getting the live simulation data from CSV
 @app.route("/api/data", methods=["GET"])
-@login_required
 def get_latest_data():
     return jsonify(latest_data_log)
 
 # POST endpoint for the life data simulation , retrieve file Avacado.... and sensor id to send to simulate live.js
 @app.route("/api/sensor_data", methods=["POST"])
-@login_required
 def api_sensor_data():
     # Parse incoming JSON data from the POST request
     data = request.get_json()
@@ -140,7 +135,6 @@ def api_sensor_data():
 ######################################################
 # POST endpoint for simulator.py to send data
 @app.route("/api/live-stream-data", methods=["POST"])
-@login_required
 def receive_live_data():
     MAX_LOG_ENTRIES = 60  # or any number you want
     global latest_data_log
@@ -177,7 +171,6 @@ def receive_live_data():
 
 # POST endpoint to start the Arduino measurement and read the data from the Arduino
 @app.route('/api/start_measurement', methods=['POST'])
-@login_required
 def start_measurement():
     data = request.get_json()
     arduino_read.clear_log()
@@ -188,7 +181,6 @@ def start_measurement():
 
 # GET endpoint to retrieve the latest live data from the Arduino
 @app.route('/api/live-stream-data', methods=['GET'])
-@login_required
 def get_latest_live_data():
     return jsonify(arduino_read.get_log())
 
