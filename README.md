@@ -1,110 +1,109 @@
-
-#  Sensor Dashboard WebApp (Flask + Plotly)
+# Sensor Dashboard WebApp (Flask + Plotly)
 
 Ein interaktives Dashboard zur Visualisierung von Sensordaten mit **Flask**, **Plotly** und **modernem UI-Styling**.  
 Sie können verschiedene Sensoren auswählen, deren Werte als Live-Plots anzeigt werden.
 
 ---
 
-##  Schnellstart (unter Windows mit PowerShell)
+## Schnellstart (unter Linux)
 
-### 1.  Winget-Quellen aktualisieren
+### 1. Python und pip installieren
 
-```powershell
-winget source update
+```bash
+sudo apt update
+sudo apt install python3 python3-pip python3-venv
 ```
 
----
+### 2. MongoDB installieren und starten
 
-### 2.  Python 3.13 installieren
+```bash
+# MongoDB installieren
+sudo apt install mongodb
 
-```powershell
-winget install --id Python.Python.3.13
+# MongoDB Service starten
+sudo systemctl start mongodb
+sudo systemctl enable mongodb
 ```
 
->  Alternativ: einfach `python` in PowerShell eingeben →  dem Link zum **Microsoft Store** folgen, um Python zu installieren.  
+### 3. Ins Projektverzeichnis wechseln
 
-
----
-
-### 3.  Ins Projektverzeichnis wechslen
-
-> zum Beispiel
-
-```powershell
-cd C:\Users\<dein-benutzername>\projekt_ordner\sensor-dashboard-app
+```bash
+cd /pfad/zu/sensor-dashboard-app
 ```
 
----
+### 4. Virtuelles Environment erstellen und aktivieren
 
-### 4.  Abhängigkeiten installieren
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
-####  Standard (wenn alles klappt):
+### 5. Abhängigkeiten installieren
 
-```powershell
+```bash
 pip install -r requirements.txt
 ```
 
-####  Empfohlen (bei Kompilierungsproblemen):
+### 6. Arduino-Berechtigungen einrichten
 
-```powershell
-pip install --only-binary :all: -r requirements.txt
+```bash
+# Benutzer zur dialout-Gruppe hinzufügen (für Arduino-Zugriff)
+sudo usermod -a -G dialout $USER
+
+# Neue Gruppe aktivieren (Neuanmeldung erforderlich)
+newgrp dialout
 ```
 
----
+### 7. .env Datei erstellen
 
-### 5.  (Optioal) Einzelne Bibliotheken installieren ( falls Fehler auftreten)
-
-Falls `pandas`, `matplotlib` oder `flask` nicht korrekt installiert werden:
-
-```powershell
-pip install --only-binary :all: pandas
-pip install --only-binary :all: matplotlib
-pip install flask==2.3.3 --only-binary :all:
+```bash
+echo "MONGODB_URI=mongodb://localhost:27017/
+SECRET_KEY=your-secret-key-here" > .env
 ```
 
----
+### 8. Flask-Webserver starten
 
-### 6.  lokalen Flask-Webserver starten
-
-```powershell
+```bash
 python app.py
 ```
 
- Öffne im Browser:
+Öffne im Browser:
 ```
 http://127.0.0.1:5000
 ```
 
 ---
 
+## Voraussetzungen
 
-### 7. mit Docker-Compose starten
-
-docker compose up --build
-
-#### - docker compose netz untersuchen 
-docker network inspect sensor-dashboard-app_default
-
-#### - logs anschauen 
-logs sensor-dashboard-app-simulator-1
-
-#### - aktuele docker netze anzeigen 
-docker network ls
-
-#### - im WebBrowser die Simulationsdaten JSON Anträge prüfen 
-http://localhost:5000/api/data
-
-
-
-
-##  Voraussetzungen
-
-- Windows 10 oder 11
-- Python 3.12 oder 3.13
-- PowerShell oder Windows Terminal
+- Linux (Ubuntu/Debian empfohlen)
+- Python 3.8+
+- MongoDB
+- Arduino mit Sensoren
+- USB-Port für Arduino (/dev/ttyACM0)
 - Internetzugang (für Paketinstallationen)
 
+## Fehlerbehebung
 
+### Arduino-Port nicht verfügbar
+1. Überprüfen Sie die Arduino-Verbindung
+2. Prüfen Sie den Port-Namen:
+```bash
+ls /dev/ttyACM*
+```
+3. Berechtigungen prüfen:
+```bash
+sudo chmod 666 /dev/ttyACM0
+```
+
+### MongoDB-Verbindungsprobleme
+1. Status prüfen:
+```bash
+sudo systemctl status mongodb
+```
+2. Logs anzeigen:
+```bash
+sudo journalctl -u mongodb
+```
 
 ![image](https://github.com/user-attachments/assets/7242700e-8f03-41a6-bade-ebde9f125cb9).

@@ -10,8 +10,8 @@ live_log = []
 def start_measurement(inputs):
     global ser, live_log
     if ser is None:
-        ser = serial.Serial('COM10', 115200, timeout=2)  # Adjust COM-Port for Windows
-        # ser = serial.Serial('/dev/ttyACM0', 115200, timeout=2)  # Adjust for Linux/Jetson
+        # ser = serial.Serial('COM10', 115200, timeout=2)  # Adjust COM-Port for Windows
+        ser = serial.Serial('/dev/ttyACM0', 115200, timeout=2)  # Adjust for Linux/Jetson
         time.sleep(2) # Wait for Arduino to initialize
 
     # Create a live log to store the output from Arduino
