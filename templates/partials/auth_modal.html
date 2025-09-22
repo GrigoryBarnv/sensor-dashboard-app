@@ -1,0 +1,81 @@
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="loginError" class="alert alert-danger d-none" role="alert"></div>
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="loginMatrikelnummer" class="form-label">Matrikelnummer</label>
+                        <input type="text" class="form-control" id="loginMatrikelnummer" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="loginPassword" class="form-label">Passwort</label>
+                        <input type="password" class="form-control" id="loginPassword" required>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Anmelden</button>
+                        <button type="button" class="btn btn-link" onclick="showRegisterForm()">Noch kein Konto? Registrieren</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Register Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="registerModalLabel">Registrierung</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="registerError" class="alert alert-danger d-none" role="alert"></div>
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label for="registerMatrikelnummer" class="form-label">Matrikelnummer</label>
+                        <input type="text" class="form-control" id="registerMatrikelnummer" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerPassword" class="form-label">Passwort</label>
+                        <input type="password" class="form-control" id="registerPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerPasswordConfirm" class="form-label">Passwort bestätigen</label>
+                        <input type="password" class="form-control" id="registerPasswordConfirm" required>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Registrieren</button>
+                        <button type="button" class="btn btn-link" onclick="showLoginForm()">Bereits registriert? Anmelden</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Menu Modal -->
+<div class="modal fade" id="userMenuModal" tabindex="-1" aria-labelledby="userMenuModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userMenuModalLabel">Meine Messungen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="measurementsList" class="list-group">
+                    <!-- Measurements will be loaded here dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="logout()">Abmelden</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrierung - Sensor-Daten-Dashboard</title>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap-agent-dark-theme.min.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-4">
+        <header class="app-header text-center">
+            <h1 class="display-5 fw-bold">Sensor Daten Dashboard</h1>
+            <p class="lead">Registrieren Sie sich mit Ihrer Matrikelnummer</p>
+        </header>
+
+        <main>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="card-title text-center mb-4">Registrierung</h2>
+                            
+                            {% if error %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ error }}
+                            </div>
+                            {% endif %}
+
+                            <form method="POST" action="{{ url_for('register') }}">
+                                <div class="mb-3">
+                                    <label for="matrikelnummer" class="form-label">Matrikelnummer</label>
+                                    <input type="text" class="form-control" id="matrikelnummer" name="matrikelnummer" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Passwort</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password_confirm" class="form-label">Passwort bestätigen</label>
+                                    <input type="password" class="form-control" id="password_confirm" name="password_confirm" required>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">Registrieren</button>
+                                </div>
+                            </form>
+
+                            <div class="text-center mt-3">
+                                <p>Bereits registriert? <a href="{{ url_for('login') }}">Anmelden</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <div class="footer-content d-flex align-items-center justify-content-center">
+                <img src="{{ url_for('static', filename='images/RZ_UniHohenheim_Logo_1C_Weiss_EN.png') }}" alt="Universität Hohenheim Logo" class="footer-logo me-3" style="height: 40px; filter: brightness(0.8);">
+                <div class="footer-text">
+                    <p class="mb-0" data-i18n="footer">&copy; 2025 Sensor-Daten-Dashboard</p>
+                    <p class="mb-0">Universität Hohenheim</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>
