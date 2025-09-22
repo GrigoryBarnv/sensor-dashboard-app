@@ -10,7 +10,7 @@ import os
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
+load_dotenv('.env')
 
 # create the Flask app and global variables
 app = Flask(__name__)
