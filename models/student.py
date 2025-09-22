@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-import bcrypt
+import hashlib
 from datetime import datetime
 import os
 from dotenv import load_dotenv
@@ -23,13 +23,14 @@ class Student:
         if self.students.find_one({'matrikelnummer': matrikelnummer}):
             return False, "Student already registered"
 
-        # Hash the password
-        salt = bcrypt.gensalt()
-        hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+        # Hash the password using SHA-256
+        salt = os.urandom(32)
+        hashed = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
 
         student = {
             'matrikelnummer': matrikelnummer,
             'password': hashed,
+            'salt': salt,
             'created_at': datetime.utcnow(),
             'last_login': None
         }
@@ -46,7 +47,10 @@ class Student:
         if not student:
             return False, "Student not found"
 
-        if bcrypt.checkpw(password.encode('utf-8'), student['password']):
+        # Verify password using stored salt
+        stored_salt = student['salt']
+        test_hash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), stored_salt, 100000)
+        if test_hash == student['password']:
             # Update last login time
             self.students.update_one(
                 {'_id': student['_id']},
@@ -59,7 +63,8 @@ class Student:
         """Get student information"""
         student = self.students.find_one({'matrikelnummer': matrikelnummer})
         if student:
-            # Convert ObjectId to string and remove password
+            # Convert ObjectId to string and remove sensitive data
             student['_id'] = str(student['_id'])
             del student['password']
+            del student['salt']
         return student
