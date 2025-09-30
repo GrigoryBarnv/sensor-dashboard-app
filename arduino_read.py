@@ -4,11 +4,10 @@ import time
 import threading
 import re
 
-# for Windows (uncomment the line below and comment the Linux line)
-DEFAULT_PORT = "COM10"  # adjust for your OS
+from arduino_connect import find_arduino_port
 
-# for Linux (uncomment the line below and comment the Windows line)
-# DEFAULT_PORT = "/dev/ttyACM0"
+# Port will be detected automatically
+DEFAULT_PORT = None  # Will be set by find_arduino_port()
 BAUD = 115200  # how fast the Arduino sends data
 READ_TIMEOUT = 2  # seconds to wait for a line
 MAX_LOG_ENTRIES = 300  # max number of entries in live_log
@@ -133,9 +132,10 @@ def start_measurement(inputs: dict):
     _reset_timer()  # <<< restart synthetic timer
     _stop_flag.clear()  # make sure the stop flag is off so reader will run
 
-    # Open serial port and wait 2 seconds for Arduino to reset
+    # Find and open serial port, wait 2 seconds for Arduino to reset
     try:
-        ser = serial.Serial(DEFAULT_PORT, baudrate=BAUD, timeout=READ_TIMEOUT)
+        port = find_arduino_port() if DEFAULT_PORT is None else DEFAULT_PORT
+        ser = serial.Serial(port, baudrate=BAUD, timeout=READ_TIMEOUT)
         time.sleep(2)  # let Arduino reset
 
         # Drain any leftover lines from the serial buffer

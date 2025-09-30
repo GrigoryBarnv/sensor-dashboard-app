@@ -115,8 +115,8 @@ def connect_arduino_terminal():
     # for windows
     # port = body.get("port", "COM10")  # override if needed
 
-    # for linux
-    port = body.get("port", "/dev/ttyACM0")  # override if needed
+    # Port will be detected automatically
+    port = body.get("port", None)  # if None, will auto-detect
     result = connect(port=port)
     return jsonify(result), (200 if result["status"] == "connected" else 500)
 
