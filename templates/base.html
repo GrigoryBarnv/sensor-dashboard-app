@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="de" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sensor-Daten-Dashboard{% endblock %}</title>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap-agent-dark-theme.min.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-4">
+        <header class="app-header text-center position-relative">
+            <div class="language-switch position-absolute top-0 end-0 p-2">
+                <button id="btn-live" class="btn btn-sm btn-outline-danger ms-2">
+                    <span class="dot"></span> Live
+                </button>
+
+                <button id="btn-de" class="btn btn-sm btn-outline-light me-1" onclick="setLanguage('de')">DE</button>
+                <button id="btn-en" class="btn btn-sm btn-outline-light me-1" onclick="setLanguage('en')">EN</button>
+                
+                {% if current_user.is_authenticated %}
+                    <button class="btn btn-sm btn-outline-light" onclick="logout()">Logout</button>
+                {% else %}
+                    <button class="btn btn-sm btn-outline-light me-1" onclick="showLoginModal()">Login</button>
+                    <button class="btn btn-sm btn-outline-light" onclick="showRegisterModal()">Register</button>
+                {% endif %}
+            </div>
+
+            <h1 class="display-5 fw-bold" data-i18n="mainTitle">{% block header_title %}Sensor Daten Dashboard{% endblock %}</h1>
+            <p class="lead" data-i18n="subtitle">{% block header_subtitle %}Interaktive Visualisierung von CSV-Sensordaten{% endblock %}</p>
+        </header>
+
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="app-footer">
+            <div class="footer-content d-flex align-items-center justify-content-center">
+                <img src="{{ url_for('static', filename='images/RZ_UniHohenheim_Logo_1C_Weiss_EN.png') }}" alt="Universität Hohenheim Logo" class="footer-logo me-3" style="height: 40px; filter: brightness(0.8);">
+                <div class="footer-text">
+                    <p class="mb-0" data-i18n="footer">&copy; 2025 Sensor-Daten-Dashboard</p>
+                    <p class="mb-0">Universität Hohenheim</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="matrikelnummer" class="form-label">Matrikelnummer</label>
+                            <input type="text" class="form-control" id="matrikelnummer" name="matrikelnummer" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="alert alert-danger d-none" id="loginError"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitLogin()">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerModalLabel">Register</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label for="regMatrikelnummer" class="form-label">Matrikelnummer</label>
+                            <input type="text" class="form-control" id="regMatrikelnummer" name="matrikelnummer" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="regPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="regPassword" name="password" required>
+                        </div>
+                        <div class="alert alert-danger d-none" id="registerError"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitRegister()">Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/plotly-latest.min.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+    <script>
+        function showLoginModal() {
+            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+        }
+
+        function showRegisterModal() {
+            const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
+            registerModal.show();
+        }
+
+        async function submitLogin() {
+            const form = document.getElementById('loginForm');
+            const errorDiv = document.getElementById('loginError');
+            
+            const formData = new FormData(form);
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (data.status === 'success') {
+                    window.location.reload();
+                } else {
+                    errorDiv.textContent = data.message;
+                    errorDiv.classList.remove('d-none');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'An error occurred. Please try again.';
+                errorDiv.classList.remove('d-none');
+            }
+        }
+
+        async function submitRegister() {
+            const form = document.getElementById('registerForm');
+            const errorDiv = document.getElementById('registerError');
+            
+            const formData = {
+                matrikelnummer: form.querySelector('#regMatrikelnummer').value,
+                password: form.querySelector('#regPassword').value
+            };
+            
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                if (data.status === 'success') {
+                    window.location.reload();
+                } else {
+                    errorDiv.textContent = data.message;
+                    errorDiv.classList.remove('d-none');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'An error occurred. Please try again.';
+                errorDiv.classList.remove('d-none');
+            }
+        }
+
+        function logout() {
+            window.location.href = '/logout';
+        }
+
+        // Live/Offline toggle
+        document.getElementById('btn-live').addEventListener('click', function() {
+            const currentPath = window.location.pathname;
+            if (currentPath === '/') {
+                window.location.href = '/live';
+            } else {
+                window.location.href = '/';
+            }
+        });
+    </script>
+</body>
+</html>

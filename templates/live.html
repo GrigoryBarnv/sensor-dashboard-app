@@ -1,33 +1,6 @@
-<!DOCTYPE html>
-<html lang="de" data-bs-theme="dark">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sensor-Daten-Dashboard</title>
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/bootstrap-agent-dark-theme.min.css') }}" rel="stylesheet">
-</head>
-
-
-<body>
-
-    <div class="container py-4">
-        <header class="app-header text-center position-relative">
-            <div class="language-switch">
-
-                <button id="btn-live" class="btn btn-sm btn-outline-danger ms-2">
-                    <span class="dot"></span> Live
-                </button>
-
-                <button id="btn-de" class="btn btn-sm btn-outline-light me-1" onclick="setLanguage('de')">DE</button>
-                <button id="btn-en" class="btn btn-sm btn-outline-light" onclick="setLanguage('en')">EN</button>
-            </div>
-
-            <h1 class="display-5 fw-bold" data-i18n="mainTitle">Sensor Daten Dashboard</h1>
-            <p class="lead" data-i18n="subtitle">Interaktive Visualisierung von CSV-Sensordaten</p>
-        </header>
+{% block content %}
 
 
         <main>
@@ -370,9 +343,9 @@
         </footer>
 
     </div>
-    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/plotly-latest.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/live.js') }}"></script>
-</body>
 
-</html>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="{{ url_for('static', filename='js/live.js') }}"></script>
+{% endblock %}
