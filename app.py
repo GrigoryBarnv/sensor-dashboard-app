@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 # Configure Flask app
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-please-change')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://postgres:postgres@localhost/sensor_dashboard')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sensor_dashboard.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize extensions
