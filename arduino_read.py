@@ -14,6 +14,13 @@ MAX_LOG_ENTRIES = 300  # max number of entries in live_log
 
 ser = None
 live_log = []
+measurement_buffer = []  # Buffer for storing complete measurement data
+measurement_info = {
+    'product_name': None,
+    'product_number': None,
+    'date': None,
+    'is_measuring': False
+}
 _stop_flag = threading.Event()
 _lock = threading.Lock()
 _reader_thread = None
@@ -73,6 +80,12 @@ def _append_entry(entry: dict):
             len(live_log) > MAX_LOG_ENTRIES
         ):  # make sure only keep the last MAX_LOG_ENTRIES
             del live_log[:-MAX_LOG_ENTRIES]
+        
+        # If this is a measurement entry (has time and sensor values), add to measurement buffer
+        if measurement_info['is_measuring'] and 'time' in entry and all(
+            sensor in entry for sensor in ['MQ136', 'MQ138', 'MQ137', 'MQ4', 'MQ9', 'MQ8', 'MQ3_10', 'MQ5', 'MQ2', 'MQ135', 'MQ6', 'MQ3_1']
+        ):
+            measurement_buffer.append(entry)
 
 
 # read from the serial port and transform from bytes to strings
@@ -126,11 +139,20 @@ def _reader():
 # backend function to start the Arduino measurement
 def start_measurement(inputs: dict):
     """Start Arduino measurement with prompts and reset timer."""
-    global ser, _reader_thread
+    global ser, _reader_thread, measurement_info, measurement_buffer
     stop()  # stop anything running before
     clear_log()  # <<< clear the log
     _reset_timer()  # <<< restart synthetic timer
     _stop_flag.clear()  # make sure the stop flag is off so reader will run
+    
+    # Reset measurement buffer and info
+    measurement_buffer = []
+    measurement_info.update({
+        'product_name': inputs.get('produktname', ''),
+        'product_number': inputs.get('produktnummer', ''),
+        'date': inputs.get('monat', '') + inputs.get('tag', ''),
+        'is_measuring': True
+    })
 
     # Find and open serial port, wait 2 seconds for Arduino to reset
     try:
@@ -202,8 +224,6 @@ def stop():
             except Exception:
                 pass
             ser.close()
-
-    # check for any errors
     except Exception as e:
         return {"status": "error", "error": str(e)}
     finally:
@@ -224,3 +244,23 @@ def clear_log():
     global live_log
     with _lock:
         live_log = []
+
+def get_measurement_data():
+    """Get the current measurement buffer and info."""
+    with _lock:
+        return {
+            'buffer': measurement_buffer.copy(),
+            'info': measurement_info.copy()
+        }
+
+def clear_measurement_data():
+    """Clear the measurement buffer and reset info."""
+    global measurement_buffer, measurement_info
+    with _lock:
+        measurement_buffer = []
+        measurement_info.update({
+            'product_name': None,
+            'product_number': None,
+            'date': None,
+            'is_measuring': False
+        })

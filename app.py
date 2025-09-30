@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
+from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, send_file
 from datetime import datetime
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from visualization import get_sensor_data
@@ -155,7 +155,31 @@ def start_measurement():
 # GET endpoint to retrieve the latest live data from the Arduino
 @app.route("/api/live-stream-data", methods=["GET"])
 def get_latest_live_data():
-    return jsonify(arduino_read.get_log())
+    log_data = arduino_read.get_log()
+    
+    # Check for measurement completion
+    for entry in log_data:
+        if isinstance(entry, dict) and 'raw' in entry:
+            if 'Measurement ended.' in entry['raw']:
+                # Get measurement data
+                measurement_data = arduino_read.get_measurement_data()
+                if measurement_data['info']['is_measuring'] and current_user.is_authenticated:
+                    # Save measurement
+                    current_user.add_measurement(
+                        measurement_data['buffer'],
+                        measurement_data['info']['product_name'],
+                        measurement_data['info']['product_number'],
+                        measurement_data['info']['date']
+                    )
+                    # Clear measurement data
+                    arduino_read.clear_measurement_data()
+                    # Add completion message
+                    log_data.append({
+                        'raw': '✅ Measurement completed and saved to your account.',
+                        'type': 'success'
+                    })
+    
+    return jsonify(log_data)
 
 
 ## a route sending stop to arduino d
@@ -213,6 +237,32 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+@app.route('/api/measurements')
+@login_required
+def get_measurements():
+    """Get list of user's measurements"""
+    measurements = [m.to_dict() for m in current_user.measurements]
+    return jsonify(measurements)
+
+@app.route('/api/measurements/<int:measurement_id>/download')
+@login_required
+def download_measurement(measurement_id):
+    """Download measurement CSV file"""
+    measurement = Measurement.query.get_or_404(measurement_id)
+    if measurement.user_id != current_user.id:
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    filepath = os.path.join('measurements', measurement.filename)
+    if not os.path.exists(filepath):
+        return jsonify({'error': 'File not found'}), 404
+    
+    return send_file(
+        filepath,
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name=measurement.filename
+    )
 
 # Create database tables
 def init_db():
