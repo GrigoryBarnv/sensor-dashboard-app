@@ -1,12 +1,32 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from visualization import get_sensor_data
 import time
 import threading
+import os
 import arduino_read  # Import the Arduino reading module
 from arduino_connect import connect  # Import the Arduino connection module
+from models import db
+from models.user import User
 
 # create the Flask app and global variables
 app = Flask(__name__)
+
+# Configure Flask app
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-please-change')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://postgres:postgres@localhost/sensor_dashboard')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize extensions
+db.init_app(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 latest_data_log = []  # simple list to keep logs (timestamp + 12 x sensor values)
 
 
@@ -154,6 +174,51 @@ def stop_arduino():
 # END FOR THE ARDUINO MEASUREMENT OUTPUT IN LOG BOX
 
 
+# Login routes
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        matrikelnummer = request.form.get('matrikelnummer')
+        password = request.form.get('password')
+        
+        user = User.get_by_matrikelnummer(matrikelnummer)
+        if user and user.check_password(password):
+            login_user(user)
+            user.last_login = datetime.utcnow()
+            db.session.commit()
+            return jsonify({'status': 'success'})
+        return jsonify({'status': 'error', 'message': 'Invalid credentials'}), 401
+    
+    return render_template('login.html')
+
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    matrikelnummer = data.get('matrikelnummer')
+    password = data.get('password')
+    
+    if User.get_by_matrikelnummer(matrikelnummer):
+        return jsonify({'status': 'error', 'message': 'Matrikelnummer already registered'}), 400
+        
+    user = User(matrikelnummer=matrikelnummer)
+    user.set_password(password)
+    db.session.add(user)
+    db.session.commit()
+    
+    return jsonify({'status': 'success'})
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
+# Create database tables
+def init_db():
+    with app.app_context():
+        db.create_all()
+
 # run the app
 if __name__ == "__main__":
+    init_db()  # Create tables before running the app
     app.run(debug=True)  # this starts the app and it ld
