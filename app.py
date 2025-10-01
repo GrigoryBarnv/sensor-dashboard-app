@@ -286,12 +286,25 @@ def download_measurement(measurement_id):
     if measurement.user_id != current_user.id:
         return jsonify({'error': 'Unauthorized'}), 403
     
-    # Use absolute path for measurements
+    # Debug prints for troubleshooting
+    print(f"DEBUG: Download requested for measurement ID: {measurement_id}")
+    print(f"DEBUG: Filename from database: {measurement.filename}")
+    
+    # List all files in measurements directory
     measurements_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'persistent_data', 'measurements')
+    print(f"DEBUG: Looking in directory: {measurements_dir}")
+    if os.path.exists(measurements_dir):
+        print("DEBUG: Files in measurements directory:")
+        for file in os.listdir(measurements_dir):
+            print(f"DEBUG: Found file: {file}")
+    else:
+        print("DEBUG: Measurements directory does not exist!")
+    
     filepath = os.path.join(measurements_dir, measurement.filename)
-    print(f"Attempting to download file: {filepath}")  # Debug print
+    print(f"DEBUG: Full file path: {filepath}")
+    
     if not os.path.exists(filepath):
-        print(f"File not found at: {filepath}")  # Debug print
+        print(f"DEBUG: File not found at: {filepath}")
         return jsonify({'error': 'File not found'}), 404
     
     return send_file(

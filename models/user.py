@@ -56,10 +56,12 @@ class User(UserMixin, db.Model):
         filename = f"{product_name}_{product_number}_{date}_Measure.CSV"
         filepath = os.path.join(measurements_dir, filename)
         
+        print(f"DEBUG: Creating measurement file at: {filepath}")
         # Save as CSV
         with open(filepath, 'w') as f:
             # Write header
             f.write("time,MQ136,MQ138,MQ137,MQ4,MQ9,MQ8,MQ3_10,MQ5,MQ2,MQ135,MQ6,MQ3_1\n")
+        print(f"DEBUG: Successfully wrote header to file")
             
             # Write data
             for entry in data_buffer:
