@@ -2,6 +2,7 @@ from . import db, UserMixin, generate_password_hash, check_password_hash
 from datetime import datetime
 import json
 import os
+from arduino_read import SENSORS  # Import sensor list in correct order
 
 class Measurement(db.Model):
     __tablename__ = 'measurements'
@@ -73,21 +74,22 @@ class User(UserMixin, db.Model):
             # Function to write CSV file
             def write_csv_file(filepath):
                 with open(filepath, 'w') as f:
-                    # Write header
-                    f.write("time,MQ136,MQ138,MQ137,MQ4,MQ9,MQ8,MQ3_10,MQ5,MQ2,MQ135,MQ6,MQ3_1\n")
-                    print(f"DEBUG: Successfully wrote header to file: {filepath}")
+                    # Write header with sensors in the order they appear in Arduino output
+                    header = ['time'] + SENSORS
+                    header_line = ','.join(header)
+                    f.write(header_line + '\n')
+                    print(f"DEBUG: Wrote header: {header_line}")
                     
                     # Write data
                     for entry in data_buffer:
                         print(f"DEBUG: Processing entry: {entry}")
-                        if isinstance(entry, dict) and 'time' in entry and all(sensor in entry for sensor in ['MQ136', 'MQ138', 'MQ137', 'MQ4', 'MQ9', 'MQ8', 'MQ3_10', 'MQ5', 'MQ2', 'MQ135', 'MQ6', 'MQ3_1']):
-                            line = [
-                                str(entry['time']),
-                                str(entry['MQ136']), str(entry['MQ138']), str(entry['MQ137']),
-                                str(entry['MQ4']), str(entry['MQ9']), str(entry['MQ8']),
-                                str(entry['MQ3_10']), str(entry['MQ5']), str(entry['MQ2']),
-                                str(entry['MQ135']), str(entry['MQ6']), str(entry['MQ3_1'])
-                            ]
+                        if isinstance(entry, dict) and 'time' in entry and all(sensor in entry for sensor in SENSORS):
+                            # Build line with values in same order as header
+                            values = [str(entry[sensor]) for sensor in SENSORS]
+                            print(f"DEBUG: SENSORS order: {SENSORS}")
+                            print(f"DEBUG: Values in order: {values}")
+                            print(f"DEBUG: Entry values: {[(sensor, entry[sensor]) for sensor in SENSORS]}")
+                            line = [str(entry['time'])] + values
                             f.write(','.join(line) + '\n')
                             print(f"DEBUG: Wrote line to file: {','.join(line)}")
                         else:
