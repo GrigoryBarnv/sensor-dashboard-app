@@ -223,9 +223,10 @@ def stop():
                 time.sleep(0.2)
             except Exception:
                 pass
-            ser.close()
-    except Exception as e:
-        return {"status": "error", "error": str(e)}
+            try:
+                ser.close()
+            except Exception as e:
+                return {"status": "error", "error": str(e)}
     finally:
         ser = None
     return {"status": "stopped"}
