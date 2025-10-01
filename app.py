@@ -15,12 +15,10 @@ app = Flask(__name__)
 
 # Configure Flask app
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-please-change')
-# Create absolute path for database
-db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'persistent_data', 'sensor_dashboard.db')
+# Configure database URI with relative path
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///persistent_data/sensor_dashboard.db'
 # Ensure the directory exists
-os.makedirs(os.path.dirname(db_path), exist_ok=True)
-# Configure database URI
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+os.makedirs('persistent_data', exist_ok=True)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize extensions
