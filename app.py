@@ -8,7 +8,7 @@ import os
 import arduino_read  # Import the Arduino reading module
 from arduino_connect import connect  # Import the Arduino connection module
 from models import db
-from models.user import User, Measurement
+from models.user import User, Measurement  # Import both User and Measurement models
 
 # create the Flask app and global variables
 app = Flask(__name__)
