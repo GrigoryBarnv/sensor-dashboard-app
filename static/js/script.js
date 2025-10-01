@@ -556,4 +556,4 @@ function resetGraph() {
     button.style.color = '';
     button.dataset.active = "false";
   });
-}
+}); // Close the DOMContentLoaded event listener
