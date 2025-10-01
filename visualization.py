@@ -14,11 +14,14 @@ def get_sensor_data(sensor_id, filename):
         app_dir = os.path.dirname(os.path.abspath(__file__))
         data_dir = os.path.join(app_dir, 'data')
         measurements_dir = os.path.join(app_dir, 'persistent_data', 'measurements')
+        print(f"DEBUG: Data directory: {data_dir}")
+        print(f"DEBUG: Measurements directory: {measurements_dir}")
         
         # Define all possible paths
         paths = [
             os.path.join(measurements_dir, filename),  # Try user measurements first
             os.path.join(data_dir, filename),  # Then try default data directory
+            os.path.join(app_dir, filename),  # Try app root
             filename  # Finally try direct path
         ]
         

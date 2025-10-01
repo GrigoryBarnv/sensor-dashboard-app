@@ -84,15 +84,21 @@ def get_available_files():
     # Combine files and check existence
     all_files = []
     
+    # Get absolute paths
+    app_dir = os.path.dirname(os.path.abspath(__file__))
+    data_dir = os.path.join(app_dir, 'data')
+    measurements_dir = os.path.join(app_dir, 'persistent_data', 'measurements')
+    print(f"DEBUG: Data directory: {data_dir}")
+    print(f"DEBUG: Measurements directory: {measurements_dir}")
+    
     # Check default files in data directory
     for file in default_files:
-        path = os.path.join('data', file)
+        path = os.path.join(data_dir, file)
         if os.path.exists(path):
             print(f"DEBUG: Found default file: {path}")
             all_files.append(file)
     
     # Check user files in measurements directory
-    measurements_dir = os.path.join('persistent_data', 'measurements')
     if os.path.exists(measurements_dir):
         for file in user_files:
             path = os.path.join(measurements_dir, file)
