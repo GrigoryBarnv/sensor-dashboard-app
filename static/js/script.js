@@ -220,24 +220,12 @@ function updateMyMeasurementsList() {
         return; // Not on the offline page
     }
 
-    console.log('DEBUG: Fetching measurements from /api/measurements');
-    fetch('/api/measurements')
+    console.log('DEBUG: Fetching measurements from /api/temp-measurements');
+    fetch('/api/temp-measurements')
         .then(response => {
             console.log('DEBUG: Response status:', response.status);
             if (!response.ok) {
-                if (response.status === 401) {
-                    console.log('DEBUG: User not authenticated');
-                    // Not logged in - hide the my measurements sections
-                    const myMeasurementsSelectionCard = document.querySelector('.card.mt-4');
-                    const myMeasurementsPlotCard = document.querySelectorAll('.card.mt-4')[1];
-                    if (myMeasurementsSelectionCard) {
-                        myMeasurementsSelectionCard.style.display = 'none';
-                    }
-                    if (myMeasurementsPlotCard) {
-                        myMeasurementsPlotCard.style.display = 'none';
-                    }
-                    return [];
-                }
+                console.log('DEBUG: Error response from server');
                 throw new Error('Network response was not ok');
             }
             return response.json();
@@ -256,7 +244,7 @@ function updateMyMeasurementsList() {
             measurements.forEach(m => {
                 const option = document.createElement('option');
                 option.value = m.filename;
-                option.textContent = `${m.product_name} ${m.product_number} (${m.date})`;
+                option.textContent = m.display_name;
                 console.log('DEBUG: Adding option:', option.textContent);
                 selector.appendChild(option);
             });

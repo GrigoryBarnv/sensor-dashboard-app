@@ -48,26 +48,31 @@ class User(UserMixin, db.Model):
 
     def add_measurement(self, data_buffer, product_name, product_number, date):
         """Save measurement data and create CSV file"""
-        # Save in both data and persistent_data/measurements directories
+        # Save in data, persistent_data/measurements, and temp directories
         app_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         data_dir = os.path.join(app_dir, 'data')
         measurements_dir = os.path.join(app_dir, 'persistent_data', 'measurements')
+        temp_dir = os.path.join(app_dir, 'temp_measurements')
         
         # Create directories if they don't exist
         os.makedirs(data_dir, exist_ok=True)
         os.makedirs(measurements_dir, exist_ok=True)
+        os.makedirs(temp_dir, exist_ok=True)
         
         print(f"DEBUG: Data directory: {data_dir}")
         print(f"DEBUG: Measurements directory: {measurements_dir}")
+        print(f"DEBUG: Temp directory: {temp_dir}")
         
         # Generate filename
         filename = f"{product_name}_{product_number}_{date}_Measure.CSV"
         data_filepath = os.path.join(data_dir, filename)
         measurements_filepath = os.path.join(measurements_dir, filename)
+        temp_filepath = os.path.join(temp_dir, filename)
         
         print(f"DEBUG: Creating measurement files at:")
         print(f"DEBUG: - {data_filepath}")
         print(f"DEBUG: - {measurements_filepath}")
+        print(f"DEBUG: - {temp_filepath}")
         print(f"DEBUG: Data buffer contains {len(data_buffer)} entries")
         
         try:
@@ -95,10 +100,11 @@ class User(UserMixin, db.Model):
                         else:
                             print(f"DEBUG: Skipping invalid entry: {entry}")
             
-            # Write to both locations
+            # Write to all three locations
             write_csv_file(data_filepath)
             write_csv_file(measurements_filepath)
-            print("DEBUG: Successfully wrote files to both locations")
+            write_csv_file(temp_filepath)
+            print("DEBUG: Successfully wrote files to all three locations")
             
         except Exception as e:
             print(f"DEBUG: Error writing files: {str(e)}")

@@ -324,6 +324,53 @@ def get_measurements():
     measurements = [m.to_dict() for m in current_user.measurements]
     return jsonify(measurements)
 
+@app.route('/api/temp-measurements')
+def get_temp_measurements():
+    """Get list of CSV files in temp_measurements directory"""
+    try:
+        temp_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp_measurements')
+        if not os.path.exists(temp_dir):
+            return jsonify([])
+        
+        csv_files = []
+        for filename in os.listdir(temp_dir):
+            if filename.endswith('.CSV') or filename.endswith('.csv'):
+                # Parse filename to extract measurement info
+                # Format: ProductName_ProductNumber_Date_Measure.CSV
+                parts = filename.replace('_Measure.CSV', '').split('_')
+                if len(parts) >= 3:
+                    product_name = parts[0]
+                    product_number = parts[1] 
+                    date = parts[2]
+                    csv_files.append({
+                        'filename': filename,
+                        'product_name': product_name,
+                        'product_number': product_number,
+                        'date': date,
+                        'display_name': f"{product_name} {product_number} ({date})"
+                    })
+        
+        return jsonify(csv_files)
+    except Exception as e:
+        print(f"Error getting temp measurements: {e}")
+        return jsonify([])
+
+@app.route('/api/clear-temp-measurements', methods=['POST'])
+def clear_temp_measurements():
+    """Clear all CSV files from temp_measurements directory"""
+    try:
+        temp_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp_measurements')
+        if os.path.exists(temp_dir):
+            for filename in os.listdir(temp_dir):
+                if filename.endswith('.CSV') or filename.endswith('.csv'):
+                    filepath = os.path.join(temp_dir, filename)
+                    os.remove(filepath)
+                    print(f"Cleared temp file: {filepath}")
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        print(f"Error clearing temp measurements: {e}")
+        return jsonify({'status': 'error', 'message': str(e)})
+
 @app.route('/api/measurements/<int:measurement_id>/delete', methods=['POST'])
 @login_required
 def delete_measurement(measurement_id):
