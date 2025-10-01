@@ -8,7 +8,7 @@ import os
 import arduino_read  # Import the Arduino reading module
 from arduino_connect import connect  # Import the Arduino connection module
 from models import db
-from models.user import User
+from models.user import User, Measurement
 
 # create the Flask app and global variables
 app = Flask(__name__)
@@ -250,6 +250,28 @@ def get_measurements():
     """Get list of user's measurements"""
     measurements = [m.to_dict() for m in current_user.measurements]
     return jsonify(measurements)
+
+@app.route('/api/measurements/<int:measurement_id>/delete', methods=['POST'])
+@login_required
+def delete_measurement(measurement_id):
+    """Delete measurement and its CSV file"""
+    measurement = Measurement.query.get_or_404(measurement_id)
+    if measurement.user_id != current_user.id:
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    # Delete CSV file
+    filepath = os.path.join('measurements', measurement.filename)
+    try:
+        if os.path.exists(filepath):
+            os.remove(filepath)
+    except Exception as e:
+        return jsonify({'error': f'Error deleting file: {str(e)}'}), 500
+    
+    # Delete from database
+    db.session.delete(measurement)
+    db.session.commit()
+    
+    return jsonify({'status': 'success'})
 
 @app.route('/api/measurements/<int:measurement_id>/download')
 @login_required
