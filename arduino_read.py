@@ -82,10 +82,11 @@ def _append_entry(entry: dict):
             del live_log[:-MAX_LOG_ENTRIES]
         
         # If this is a measurement entry (has time and sensor values), add to measurement buffer
-        if measurement_info['is_measuring'] and 'time' in entry and all(
+        if 'time' in entry and all(
             sensor in entry for sensor in ['MQ136', 'MQ138', 'MQ137', 'MQ4', 'MQ9', 'MQ8', 'MQ3_10', 'MQ5', 'MQ2', 'MQ135', 'MQ6', 'MQ3_1']
         ):
             measurement_buffer.append(entry)
+            print(f"DEBUG: Added entry to measurement buffer. Buffer size: {len(measurement_buffer)}")
 
 
 # read from the serial port and transform from bytes to strings
@@ -153,6 +154,7 @@ def start_measurement(inputs: dict):
         'date': inputs.get('monat', '') + inputs.get('tag', ''),
         'is_measuring': True
     })
+    print(f"DEBUG: Starting measurement with info: {measurement_info}")
 
     # Find and open serial port, wait 2 seconds for Arduino to reset
     try:
@@ -249,6 +251,8 @@ def clear_log():
 def get_measurement_data():
     """Get the current measurement buffer and info."""
     with _lock:
+        print(f"DEBUG: Getting measurement data. Buffer size: {len(measurement_buffer)}")
+        print(f"DEBUG: Measurement info: {measurement_info}")
         return {
             'buffer': measurement_buffer.copy(),
             'info': measurement_info.copy()
