@@ -102,7 +102,7 @@
 
 
 
-            <div class="main-content-wrapper">
+            <div class="main-content-wrapper" style="margin-left: 20px; flex-grow: 1; max-width: calc(100% - 320px);">
 
 
 
@@ -201,13 +201,45 @@
 
                         </div>
                     </div>
-                </div
-                
-                
-                
-                >
+                </div>
 
+                <!-- My Measurements Plot -->
+                <div class="card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 id="my-measurements-title">My Measurements</h4>
+                        <span id="my-measurements-sensor-badge" class="badge bg-primary d-none">Sensor</span>
+                    </div>
 
+                    <div class="mb-3 p-3">
+                        <label for="my-measurements-selector" class="form-label">Select My Measurement:</label>
+                        <select id="my-measurements-selector" class="form-select">
+                            <!-- Will be populated with user's measurements -->
+                        </select>
+                    </div>
+
+                    <div class="card-body visualization-container">
+                        <!-- Loading spinner -->
+                        <div id="my-measurements-loading-spinner" class="spinner-border loading-spinner d-none" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+
+                        <!-- Error display -->
+                        <div id="my-measurements-error" class="alert alert-danger error-message d-none" role="alert">
+                        </div>
+
+                        <!-- Plot container -->
+                        <div id="my-measurements-chart-container" class="chart-container">
+                            <div id="my-measurements-plot" style="width: 100%; height: 400px;"></div>
+                        </div>
+
+                        <!-- Initial message -->
+                        <div id="my-measurements-initial-message" class="text-center p-5">
+                            <p class="lead text-muted">
+                                Please select a measurement from the dropdown above and click on sensors to view their data
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
         <footer class="app-footer">
