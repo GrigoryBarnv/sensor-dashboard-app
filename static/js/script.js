@@ -213,12 +213,19 @@ function updateFileList() {
 // Function to update my measurements list
 function updateMyMeasurementsList() {
     console.log('DEBUG: updateMyMeasurementsList called');
-    const selector = document.getElementById('my-measurements-selector');
-    console.log('DEBUG: Selector found:', selector);
-    if (!selector) {
-        console.log('DEBUG: No selector found - not on offline page');
+    const loadingDiv = document.getElementById('my-measurements-loading');
+    const listDiv = document.getElementById('my-measurements-list');
+    const emptyDiv = document.getElementById('my-measurements-empty');
+    
+    if (!loadingDiv || !listDiv || !emptyDiv) {
+        console.log('DEBUG: Required elements not found - not on offline page');
         return; // Not on the offline page
     }
+
+    // Show loading state
+    loadingDiv.classList.remove('d-none');
+    listDiv.classList.add('d-none');
+    emptyDiv.classList.add('d-none');
 
     console.log('DEBUG: Fetching measurements from /api/temp-measurements');
     fetch('/api/temp-measurements')
@@ -232,61 +239,62 @@ function updateMyMeasurementsList() {
         })
         .then(measurements => {
             console.log('DEBUG: Received measurements:', measurements);
-            if (!measurements) return;
+            
+            // Hide loading
+            loadingDiv.classList.add('d-none');
+            
+            if (!measurements || measurements.length === 0) {
+                // Show empty message
+                emptyDiv.classList.remove('d-none');
+                listDiv.classList.add('d-none');
+                return;
+            }
 
-            const currentValue = selector.value;
+            // Clear current list
+            const listGroup = listDiv.querySelector('.list-group');
+            listGroup.innerHTML = '';
 
-            // Clear current options
-            selector.innerHTML = '';
-
-            // Add new options
-            console.log('DEBUG: Adding', measurements.length, 'measurements to dropdown');
-            measurements.forEach(m => {
-                const option = document.createElement('option');
-                option.value = m.filename;
-                option.textContent = m.display_name;
-                console.log('DEBUG: Adding option:', option.textContent);
-                selector.appendChild(option);
+            // Add measurements to list
+            console.log('DEBUG: Adding', measurements.length, 'measurements to list');
+            measurements.forEach((m, index) => {
+                const listItem = document.createElement('div');
+                listItem.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+                listItem.style.cursor = 'pointer';
+                
+                listItem.innerHTML = `
+                    <div>
+                        <h6 class="mb-1">${m.display_name}</h6>
+                        <small class="text-muted">${m.filename}</small>
+                    </div>
+                    <span class="badge bg-primary rounded-pill">Select</span>
+                `;
+                
+                // Add click handler
+                listItem.addEventListener('click', function() {
+                    console.log('DEBUG: Selected measurement:', m.filename);
+                    window.selectedMyMeasurement = m.filename;
+                    
+                    // Update visual selection
+                    document.querySelectorAll('.list-group-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+                
+                console.log('DEBUG: Adding list item:', m.display_name);
+                listGroup.appendChild(listItem);
             });
 
-            // Try to restore previous selection
-            if (measurements.some(m => m.filename === currentValue)) {
-                selector.value = currentValue;
-            } else if (measurements.length > 0) {
-                selector.value = measurements[0].filename;
-                selectedMyMeasurement = measurements[0].filename;
-            }
-
-            // Show/hide initial message and cards
-            const myMeasurementsSelectionCard = document.querySelector('.card.mt-4');
-            const myMeasurementsPlotCard = document.querySelectorAll('.card.mt-4')[1];
-            const initialMessage = document.getElementById('my-measurements-initial-message');
-
-            if (measurements.length === 0) {
-                if (initialMessage) {
-                    initialMessage.style.display = 'block';
-                    initialMessage.innerHTML = '<p class="text-muted">No measurements yet. Make some measurements in the Live page!</p>';
-                }
-                if (myMeasurementsSelectionCard) {
-                    myMeasurementsSelectionCard.style.display = 'none';
-                }
-                if (myMeasurementsPlotCard) {
-                    myMeasurementsPlotCard.style.display = 'none';
-                }
-            } else {
-                if (initialMessage) {
-                    initialMessage.style.display = 'none';
-                }
-                if (myMeasurementsSelectionCard) {
-                    myMeasurementsSelectionCard.style.display = 'block';
-                }
-                if (myMeasurementsPlotCard) {
-                    myMeasurementsPlotCard.style.display = 'block';
-                }
-            }
+            // Show the list
+            listDiv.classList.remove('d-none');
+            emptyDiv.classList.add('d-none');
         })
         .catch(error => {
             console.error('Error fetching measurements:', error);
+            // Hide loading and show error
+            loadingDiv.classList.add('d-none');
+            emptyDiv.classList.remove('d-none');
+            emptyDiv.innerHTML = '<p class="text-danger">Error loading measurements. Please try again.</p>';
         });
 }
 
@@ -378,21 +386,7 @@ document.addEventListener("DOMContentLoaded", () => {  // run the code inside wh
     updateSensorTooltips(savedLang);
   });
 
-  // Add event listener for My Measurements dropdown
-  const myMeasurementsSelector = document.getElementById('my-measurements-selector');
-  if (myMeasurementsSelector) {
-    myMeasurementsSelector.addEventListener('change', function() {
-      const selectedFile = this.value;
-      if (selectedFile) {
-        // Store the selected measurement for potential use
-        window.selectedMyMeasurement = selectedFile;
-        
-        // You can add logic here to display the selected measurement
-        // For example, load and display the measurement data
-        console.log('Selected my measurement:', selectedFile);
-      }
-    });
-  }
+  // Note: My Measurements list click handlers are added dynamically in updateMyMeasurementsList()
 });
 
 

@@ -187,20 +187,28 @@
                             <!-- My Measurements Selection -->
                             <div class="card mt-4">
                                 <div class="card-header">
-                                    <h4>Select My Measurement</h4>
+                                    <h4>My Measurements</h4>
                                 </div>
                                 <div class="card-body">
-                                    <div class="mb-3">
-                                        <label for="my-measurements-selector" class="form-label">Choose Measurement:</label>
-                                        <select id="my-measurements-selector" class="form-select">
-                                            <!-- Will be populated with user's measurements -->
-                                        </select>
+                                    <!-- Loading message -->
+                                    <div id="my-measurements-loading" class="text-center p-3">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading measurements...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading measurements...</p>
                                     </div>
                                     
-                                    <!-- Initial message -->
-                                    <div id="my-measurements-initial-message" class="text-center p-3">
+                                    <!-- Measurements list -->
+                                    <div id="my-measurements-list" class="d-none">
+                                        <div class="list-group">
+                                            <!-- Will be populated with user's measurements -->
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- No measurements message -->
+                                    <div id="my-measurements-empty" class="text-center p-3 d-none">
                                         <p class="text-muted">
-                                            Please select a measurement from the dropdown above
+                                            No measurements found. Make some measurements in the Live page!
                                         </p>
                                     </div>
                                 </div>
