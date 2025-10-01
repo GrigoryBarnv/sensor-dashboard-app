@@ -5,22 +5,35 @@ import matplotlib.pyplot as plt
 import os
 
 
-#  is function to extract sensor data from a CSV file
+# Function to extract sensor data from a CSV file
 def get_sensor_data(sensor_id, filename):
     try:
-        # Check both default and user measurement locations
-        default_path = filename
-        user_path = os.path.join('persistent_data', 'measurements', filename)
+        print(f"DEBUG: Looking for file: {filename}")
         
-        # Try user measurements first, then default files
-        if os.path.exists(user_path):
-            print(f"DEBUG: Reading user measurement: {user_path}")
-            df = pd.read_csv(user_path, sep=",")
-        elif os.path.exists(default_path):
-            print(f"DEBUG: Reading default file: {default_path}")
-            df = pd.read_csv(default_path, sep=",")
-        else:
-            print(f"DEBUG: File not found in either location: {filename}")
+        # Define all possible paths
+        paths = [
+            filename,  # Try direct path
+            os.path.join('data', filename),  # Try in data directory
+            os.path.join('persistent_data', 'measurements', filename),  # Try in user measurements
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', filename),  # Try absolute data path
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'persistent_data', 'measurements', filename)  # Try absolute measurements path
+        ]
+        
+        # Try each path
+        df = None
+        for path in paths:
+            print(f"DEBUG: Trying path: {path}")
+            if os.path.exists(path):
+                print(f"DEBUG: Found file at: {path}")
+                try:
+                    df = pd.read_csv(path, sep=",")
+                    break  # Found and loaded the file successfully
+                except Exception as e:
+                    print(f"DEBUG: Error reading file at {path}: {str(e)}")
+                    continue
+        
+        if df is None:
+            print("DEBUG: File not found in any location")
             return {"error": "File not found"}
         df.columns = df.columns.str.strip().str.lower()  # Normalize columns
 

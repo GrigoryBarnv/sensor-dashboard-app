@@ -64,8 +64,10 @@ def live():
 # Get list of all available CSV files (default + user measurements)
 @app.route("/api/available-files")
 def get_available_files():
+    print("DEBUG: Getting available files")
+    
     # Default test files
-    files = [
+    default_files = [
         "Avocado_Enrich2_Measure.CSV",
         "Banane_Enrich2_Measure.CSV",
         "Erdbeere_Enrich5_Measure.CSV",
@@ -73,13 +75,34 @@ def get_available_files():
     ]
     
     # Add user's measurements if logged in
+    user_files = []
     if current_user.is_authenticated:
+        print(f"DEBUG: User is authenticated, getting measurements")
         user_files = [m.filename for m in current_user.measurements]
-        files.extend(user_files)
+        print(f"DEBUG: User measurements: {user_files}")
+    
+    # Combine files and check existence
+    all_files = []
+    
+    # Check default files in data directory
+    for file in default_files:
+        path = os.path.join('data', file)
+        if os.path.exists(path):
+            print(f"DEBUG: Found default file: {path}")
+            all_files.append(file)
+    
+    # Check user files in measurements directory
+    measurements_dir = os.path.join('persistent_data', 'measurements')
+    if os.path.exists(measurements_dir):
+        for file in user_files:
+            path = os.path.join(measurements_dir, file)
+            if os.path.exists(path):
+                print(f"DEBUG: Found user file: {path}")
+                all_files.append(file)
     
     # Remove duplicates and sort
-    files = sorted(list(set(files)))
-    print(f"DEBUG: Available files: {files}")
+    files = sorted(list(set(all_files)))
+    print(f"DEBUG: Final available files: {files}")
     return jsonify(files)
 
 # API endpoint for frontend to retrieve full CSV sensor data for offline Plotting
