@@ -332,6 +332,18 @@
                     }
                 });
                 
+                // Scroll to the plot area smoothly
+                setTimeout(() => {
+                    const plotElement = document.getElementById('my-measurements-plot');
+                    if (plotElement) {
+                        plotElement.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'start',
+                            inline: 'nearest'
+                        });
+                    }
+                }, 500); // Small delay to ensure content is loaded
+                
                 // Clean URL (remove parameter)
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
