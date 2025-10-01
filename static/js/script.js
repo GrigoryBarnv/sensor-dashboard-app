@@ -210,12 +210,88 @@ function updateFileList() {
         });
 }
 
-// Make updateFileList available globally
+// Function to update my measurements list
+function updateMyMeasurementsList() {
+    const selector = document.getElementById('my-measurements-selector');
+    if (!selector) {
+        return; // Not on the offline page
+    }
+
+    fetch('/api/measurements')
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 401) {
+                    // Not logged in - hide the my measurements section
+                    const myMeasurementsCard = document.querySelector('.card.mt-4');
+                    if (myMeasurementsCard) {
+                        myMeasurementsCard.style.display = 'none';
+                    }
+                    return [];
+                }
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(measurements => {
+            if (!measurements) return;
+
+            const currentValue = selector.value;
+
+            // Clear current options
+            selector.innerHTML = '';
+
+            // Add new options
+            measurements.forEach(m => {
+                const option = document.createElement('option');
+                option.value = m.filename;
+                option.textContent = `${m.product_name} ${m.product_number} (${m.date})`;
+                selector.appendChild(option);
+            });
+
+            // Try to restore previous selection
+            if (measurements.some(m => m.filename === currentValue)) {
+                selector.value = currentValue;
+            } else if (measurements.length > 0) {
+                selector.value = measurements[0].filename;
+                selectedMyMeasurement = measurements[0].filename;
+            }
+
+            // Show/hide initial message and card
+            const myMeasurementsCard = document.querySelector('.card.mt-4');
+            const initialMessage = document.getElementById('my-measurements-initial-message');
+
+            if (measurements.length === 0) {
+                if (initialMessage) {
+                    initialMessage.style.display = 'block';
+                    initialMessage.innerHTML = '<p class="lead text-muted">No measurements yet. Make some measurements in the Live page!</p>';
+                }
+                if (myMeasurementsCard) {
+                    myMeasurementsCard.style.display = 'none';
+                }
+            } else {
+                if (initialMessage) {
+                    initialMessage.style.display = 'none';
+                }
+                if (myMeasurementsCard) {
+                    myMeasurementsCard.style.display = 'block';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching measurements:', error);
+        });
+}
+
+// Make functions available globally
 window.updateFileList = updateFileList;
+window.updateMyMeasurementsList = updateMyMeasurementsList;
 
 document.addEventListener("DOMContentLoaded", () => {  // run the code inside when the page is fully loaded 
     // Update file list on page load
     updateFileList();
+    
+    // Update my measurements list on page load
+    updateMyMeasurementsList();
   const buttons = document.querySelectorAll(".sensor-button"); // assign all html elements with the class "sensor-button" to the variable "buttons"
   const savedLang = localStorage.getItem("lang") || "de"; // get the language setting from local storage or set it to "de" by default
   setLanguage(savedLang);
@@ -291,6 +367,22 @@ document.addEventListener("DOMContentLoaded", () => {  // run the code inside wh
     setLanguage(savedLang);
     updateSensorTooltips(savedLang);
   });
+
+  // Add event listener for My Measurements dropdown
+  const myMeasurementsSelector = document.getElementById('my-measurements-selector');
+  if (myMeasurementsSelector) {
+    myMeasurementsSelector.addEventListener('change', function() {
+      const selectedFile = this.value;
+      if (selectedFile) {
+        // Store the selected measurement for potential use
+        window.selectedMyMeasurement = selectedFile;
+        
+        // You can add logic here to display the selected measurement
+        // For example, load and display the measurement data
+        console.log('Selected my measurement:', selectedFile);
+      }
+    });
+  }
 });
 
 
