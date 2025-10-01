@@ -288,8 +288,7 @@ def download_measurement(measurement_id):
     return send_file(
         filepath,
         mimetype='text/csv',
-        as_attachment=True,
-        download_name=measurement.filename
+        as_attachment=True
     )
 
 # Create database tables
