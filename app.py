@@ -443,6 +443,41 @@ def download_measurement(measurement_id):
         as_attachment=True
     )
 
+@app.route('/api/measurements/<int:measurement_id>/data')
+@login_required
+def get_measurement_data(measurement_id):
+    """Get measurement data for plotting"""
+    measurement = Measurement.query.get_or_404(measurement_id)
+    if measurement.user_id != current_user.id:
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    # Get the file path
+    measurements_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'persistent_data', 'measurements')
+    filepath = os.path.join(measurements_dir, measurement.filename)
+    
+    if not os.path.exists(filepath):
+        return jsonify({'error': 'File not found'}), 404
+    
+    try:
+        # Read CSV data using pandas
+        import pandas as pd
+        data = pd.read_csv(filepath)
+        
+        # Convert to the format expected by the frontend
+        result = {}
+        for column in data.columns:
+            if column != 'time':
+                result[column] = {
+                    'time': data['time'].tolist(),
+                    'values': data[column].tolist(),
+                    'sensor_id': column
+                }
+        
+        return jsonify(result)
+    except Exception as e:
+        print(f"Error reading measurement data: {e}")
+        return jsonify({'error': str(e)}), 500
+
 # Create database tables
 def init_db():
     with app.app_context():
