@@ -324,38 +324,99 @@
             }
         }
 
-        // Function to plot measurement data
-        function plotMeasurementData(data, sensorId) {
-            if (!data || !data[sensorId]) {
-                console.error('No data available for sensor:', sensorId);
+        // Store active sensors for My Measurements plot
+        window.activeMyMeasurementSensors = new Map();
+
+        // Function to plot measurement data with multiple sensors
+        function plotMeasurementData() {
+            if (!window.currentMeasurementData) {
+                console.error('No measurement data available');
                 return;
             }
             
-            const sensorData = data[sensorId];
             const plotDiv = document.getElementById('my-measurements-plot');
-            
             if (!plotDiv) {
                 console.error('Plot div not found');
                 return;
             }
             
-            const trace = {
-                x: sensorData.time,
-                y: sensorData.values,
-                type: 'scatter',
-                mode: 'lines+markers',
-                marker: { color: getSensorColor(sensorId) },
-                name: sensorId
-            };
+            const traces = [];
+            let title = 'My Measurement';
+            
+            // Create traces for all active sensors
+            for (const [sensorId, data] of window.activeMyMeasurementSensors.entries()) {
+                const trace = {
+                    x: data.time,
+                    y: data.values,
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    marker: { color: getSensorColor(sensorId) },
+                    name: sensorId
+                };
+                traces.push(trace);
+            }
+            
+            // Update title based on number of active sensors
+            if (window.activeMyMeasurementSensors.size === 0) {
+                title = 'My Measurement - Select sensors to view data';
+            } else if (window.activeMyMeasurementSensors.size === 1) {
+                const sensorId = Array.from(window.activeMyMeasurementSensors.keys())[0];
+                title = `My Measurement - ${sensorId}`;
+            } else {
+                title = `My Measurement - ${window.activeMyMeasurementSensors.size} sensors`;
+            }
             
             const layout = {
-                title: `My Measurement - ${sensorId}`,
+                title: title,
                 xaxis: { title: 'Time' },
                 yaxis: { title: 'Sensor Value (Ohm)' },
                 margin: { t: 40 }
             };
             
-            Plotly.newPlot('my-measurements-plot', [trace], layout);
+            Plotly.newPlot('my-measurements-plot', traces, layout);
+        }
+
+        // Function to toggle sensor in My Measurements plot
+        function toggleMyMeasurementSensor(sensorId) {
+            const button = document.querySelector(`.sensor-button-my[data-sensor-id="${sensorId}"]`);
+            
+            if (window.activeMyMeasurementSensors.has(sensorId)) {
+                // Remove sensor
+                window.activeMyMeasurementSensors.delete(sensorId);
+                button.classList.remove('active');
+                button.style.backgroundColor = '';
+                button.style.color = '';
+                button.dataset.active = "false";
+            } else {
+                // Add sensor
+                if (window.currentMeasurementData && window.currentMeasurementData[sensorId]) {
+                    window.activeMyMeasurementSensors.set(sensorId, window.currentMeasurementData[sensorId]);
+                    button.classList.add('active');
+                    button.style.backgroundColor = getSensorColor(sensorId);
+                    button.style.color = 'white';
+                    button.dataset.active = "true";
+                }
+            }
+            
+            // Redraw plot with all active sensors
+            plotMeasurementData();
+        }
+
+        // Function to clear all active sensors
+        function clearAllMyMeasurementSensors() {
+            // Clear the active sensors map
+            window.activeMyMeasurementSensors.clear();
+            
+            // Reset all button styles
+            document.querySelectorAll('.sensor-button-my').forEach(button => {
+                button.classList.remove('active');
+                button.style.backgroundColor = '';
+                button.style.color = '';
+                button.dataset.active = "false";
+            });
+            
+            // Redraw plot (will be empty)
+            plotMeasurementData();
         }
 
         // Function to get sensor color

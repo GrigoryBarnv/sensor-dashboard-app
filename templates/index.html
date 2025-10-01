@@ -249,8 +249,11 @@
                         
                         <!-- My Measurements Sensor Selection -->
                         <div class="card mt-4 d-none" id="my-measurements-sensor-card">
-                            <div class="card-header">
-                                <h4>Select Sensor to View Data</h4>
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h4>Select Sensors to View Data</h4>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="clearAllMyMeasurementSensors()">
+                                    <i class="fas fa-times"></i> Clear All
+                                </button>
                             </div>
                             <div class="card-body">
                                 <div class="sensor-buttons">
@@ -354,20 +357,8 @@
                     const sensorId = this.getAttribute('data-sensor-id');
                     
                     if (window.currentMeasurementData) {
-                        // Reset all button styles
-                        document.querySelectorAll('.sensor-button-my').forEach(btn => {
-                            btn.classList.remove('active');
-                            btn.style.backgroundColor = '';
-                            btn.style.color = '';
-                        });
-                        
-                        // Highlight clicked button
-                        this.classList.add('active');
-                        this.style.backgroundColor = getSensorColor(sensorId);
-                        this.style.color = 'white';
-                        
-                        // Plot the data
-                        plotMeasurementData(window.currentMeasurementData, sensorId);
+                        // Toggle the sensor (add/remove from plot)
+                        toggleMyMeasurementSensor(sensorId);
                     }
                 });
             });
