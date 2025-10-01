@@ -325,8 +325,8 @@ def delete_measurement(measurement_id):
     if measurement.user_id != current_user.id:
         return jsonify({'error': 'Unauthorized'}), 403
     
-    # Delete CSV file
-    filepath = os.path.join('measurements', measurement.filename)
+    # Delete CSV file from persistent storage
+    filepath = os.path.join('persistent_data', 'measurements', measurement.filename)
     try:
         if os.path.exists(filepath):
             os.remove(filepath)

@@ -10,13 +10,16 @@ def get_sensor_data(sensor_id, filename):
     try:
         print(f"DEBUG: Looking for file: {filename}")
         
+        # Get absolute paths
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        data_dir = os.path.join(app_dir, 'data')
+        measurements_dir = os.path.join(app_dir, 'persistent_data', 'measurements')
+        
         # Define all possible paths
         paths = [
-            filename,  # Try direct path
-            os.path.join('data', filename),  # Try in data directory
-            os.path.join('persistent_data', 'measurements', filename),  # Try in user measurements
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', filename),  # Try absolute data path
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'persistent_data', 'measurements', filename)  # Try absolute measurements path
+            os.path.join(measurements_dir, filename),  # Try user measurements first
+            os.path.join(data_dir, filename),  # Then try default data directory
+            filename  # Finally try direct path
         ]
         
         # Try each path
@@ -27,10 +30,13 @@ def get_sensor_data(sensor_id, filename):
                 print(f"DEBUG: Found file at: {path}")
                 try:
                     df = pd.read_csv(path, sep=",")
+                    print(f"DEBUG: Successfully loaded file from: {path}")
                     break  # Found and loaded the file successfully
                 except Exception as e:
                     print(f"DEBUG: Error reading file at {path}: {str(e)}")
                     continue
+            else:
+                print(f"DEBUG: File does not exist at: {path}")
         
         if df is None:
             print("DEBUG: File not found in any location")
