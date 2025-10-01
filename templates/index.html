@@ -242,50 +242,54 @@
                                 Select a measurement above and click on sensors to view their data
                             </p>
                         </div>
-                        
-                        <!-- Sensor buttons for My Measurements -->
-                        <div id="my-measurements-sensor-buttons" class="d-none">
-                            <h6 class="mt-3 mb-2">Click sensors to view data:</h6>
-                            <div class="sensor-buttons">
-                                <button class="btn btn-outline-primary sensor-button-my m-1 px-2 py-1" style="width: 30%;" data-sensor-id="MQ2">
-                                    MQ2
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button-my m-1 px-2 py-1" style="width: 30%;" data-sensor-id="MQ3_1">
-                                    MQ3_1
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button-my m-1 px-2 py-1" style="width: 30%;" data-sensor-id="MQ3_10">
-                                    MQ3_10
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button-my m-1 px-2 py-1" style="width: 30%;" data-sensor-id="MQ4">
-                                    MQ4
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button-my m-1 px-2 py-1" style="width: 30%;" data-sensor-id="MQ5">
-                                    MQ5
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button-my m-1 px-2 py-1" style="width: 30%;" data-sensor-id="MQ6">
-                                    MQ6
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button-my m-1 px-2 py-1" style="width: 30%;" data-sensor-id="MQ8">
-                                    MQ8
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button-my m-1 px-2 py-1" style="width: 30%;" data-sensor-id="MQ9">
-                                    MQ9
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button-my m-1 px-2 py-1" style="width: 30%;" data-sensor-id="MQ135">
-                                    MQ135
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button-my m-1 px-2 py-1" style="width: 30%;" data-sensor-id="MQ136">
-                                    MQ136
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button-my m-1 px-2 py-1" style="width: 30%;" data-sensor-id="MQ137">
-                                    MQ137
-                                </button>
-                                <button class="btn btn-outline-primary sensor-button-my m-1 px-2 py-1" style="width: 30%;" data-sensor-id="MQ138">
-                                    MQ138
-                                </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                                    </div>
+                        
+                        <!-- My Measurements Sensor Selection -->
+                        <div class="card mt-4 d-none" id="my-measurements-sensor-card">
+                            <div class="card-header">
+                                <h4>Select Sensor to View Data</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="sensor-buttons">
+                                    <button class="btn btn-outline-primary sensor-button-my m-1 px-3 py-2" style="width: 22%;" data-sensor-id="MQ2">
+                                        MQ2
+                                    </button>
+                                    <button class="btn btn-outline-primary sensor-button-my m-1 px-3 py-2" style="width: 22%;" data-sensor-id="MQ3_1">
+                                        MQ3_1
+                                    </button>
+                                    <button class="btn btn-outline-primary sensor-button-my m-1 px-3 py-2" style="width: 22%;" data-sensor-id="MQ3_10">
+                                        MQ3_10
+                                    </button>
+                                    <button class="btn btn-outline-primary sensor-button-my m-1 px-3 py-2" style="width: 22%;" data-sensor-id="MQ4">
+                                        MQ4
+                                    </button>
+                                    <button class="btn btn-outline-primary sensor-button-my m-1 px-3 py-2" style="width: 22%;" data-sensor-id="MQ5">
+                                        MQ5
+                                    </button>
+                                    <button class="btn btn-outline-primary sensor-button-my m-1 px-3 py-2" style="width: 22%;" data-sensor-id="MQ6">
+                                        MQ6
+                                    </button>
+                                    <button class="btn btn-outline-primary sensor-button-my m-1 px-3 py-2" style="width: 22%;" data-sensor-id="MQ8">
+                                        MQ8
+                                    </button>
+                                    <button class="btn btn-outline-primary sensor-button-my m-1 px-3 py-2" style="width: 22%;" data-sensor-id="MQ9">
+                                        MQ9
+                                    </button>
+                                    <button class="btn btn-outline-primary sensor-button-my m-1 px-3 py-2" style="width: 22%;" data-sensor-id="MQ135">
+                                        MQ135
+                                    </button>
+                                    <button class="btn btn-outline-primary sensor-button-my m-1 px-3 py-2" style="width: 22%;" data-sensor-id="MQ136">
+                                        MQ136
+                                    </button>
+                                    <button class="btn btn-outline-primary sensor-button-my m-1 px-3 py-2" style="width: 22%;" data-sensor-id="MQ137">
+                                        MQ137
+                                    </button>
+                                    <button class="btn btn-outline-primary sensor-button-my m-1 px-3 py-2" style="width: 22%;" data-sensor-id="MQ138">
+                                        MQ138
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -318,7 +322,7 @@
             if (measurementId) {
                 // Show the My Measurements plot section
                 document.getElementById('my-measurements-plot-initial-message').style.display = 'none';
-                document.getElementById('my-measurements-sensor-buttons').classList.remove('d-none');
+                document.getElementById('my-measurements-sensor-card').classList.remove('d-none');
                 
                 // Load measurement data
                 loadMeasurementData(measurementId).then(data => {
