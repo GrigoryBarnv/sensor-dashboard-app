@@ -47,73 +47,114 @@ class User(UserMixin, db.Model):
 
     def add_measurement(self, data_buffer, product_name, product_number, date):
         """Save measurement data and create CSV file"""
-        # Create persistent measurements directory
-        measurements_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'persistent_data', 'measurements')
+        # Save in both data and persistent_data/measurements directories
+        app_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        data_dir = os.path.join(app_dir, 'data')
+        measurements_dir = os.path.join(app_dir, 'persistent_data', 'measurements')
+        
+        # Create directories if they don't exist
+        os.makedirs(data_dir, exist_ok=True)
         os.makedirs(measurements_dir, exist_ok=True)
-        print(f"Saving measurement to: {measurements_dir}")  # Debug print
+        
+        print(f"DEBUG: Data directory: {data_dir}")
+        print(f"DEBUG: Measurements directory: {measurements_dir}")
         
         # Generate filename
         filename = f"{product_name}_{product_number}_{date}_Measure.CSV"
-        filepath = os.path.join(measurements_dir, filename)
+        data_filepath = os.path.join(data_dir, filename)
+        measurements_filepath = os.path.join(measurements_dir, filename)
         
-        print(f"DEBUG: Creating measurement file at: {filepath}")
+        print(f"DEBUG: Creating measurement files at:")
+        print(f"DEBUG: - {data_filepath}")
+        print(f"DEBUG: - {measurements_filepath}")
         print(f"DEBUG: Data buffer contains {len(data_buffer)} entries")
         
         try:
-            # Save as CSV
-            with open(filepath, 'w') as f:
-                # Write header
-                f.write("time,MQ136,MQ138,MQ137,MQ4,MQ9,MQ8,MQ3_10,MQ5,MQ2,MQ135,MQ6,MQ3_1\n")
-                print(f"DEBUG: Successfully wrote header to file")
-                
-                # Write data
-                for entry in data_buffer:
-                    print(f"DEBUG: Processing entry: {entry}")
-                    if isinstance(entry, dict) and 'time' in entry and all(sensor in entry for sensor in ['MQ136', 'MQ138', 'MQ137', 'MQ4', 'MQ9', 'MQ8', 'MQ3_10', 'MQ5', 'MQ2', 'MQ135', 'MQ6', 'MQ3_1']):
-                        line = [
-                            str(entry['time']),
-                            str(entry['MQ136']), str(entry['MQ138']), str(entry['MQ137']),
-                            str(entry['MQ4']), str(entry['MQ9']), str(entry['MQ8']),
-                            str(entry['MQ3_10']), str(entry['MQ5']), str(entry['MQ2']),
-                            str(entry['MQ135']), str(entry['MQ6']), str(entry['MQ3_1'])
-                        ]
-                        f.write(','.join(line) + '\n')
-                        print(f"DEBUG: Wrote line to file: {','.join(line)}")
-                    else:
-                        print(f"DEBUG: Skipping invalid entry: {entry}")
+            # Function to write CSV file
+            def write_csv_file(filepath):
+                with open(filepath, 'w') as f:
+                    # Write header
+                    f.write("time,MQ136,MQ138,MQ137,MQ4,MQ9,MQ8,MQ3_10,MQ5,MQ2,MQ135,MQ6,MQ3_1\n")
+                    print(f"DEBUG: Successfully wrote header to file: {filepath}")
+                    
+                    # Write data
+                    for entry in data_buffer:
+                        print(f"DEBUG: Processing entry: {entry}")
+                        if isinstance(entry, dict) and 'time' in entry and all(sensor in entry for sensor in ['MQ136', 'MQ138', 'MQ137', 'MQ4', 'MQ9', 'MQ8', 'MQ3_10', 'MQ5', 'MQ2', 'MQ135', 'MQ6', 'MQ3_1']):
+                            line = [
+                                str(entry['time']),
+                                str(entry['MQ136']), str(entry['MQ138']), str(entry['MQ137']),
+                                str(entry['MQ4']), str(entry['MQ9']), str(entry['MQ8']),
+                                str(entry['MQ3_10']), str(entry['MQ5']), str(entry['MQ2']),
+                                str(entry['MQ135']), str(entry['MQ6']), str(entry['MQ3_1'])
+                            ]
+                            f.write(','.join(line) + '\n')
+                            print(f"DEBUG: Wrote line to file: {','.join(line)}")
+                        else:
+                            print(f"DEBUG: Skipping invalid entry: {entry}")
+            
+            # Write to both locations
+            write_csv_file(data_filepath)
+            write_csv_file(measurements_filepath)
+            print("DEBUG: Successfully wrote files to both locations")
+            
         except Exception as e:
-            print(f"DEBUG: Error writing file: {str(e)}")
+            print(f"DEBUG: Error writing files: {str(e)}")
+            raise  # Re-raise to handle in the caller
         
-        # Create measurement record
-        measurement = Measurement(
-            user_id=self.id,
-            filename=filename,
-            product_name=product_name,
-            product_number=product_number,
-            date=date,
-            data=json.dumps(data_buffer)
-        )
-        db.session.add(measurement)
-        db.session.commit()
-        return measurement
+        try:
+            # Create measurement record
+            measurement = Measurement(
+                user_id=self.id,
+                filename=filename,
+                product_name=product_name,
+                product_number=product_number,
+                date=date,
+                data=json.dumps(data_buffer)
+            )
+            db.session.add(measurement)
+            db.session.commit()
+            print("DEBUG: Successfully created measurement record in database")
+            return measurement
+            
+        except Exception as e:
+            print(f"DEBUG: Error creating measurement record: {str(e)}")
+            raise  # Re-raise to handle in the caller
 
     def delete_measurement(self, measurement_id):
         """Delete measurement and its CSV file"""
         measurement = Measurement.query.get(measurement_id)
         if measurement and measurement.user_id == self.id:
-            # Delete CSV file from persistent storage
-            measurements_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'persistent_data', 'measurements')
-            filepath = os.path.join(measurements_dir, measurement.filename)
+            # Get paths
+            app_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            data_filepath = os.path.join(app_dir, 'data', measurement.filename)
+            measurements_filepath = os.path.join(app_dir, 'persistent_data', 'measurements', measurement.filename)
+            
+            print(f"DEBUG: Deleting measurement files:")
+            print(f"DEBUG: - {data_filepath}")
+            print(f"DEBUG: - {measurements_filepath}")
+            
+            # Delete CSV files
             try:
-                if os.path.exists(filepath):
-                    os.remove(filepath)
+                if os.path.exists(data_filepath):
+                    os.remove(data_filepath)
+                    print(f"DEBUG: Deleted file: {data_filepath}")
+                if os.path.exists(measurements_filepath):
+                    os.remove(measurements_filepath)
+                    print(f"DEBUG: Deleted file: {measurements_filepath}")
             except Exception as e:
-                print(f"Error deleting file: {e}")
+                print(f"DEBUG: Error deleting files: {e}")
+                raise  # Re-raise to handle in the caller
             
             # Delete from database
-            db.session.delete(measurement)
-            db.session.commit()
-            return True
+            try:
+                db.session.delete(measurement)
+                db.session.commit()
+                print("DEBUG: Successfully deleted measurement record from database")
+                return True
+            except Exception as e:
+                print(f"DEBUG: Error deleting measurement record: {e}")
+                raise  # Re-raise to handle in the caller
         return False
 
     @staticmethod
