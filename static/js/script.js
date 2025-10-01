@@ -180,7 +180,42 @@ function setLanguage(lang) {
 // The content is executed after the Page is fully loaded
 
 //Prepare the buttons and language settings
+// Function to update the file list
+function updateFileList() {
+    fetch('/api/available-files')
+        .then(response => response.json())
+        .then(files => {
+            const selector = document.getElementById("csv-selector");
+            const currentValue = selector.value;
+            
+            // Clear current options
+            selector.innerHTML = '';
+            
+            // Add new options
+            files.forEach(file => {
+                const option = document.createElement('option');
+                option.value = file;
+                // Show friendly name without _Measure.CSV
+                option.textContent = file.replace('_Measure.CSV', '').replace(/_/g, ' ');
+                selector.appendChild(option);
+            });
+            
+            // Try to restore previous selection
+            if (files.includes(currentValue)) {
+                selector.value = currentValue;
+            } else {
+                selectedFile = files[0];
+                selector.value = files[0];
+            }
+        });
+}
+
+// Make updateFileList available globally
+window.updateFileList = updateFileList;
+
 document.addEventListener("DOMContentLoaded", () => {  // run the code inside when the page is fully loaded 
+    // Update file list on page load
+    updateFileList();
   const buttons = document.querySelectorAll(".sensor-button"); // assign all html elements with the class "sensor-button" to the variable "buttons"
   const savedLang = localStorage.getItem("lang") || "de"; // get the language setting from local storage or set it to "de" by default
   setLanguage(savedLang);

@@ -61,6 +61,27 @@ def live():
     return render_template("live.html")
 
 
+# Get list of all available CSV files (default + user measurements)
+@app.route("/api/available-files")
+def get_available_files():
+    # Default test files
+    files = [
+        "Avocado_Enrich2_Measure.CSV",
+        "Banane_Enrich2_Measure.CSV",
+        "Erdbeere_Enrich5_Measure.CSV",
+        "Tomate_Enrich2_Measure.CSV"
+    ]
+    
+    # Add user's measurements if logged in
+    if current_user.is_authenticated:
+        user_files = [m.filename for m in current_user.measurements]
+        files.extend(user_files)
+    
+    # Remove duplicates and sort
+    files = sorted(list(set(files)))
+    print(f"DEBUG: Available files: {files}")
+    return jsonify(files)
+
 # API endpoint for frontend to retrieve full CSV sensor data for offline Plotting
 @app.route("/api/sensor/<sensor_id>")
 def api_sensor(sensor_id):
