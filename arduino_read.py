@@ -93,6 +93,7 @@ def _append_entry(entry: dict):
         if isinstance(entry, dict) and 'raw' in entry and 'Measurement ended.' in entry['raw']:
             print("DEBUG: Found measurement end marker")
             measurement_info['is_measuring'] = False
+            # Don't clear buffer here - let app.py handle it after saving
 
 
 # read from the serial port and transform from bytes to strings
@@ -150,8 +151,9 @@ def start_measurement(inputs: dict):
     stop()  # stop anything running before
     
     # Clear all buffers and logs
-    measurement_buffer = []
-    live_log = []
+    with _lock:
+        measurement_buffer.clear()
+        live_log.clear()
     _reset_timer()  # restart synthetic timer
     _stop_flag.clear()  # make sure the stop flag is off so reader will run
     
@@ -271,10 +273,11 @@ def clear_measurement_data():
     """Clear the measurement buffer and reset info."""
     global measurement_buffer, measurement_info
     with _lock:
-        measurement_buffer = []
+        measurement_buffer.clear()
         measurement_info.update({
             'product_name': None,
             'product_number': None,
             'date': None,
             'is_measuring': False
         })
+        print("DEBUG: Cleared measurement buffer and reset info")
