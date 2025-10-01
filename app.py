@@ -15,9 +15,14 @@ app = Flask(__name__)
 
 # Configure Flask app
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-please-change')
-# Create database directory
-db_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'persistent_data')
+# Create persistent directories for database and measurements
+persistent_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'persistent_data')
+db_dir = os.path.join(persistent_dir, 'db')
+measurements_dir = os.path.join(persistent_dir, 'measurements')
+
+# Create directories if they don't exist
 os.makedirs(db_dir, exist_ok=True)
+os.makedirs(measurements_dir, exist_ok=True)
 
 # Configure database URI with absolute path
 db_path = os.path.join(db_dir, 'sensor_dashboard.db')
@@ -281,7 +286,7 @@ def download_measurement(measurement_id):
     if measurement.user_id != current_user.id:
         return jsonify({'error': 'Unauthorized'}), 403
     
-    filepath = os.path.join('measurements', measurement.filename)
+    filepath = os.path.join(measurements_dir, measurement.filename)
     if not os.path.exists(filepath):
         return jsonify({'error': 'File not found'}), 404
     

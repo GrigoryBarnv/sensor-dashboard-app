@@ -1,5 +1,16 @@
-sensor_try.ipynb
-
-
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+.env
+.venv/
+venv/
+
+# Database and data files
+persistent_data/
+*.db
+*.sqlite3
+
+# System files
+.DS_Store
+Thumbs.db
