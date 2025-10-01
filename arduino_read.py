@@ -74,6 +74,7 @@ def _next_time_str():
 # add a line to the live log
 def _append_entry(entry: dict):
     """Store an entry and keep the buffer bounded."""
+    global measurement_info
     with _lock:  # lock to prevent concurrent access (e.g. from same reader thread)
         live_log.append(entry)
         if (
@@ -82,11 +83,16 @@ def _append_entry(entry: dict):
             del live_log[:-MAX_LOG_ENTRIES]
         
         # If this is a measurement entry (has time and sensor values), add to measurement buffer
-        if 'time' in entry and all(
+        if measurement_info['is_measuring'] and 'time' in entry and all(
             sensor in entry for sensor in ['MQ136', 'MQ138', 'MQ137', 'MQ4', 'MQ9', 'MQ8', 'MQ3_10', 'MQ5', 'MQ2', 'MQ135', 'MQ6', 'MQ3_1']
         ):
             measurement_buffer.append(entry)
             print(f"DEBUG: Added entry to measurement buffer. Buffer size: {len(measurement_buffer)}")
+        
+        # Check for measurement end AFTER adding the last data point
+        if isinstance(entry, dict) and 'raw' in entry and 'Measurement ended.' in entry['raw']:
+            print("DEBUG: Found measurement end marker")
+            measurement_info['is_measuring'] = False
 
 
 # read from the serial port and transform from bytes to strings
@@ -140,21 +146,24 @@ def _reader():
 # backend function to start the Arduino measurement
 def start_measurement(inputs: dict):
     """Start Arduino measurement with prompts and reset timer."""
-    global ser, _reader_thread, measurement_info, measurement_buffer
+    global ser, _reader_thread, measurement_info, measurement_buffer, live_log
     stop()  # stop anything running before
-    clear_log()  # <<< clear the log
-    _reset_timer()  # <<< restart synthetic timer
+    
+    # Clear all buffers and logs
+    measurement_buffer = []
+    live_log = []
+    _reset_timer()  # restart synthetic timer
     _stop_flag.clear()  # make sure the stop flag is off so reader will run
     
-    # Reset measurement buffer and info
-    measurement_buffer = []
+    # Reset measurement info
     measurement_info.update({
         'product_name': inputs.get('produktname', ''),
         'product_number': inputs.get('produktnummer', ''),
         'date': inputs.get('monat', '') + inputs.get('tag', ''),
         'is_measuring': True
     })
-    print(f"DEBUG: Starting measurement with info: {measurement_info}")
+    print(f"DEBUG: Starting new measurement with info: {measurement_info}")
+    print("DEBUG: All buffers and logs cleared")
 
     # Find and open serial port, wait 2 seconds for Arduino to reset
     try:

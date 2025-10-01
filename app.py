@@ -241,15 +241,16 @@ def get_latest_live_data():
                         )
                         print("DEBUG: Successfully saved measurement")
                         
-                        # Clear measurement data
+                        # Clear measurement data and logs
                         arduino_read.clear_measurement_data()
-                        print("DEBUG: Cleared measurement data")
+                        arduino_read.clear_log()
+                        print("DEBUG: Cleared measurement data and logs")
                         
-                        # Add completion message
-                        log_data.append({
+                        # Return success message only
+                        return jsonify([{
                             'raw': '✅ Measurement completed and saved to your account.',
                             'type': 'success'
-                        })
+                        }])
                     except Exception as e:
                         print(f"DEBUG: Error saving measurement: {str(e)}")
                         log_data.append({
