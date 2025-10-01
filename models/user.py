@@ -47,12 +47,14 @@ class User(UserMixin, db.Model):
 
     def add_measurement(self, data_buffer, product_name, product_number, date):
         """Save measurement data and create CSV file"""
-        # Create measurements directory if it doesn't exist
-        os.makedirs('measurements', exist_ok=True)
+        # Create persistent measurements directory
+        measurements_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'persistent_data', 'measurements')
+        os.makedirs(measurements_dir, exist_ok=True)
+        print(f"Saving measurement to: {measurements_dir}")  # Debug print
         
         # Generate filename
         filename = f"{product_name}_{product_number}_{date}_Measure.CSV"
-        filepath = os.path.join('measurements', filename)
+        filepath = os.path.join(measurements_dir, filename)
         
         # Save as CSV
         with open(filepath, 'w') as f:
@@ -83,6 +85,25 @@ class User(UserMixin, db.Model):
         db.session.add(measurement)
         db.session.commit()
         return measurement
+
+    def delete_measurement(self, measurement_id):
+        """Delete measurement and its CSV file"""
+        measurement = Measurement.query.get(measurement_id)
+        if measurement and measurement.user_id == self.id:
+            # Delete CSV file from persistent storage
+            measurements_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'persistent_data', 'measurements')
+            filepath = os.path.join(measurements_dir, measurement.filename)
+            try:
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+            except Exception as e:
+                print(f"Error deleting file: {e}")
+            
+            # Delete from database
+            db.session.delete(measurement)
+            db.session.commit()
+            return True
+        return False
 
     @staticmethod
     def get_by_matrikelnummer(matrikelnummer):
