@@ -296,10 +296,12 @@ window.updateFileList = updateFileList;
 window.updateMyMeasurementsList = updateMyMeasurementsList;
 
 document.addEventListener("DOMContentLoaded", () => {  // run the code inside when the page is fully loaded 
+    console.log('DEBUG: DOMContentLoaded event fired');
     // Update file list on page load
     updateFileList();
     
     // Update my measurements list on page load
+    console.log('DEBUG: About to call updateMyMeasurementsList');
     updateMyMeasurementsList();
   const buttons = document.querySelectorAll(".sensor-button"); // assign all html elements with the class "sensor-button" to the variable "buttons"
   const savedLang = localStorage.getItem("lang") || "de"; // get the language setting from local storage or set it to "de" by default

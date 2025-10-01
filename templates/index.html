@@ -191,14 +191,15 @@
                                     <span id="my-measurements-sensor-badge" class="badge bg-primary d-none">Sensor</span>
                                 </div>
 
-                                <div class="mb-3 p-3">
-                                    <label for="my-measurements-selector" class="form-label">Select My Measurement:</label>
-                                    <select id="my-measurements-selector" class="form-select">
-                                        <!-- Will be populated with user's measurements -->
-                                    </select>
-                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="my-measurements-selector" class="form-label">Select My Measurement:</label>
+                                        <select id="my-measurements-selector" class="form-select" style="position: relative; z-index: 1000;">
+                                            <!-- Will be populated with user's measurements -->
+                                        </select>
+                                    </div>
 
-                                <div class="card-body visualization-container">
+                                    <div class="visualization-container">
                                     <!-- Loading spinner -->
                                     <div id="my-measurements-loading-spinner" class="spinner-border loading-spinner d-none" role="status">
                                         <span class="visually-hidden">Loading...</span>
