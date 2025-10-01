@@ -212,15 +212,21 @@ function updateFileList() {
 
 // Function to update my measurements list
 function updateMyMeasurementsList() {
+    console.log('DEBUG: updateMyMeasurementsList called');
     const selector = document.getElementById('my-measurements-selector');
+    console.log('DEBUG: Selector found:', selector);
     if (!selector) {
+        console.log('DEBUG: No selector found - not on offline page');
         return; // Not on the offline page
     }
 
+    console.log('DEBUG: Fetching measurements from /api/measurements');
     fetch('/api/measurements')
         .then(response => {
+            console.log('DEBUG: Response status:', response.status);
             if (!response.ok) {
                 if (response.status === 401) {
+                    console.log('DEBUG: User not authenticated');
                     // Not logged in - hide the my measurements section
                     const myMeasurementsCard = document.querySelector('.card.mt-4');
                     if (myMeasurementsCard) {
@@ -233,6 +239,7 @@ function updateMyMeasurementsList() {
             return response.json();
         })
         .then(measurements => {
+            console.log('DEBUG: Received measurements:', measurements);
             if (!measurements) return;
 
             const currentValue = selector.value;
@@ -241,10 +248,12 @@ function updateMyMeasurementsList() {
             selector.innerHTML = '';
 
             // Add new options
+            console.log('DEBUG: Adding', measurements.length, 'measurements to dropdown');
             measurements.forEach(m => {
                 const option = document.createElement('option');
                 option.value = m.filename;
                 option.textContent = `${m.product_name} ${m.product_number} (${m.date})`;
+                console.log('DEBUG: Adding option:', option.textContent);
                 selector.appendChild(option);
             });
 
