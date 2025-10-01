@@ -227,10 +227,14 @@ function updateMyMeasurementsList() {
             if (!response.ok) {
                 if (response.status === 401) {
                     console.log('DEBUG: User not authenticated');
-                    // Not logged in - hide the my measurements section
-                    const myMeasurementsCard = document.querySelector('.card.mt-4');
-                    if (myMeasurementsCard) {
-                        myMeasurementsCard.style.display = 'none';
+                    // Not logged in - hide the my measurements sections
+                    const myMeasurementsSelectionCard = document.querySelector('.card.mt-4');
+                    const myMeasurementsPlotCard = document.querySelectorAll('.card.mt-4')[1];
+                    if (myMeasurementsSelectionCard) {
+                        myMeasurementsSelectionCard.style.display = 'none';
+                    }
+                    if (myMeasurementsPlotCard) {
+                        myMeasurementsPlotCard.style.display = 'none';
                     }
                     return [];
                 }
@@ -265,24 +269,31 @@ function updateMyMeasurementsList() {
                 selectedMyMeasurement = measurements[0].filename;
             }
 
-            // Show/hide initial message and card
-            const myMeasurementsCard = document.querySelector('.card.mt-4');
+            // Show/hide initial message and cards
+            const myMeasurementsSelectionCard = document.querySelector('.card.mt-4');
+            const myMeasurementsPlotCard = document.querySelectorAll('.card.mt-4')[1];
             const initialMessage = document.getElementById('my-measurements-initial-message');
 
             if (measurements.length === 0) {
                 if (initialMessage) {
                     initialMessage.style.display = 'block';
-                    initialMessage.innerHTML = '<p class="lead text-muted">No measurements yet. Make some measurements in the Live page!</p>';
+                    initialMessage.innerHTML = '<p class="text-muted">No measurements yet. Make some measurements in the Live page!</p>';
                 }
-                if (myMeasurementsCard) {
-                    myMeasurementsCard.style.display = 'none';
+                if (myMeasurementsSelectionCard) {
+                    myMeasurementsSelectionCard.style.display = 'none';
+                }
+                if (myMeasurementsPlotCard) {
+                    myMeasurementsPlotCard.style.display = 'none';
                 }
             } else {
                 if (initialMessage) {
                     initialMessage.style.display = 'none';
                 }
-                if (myMeasurementsCard) {
-                    myMeasurementsCard.style.display = 'block';
+                if (myMeasurementsSelectionCard) {
+                    myMeasurementsSelectionCard.style.display = 'block';
+                }
+                if (myMeasurementsPlotCard) {
+                    myMeasurementsPlotCard.style.display = 'block';
                 }
             }
         })

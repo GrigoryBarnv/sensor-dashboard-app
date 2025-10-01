@@ -184,41 +184,56 @@
                                 </div>
                             </div>
 
-                            <!-- My Measurements Plot -->
+                            <!-- My Measurements Selection -->
                             <div class="card mt-4">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h4 id="my-measurements-title">My Measurements</h4>
-                                    <span id="my-measurements-sensor-badge" class="badge bg-primary d-none">Sensor</span>
+                                <div class="card-header">
+                                    <h4>Select My Measurement</h4>
                                 </div>
-
                                 <div class="card-body">
                                     <div class="mb-3">
-                                        <label for="my-measurements-selector" class="form-label">Select My Measurement:</label>
-                                        <select id="my-measurements-selector" class="form-select" style="position: relative; z-index: 1000;">
+                                        <label for="my-measurements-selector" class="form-label">Choose Measurement:</label>
+                                        <select id="my-measurements-selector" class="form-select">
                                             <!-- Will be populated with user's measurements -->
                                         </select>
                                     </div>
-
-                                    <div class="visualization-container">
-                                    <!-- Loading spinner -->
-                                    <div id="my-measurements-loading-spinner" class="spinner-border loading-spinner d-none" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-
-                                    <!-- Error display -->
-                                    <div id="my-measurements-error" class="alert alert-danger error-message d-none" role="alert">
-                                    </div>
-
-                                    <!-- Plot container -->
-                                    <div id="my-measurements-chart-container" class="chart-container">
-                                        <div id="my-measurements-plot" style="width: 100%; height: 400px;"></div>
-                                    </div>
-
+                                    
                                     <!-- Initial message -->
-                                    <div id="my-measurements-initial-message" class="text-center p-5">
-                                        <p class="lead text-muted">
-                                            Please select a measurement from the dropdown above and click on sensors to view their data
+                                    <div id="my-measurements-initial-message" class="text-center p-3">
+                                        <p class="text-muted">
+                                            Please select a measurement from the dropdown above
                                         </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- My Measurements Plot -->
+                            <div class="card mt-4">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h4 id="my-measurements-title">My Measurements Plot</h4>
+                                    <span id="my-measurements-sensor-badge" class="badge bg-primary d-none">Sensor</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="visualization-container">
+                                        <!-- Loading spinner -->
+                                        <div id="my-measurements-loading-spinner" class="spinner-border loading-spinner d-none" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+
+                                        <!-- Error display -->
+                                        <div id="my-measurements-error" class="alert alert-danger error-message d-none" role="alert">
+                                        </div>
+
+                                        <!-- Plot container -->
+                                        <div id="my-measurements-chart-container" class="chart-container">
+                                            <div id="my-measurements-plot" style="width: 100%; height: 400px;"></div>
+                                        </div>
+
+                                        <!-- Plot initial message -->
+                                        <div id="my-measurements-plot-initial-message" class="text-center p-5">
+                                            <p class="lead text-muted">
+                                                Select a measurement above and click on sensors to view their data
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
