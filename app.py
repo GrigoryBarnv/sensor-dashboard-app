@@ -229,7 +229,7 @@ def get_latest_live_data():
                 measurement_data = arduino_read.get_measurement_data()
                 print(f"DEBUG: Got measurement data: {measurement_data}")
                 
-                if measurement_data['info']['is_measuring'] and current_user.is_authenticated:
+                if len(measurement_data['buffer']) > 0 and current_user.is_authenticated:
                     print("DEBUG: Saving measurement for authenticated user")
                     try:
                         # Save measurement
