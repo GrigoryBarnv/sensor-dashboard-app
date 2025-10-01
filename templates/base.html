@@ -299,8 +299,24 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
+                            // Hide the current modal
+                            const currentModal = bootstrap.Modal.getInstance(document.getElementById('measurementsModal'));
+                            if (currentModal) {
+                                currentModal.hide();
+                            }
+                            // Remove any modal backdrops
+                            document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+                            // Remove modal-open class from body
+                            document.body.classList.remove('modal-open');
+                            document.body.style.overflow = '';
+                            document.body.style.paddingRight = '';
+                            
                             showToast('Measurement deleted successfully');
-                            showMeasurementsModal();  // Refresh the list
+                            // Short delay before showing the modal again
+                            setTimeout(() => {
+                                showMeasurementsModal();
+                            }, 100);
+                            
                             // Update offline page file list if we're on that page
                             if (window.updateFileList) {
                                 window.updateFileList();
