@@ -329,30 +329,45 @@ def get_temp_measurements():
     """Get list of CSV files in temp_measurements directory"""
     try:
         temp_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp_measurements')
+        print(f"DEBUG: Looking for temp directory at: {temp_dir}")
+        print(f"DEBUG: Directory exists: {os.path.exists(temp_dir)}")
+        
         if not os.path.exists(temp_dir):
+            print("DEBUG: Temp directory does not exist, returning empty list")
             return jsonify([])
         
+        files = os.listdir(temp_dir)
+        print(f"DEBUG: Found {len(files)} files in temp directory: {files}")
+        
         csv_files = []
-        for filename in os.listdir(temp_dir):
+        for filename in files:
+            print(f"DEBUG: Checking file: {filename}")
             if filename.endswith('.CSV') or filename.endswith('.csv'):
+                print(f"DEBUG: File {filename} is a CSV file")
                 # Parse filename to extract measurement info
                 # Format: ProductName_ProductNumber_Date_Measure.CSV
                 parts = filename.replace('_Measure.CSV', '').split('_')
+                print(f"DEBUG: Parsed parts: {parts}")
                 if len(parts) >= 3:
                     product_name = parts[0]
                     product_number = parts[1] 
                     date = parts[2]
-                    csv_files.append({
+                    measurement = {
                         'filename': filename,
                         'product_name': product_name,
                         'product_number': product_number,
                         'date': date,
                         'display_name': f"{product_name} {product_number} ({date})"
-                    })
+                    }
+                    csv_files.append(measurement)
+                    print(f"DEBUG: Added measurement: {measurement}")
         
+        print(f"DEBUG: Returning {len(csv_files)} measurements")
         return jsonify(csv_files)
     except Exception as e:
         print(f"Error getting temp measurements: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify([])
 
 @app.route('/api/clear-temp-measurements', methods=['POST'])

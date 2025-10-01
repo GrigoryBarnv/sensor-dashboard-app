@@ -228,8 +228,16 @@ function updateMyMeasurementsList() {
     emptyDiv.classList.add('d-none');
 
     console.log('DEBUG: Fetching measurements from /api/temp-measurements');
-    fetch('/api/temp-measurements')
+    
+    // Add timeout to fetch request
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    
+    fetch('/api/temp-measurements', { 
+        signal: controller.signal 
+    })
         .then(response => {
+            clearTimeout(timeoutId); // Clear timeout on successful response
             console.log('DEBUG: Response status:', response.status);
             if (!response.ok) {
                 console.log('DEBUG: Error response from server');
@@ -290,11 +298,17 @@ function updateMyMeasurementsList() {
             emptyDiv.classList.add('d-none');
         })
         .catch(error => {
+            clearTimeout(timeoutId); // Clear timeout on error
             console.error('Error fetching measurements:', error);
+            console.log('DEBUG: Full error object:', error);
             // Hide loading and show error
             loadingDiv.classList.add('d-none');
             emptyDiv.classList.remove('d-none');
-            emptyDiv.innerHTML = '<p class="text-danger">Error loading measurements. Please try again.</p>';
+            if (error.name === 'AbortError') {
+                emptyDiv.innerHTML = '<p class="text-danger">Request timed out. Please check your connection.</p>';
+            } else {
+                emptyDiv.innerHTML = `<p class="text-danger">Error loading measurements: ${error.message}</p>`;
+            }
         });
 }
 
