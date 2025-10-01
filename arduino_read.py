@@ -84,7 +84,7 @@ def _append_entry(entry: dict):
         
         # If this is a measurement entry (has time and sensor values), add to measurement buffer
         if measurement_info['is_measuring'] and 'time' in entry and all(
-            sensor in entry for sensor in ['MQ136', 'MQ138', 'MQ137', 'MQ4', 'MQ9', 'MQ8', 'MQ3_10', 'MQ5', 'MQ2', 'MQ135', 'MQ6', 'MQ3_1']
+            sensor in entry for sensor in SENSORS
         ):
             measurement_buffer.append(entry)
             print(f"DEBUG: Added entry to measurement buffer. Buffer size: {len(measurement_buffer)}")
