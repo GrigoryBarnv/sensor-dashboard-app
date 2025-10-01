@@ -57,23 +57,32 @@ class User(UserMixin, db.Model):
         filepath = os.path.join(measurements_dir, filename)
         
         print(f"DEBUG: Creating measurement file at: {filepath}")
-        # Save as CSV
-        with open(filepath, 'w') as f:
-            # Write header
-            f.write("time,MQ136,MQ138,MQ137,MQ4,MQ9,MQ8,MQ3_10,MQ5,MQ2,MQ135,MQ6,MQ3_1\n")
-        print(f"DEBUG: Successfully wrote header to file")
-            
-        # Write data
-        for entry in data_buffer:
-            if 'time' in entry and all(sensor in entry for sensor in ['MQ136', 'MQ138', 'MQ137', 'MQ4', 'MQ9', 'MQ8', 'MQ3_10', 'MQ5', 'MQ2', 'MQ135', 'MQ6', 'MQ3_1']):
-                line = [
-                    entry['time'],
-                    str(entry['MQ136']), str(entry['MQ138']), str(entry['MQ137']),
-                    str(entry['MQ4']), str(entry['MQ9']), str(entry['MQ8']),
-                    str(entry['MQ3_10']), str(entry['MQ5']), str(entry['MQ2']),
-                    str(entry['MQ135']), str(entry['MQ6']), str(entry['MQ3_1'])
-                ]
-                f.write(','.join(line) + '\n')
+        print(f"DEBUG: Data buffer contains {len(data_buffer)} entries")
+        
+        try:
+            # Save as CSV
+            with open(filepath, 'w') as f:
+                # Write header
+                f.write("time,MQ136,MQ138,MQ137,MQ4,MQ9,MQ8,MQ3_10,MQ5,MQ2,MQ135,MQ6,MQ3_1\n")
+                print(f"DEBUG: Successfully wrote header to file")
+                
+                # Write data
+                for entry in data_buffer:
+                    print(f"DEBUG: Processing entry: {entry}")
+                    if isinstance(entry, dict) and 'time' in entry and all(sensor in entry for sensor in ['MQ136', 'MQ138', 'MQ137', 'MQ4', 'MQ9', 'MQ8', 'MQ3_10', 'MQ5', 'MQ2', 'MQ135', 'MQ6', 'MQ3_1']):
+                        line = [
+                            str(entry['time']),
+                            str(entry['MQ136']), str(entry['MQ138']), str(entry['MQ137']),
+                            str(entry['MQ4']), str(entry['MQ9']), str(entry['MQ8']),
+                            str(entry['MQ3_10']), str(entry['MQ5']), str(entry['MQ2']),
+                            str(entry['MQ135']), str(entry['MQ6']), str(entry['MQ3_1'])
+                        ]
+                        f.write(','.join(line) + '\n')
+                        print(f"DEBUG: Wrote line to file: {','.join(line)}")
+                    else:
+                        print(f"DEBUG: Skipping invalid entry: {entry}")
+        except Exception as e:
+            print(f"DEBUG: Error writing file: {str(e)}")
         
         # Create measurement record
         measurement = Measurement(

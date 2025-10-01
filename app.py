@@ -167,28 +167,45 @@ def start_measurement():
 @app.route("/api/live-stream-data", methods=["GET"])
 def get_latest_live_data():
     log_data = arduino_read.get_log()
+    print("DEBUG: Got log data from arduino_read")
     
     # Check for measurement completion
     for entry in log_data:
         if isinstance(entry, dict) and 'raw' in entry:
+            print(f"DEBUG: Processing log entry: {entry}")
             if 'Measurement ended.' in entry['raw']:
+                print("DEBUG: Found measurement completion message")
                 # Get measurement data
                 measurement_data = arduino_read.get_measurement_data()
+                print(f"DEBUG: Got measurement data: {measurement_data}")
+                
                 if measurement_data['info']['is_measuring'] and current_user.is_authenticated:
-                    # Save measurement
-                    current_user.add_measurement(
-                        measurement_data['buffer'],
-                        measurement_data['info']['product_name'],
-                        measurement_data['info']['product_number'],
-                        measurement_data['info']['date']
-                    )
-                    # Clear measurement data
-                    arduino_read.clear_measurement_data()
-                    # Add completion message
-                    log_data.append({
-                        'raw': '✅ Measurement completed and saved to your account.',
-                        'type': 'success'
-                    })
+                    print("DEBUG: Saving measurement for authenticated user")
+                    try:
+                        # Save measurement
+                        current_user.add_measurement(
+                            measurement_data['buffer'],
+                            measurement_data['info']['product_name'],
+                            measurement_data['info']['product_number'],
+                            measurement_data['info']['date']
+                        )
+                        print("DEBUG: Successfully saved measurement")
+                        
+                        # Clear measurement data
+                        arduino_read.clear_measurement_data()
+                        print("DEBUG: Cleared measurement data")
+                        
+                        # Add completion message
+                        log_data.append({
+                            'raw': '✅ Measurement completed and saved to your account.',
+                            'type': 'success'
+                        })
+                    except Exception as e:
+                        print(f"DEBUG: Error saving measurement: {str(e)}")
+                        log_data.append({
+                            'raw': f'❌ Error saving measurement: {str(e)}',
+                            'type': 'error'
+                        })
     
     return jsonify(log_data)
 
