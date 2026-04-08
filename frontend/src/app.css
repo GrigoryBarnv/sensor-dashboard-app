@@ -36,6 +36,10 @@
   margin: 0 auto;
 }
 
+.live-toolbar {
+  padding-inline: 0.25rem;
+}
+
 .plot-frame {
   min-height: 420px;
 }

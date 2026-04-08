@@ -733,22 +733,24 @@ function LiveDashboard({ language, onToast }) {
   }
 
   return (
-    <div className="dashboard-grid">
-      <div>
-        <SensorGrid
-          activeSensors={activeSensors}
-          onToggle={(sensorId) =>
-            setActiveSensors((current) =>
-              current.includes(sensorId)
-                ? current.filter((item) => item !== sensorId)
-                : [...current, sensorId],
-            )
-          }
-          language={language}
-        />
+    <div className="dashboard-main dashboard-main-centered">
+      <div className="card section-card selector-card">
+        <div className="card-body">
+          <SensorGrid
+            activeSensors={activeSensors}
+            onToggle={(sensorId) =>
+              setActiveSensors((current) =>
+                current.includes(sensorId)
+                  ? current.filter((item) => item !== sensorId)
+                  : [...current, sensorId],
+              )
+            }
+            language={language}
+          />
+        </div>
       </div>
       <div className="dashboard-main">
-        <div className="d-flex align-items-center gap-3 flex-wrap">
+        <div className="d-flex align-items-center gap-3 flex-wrap live-toolbar">
           <span className="status-chip">
             <span className={classNames("status-chip-dot", connectStatus.connected && "online")} />
             {connectStatus.connected
