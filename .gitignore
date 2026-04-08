@@ -14,3 +14,7 @@ persistent_data/
 # System files
 .DS_Store
 Thumbs.db
+
+# Frontend
+frontend/node_modules/
+static/frontend/

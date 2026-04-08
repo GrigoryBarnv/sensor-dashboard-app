@@ -1,0 +1,185 @@
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-header-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+.dashboard-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.dashboard-main-centered {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+}
+
+.plot-frame {
+  min-height: 420px;
+}
+
+.selector-card .card-body {
+  padding: 1.25rem 1.5rem;
+}
+
+.selector-card .sensor-panel {
+  position: static;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.selector-card .sensor-buttons {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+  justify-content: stretch;
+}
+
+.selector-card .sensor-button {
+  min-width: 0;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 0.5rem;
+}
+
+.selector-card .sensor-name {
+  margin: 0;
+  text-align: center;
+}
+
+.measurement-table td,
+.measurement-table th {
+  vertical-align: middle;
+}
+
+.terminal-box {
+  white-space: pre-wrap;
+  font-family: Consolas, Monaco, monospace;
+  background: #181a1b;
+  color: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  min-height: 180px;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.app-modal {
+  background: rgba(5, 7, 12, 0.72);
+}
+
+.app-modal .modal-dialog {
+  max-width: 720px;
+}
+
+.section-card {
+  margin: 0;
+  max-width: none;
+  width: 100%;
+}
+
+.control-card .card-body {
+  padding: 1.25rem 1.5rem;
+}
+
+.dataset-controls {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: end;
+}
+
+.source-switcher,
+.dataset-picker {
+  min-width: 0;
+}
+
+.dataset-picker .form-select {
+  width: 100%;
+}
+
+.card-header h4,
+.card-header h5 {
+  margin-bottom: 0;
+}
+
+.live-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.status-chip-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: #dc3545;
+}
+
+.status-chip-dot.online {
+  background: #198754;
+}
+
+.sensor-info-list {
+  margin-bottom: 0;
+}
+
+@media (max-width: 992px) {
+  .live-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-actions {
+    justify-content: flex-start;
+  }
+
+  .dataset-controls {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .selector-card .sensor-buttons {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .selector-card .sensor-buttons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

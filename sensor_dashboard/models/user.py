@@ -1,8 +1,8 @@
 from . import db, UserMixin, generate_password_hash, check_password_hash
 from datetime import datetime
 import json
-import os
-from arduino_read import SENSORS  # Import sensor list in correct order
+from sensor_dashboard.hardware.arduino_read import SENSORS
+from sensor_dashboard.paths import DATA_DIR, MEASUREMENTS_DIR, TEMP_MEASUREMENTS_DIR
 
 class Measurement(db.Model):
     __tablename__ = 'measurements'
@@ -48,26 +48,19 @@ class User(UserMixin, db.Model):
 
     def add_measurement(self, data_buffer, product_name, product_number, date):
         """Save measurement data and create CSV file"""
-        # Save in data, persistent_data/measurements, and temp directories
-        app_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        data_dir = os.path.join(app_dir, 'data')
-        measurements_dir = os.path.join(app_dir, 'persistent_data', 'measurements')
-        temp_dir = os.path.join(app_dir, 'temp_measurements')
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        MEASUREMENTS_DIR.mkdir(parents=True, exist_ok=True)
+        TEMP_MEASUREMENTS_DIR.mkdir(parents=True, exist_ok=True)
         
-        # Create directories if they don't exist
-        os.makedirs(data_dir, exist_ok=True)
-        os.makedirs(measurements_dir, exist_ok=True)
-        os.makedirs(temp_dir, exist_ok=True)
-        
-        print(f"DEBUG: Data directory: {data_dir}")
-        print(f"DEBUG: Measurements directory: {measurements_dir}")
-        print(f"DEBUG: Temp directory: {temp_dir}")
+        print(f"DEBUG: Data directory: {DATA_DIR}")
+        print(f"DEBUG: Measurements directory: {MEASUREMENTS_DIR}")
+        print(f"DEBUG: Temp directory: {TEMP_MEASUREMENTS_DIR}")
         
         # Generate filename
         filename = f"{product_name}_{product_number}_{date}_Measure.CSV"
-        data_filepath = os.path.join(data_dir, filename)
-        measurements_filepath = os.path.join(measurements_dir, filename)
-        temp_filepath = os.path.join(temp_dir, filename)
+        data_filepath = DATA_DIR / filename
+        measurements_filepath = MEASUREMENTS_DIR / filename
+        temp_filepath = TEMP_MEASUREMENTS_DIR / filename
         
         print(f"DEBUG: Creating measurement files at:")
         print(f"DEBUG: - {data_filepath}")
@@ -133,10 +126,8 @@ class User(UserMixin, db.Model):
         """Delete measurement and its CSV file"""
         measurement = Measurement.query.get(measurement_id)
         if measurement and measurement.user_id == self.id:
-            # Get paths
-            app_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            data_filepath = os.path.join(app_dir, 'data', measurement.filename)
-            measurements_filepath = os.path.join(app_dir, 'persistent_data', 'measurements', measurement.filename)
+            data_filepath = DATA_DIR / measurement.filename
+            measurements_filepath = MEASUREMENTS_DIR / measurement.filename
             
             print(f"DEBUG: Deleting measurement files:")
             print(f"DEBUG: - {data_filepath}")
@@ -144,11 +135,11 @@ class User(UserMixin, db.Model):
             
             # Delete CSV files
             try:
-                if os.path.exists(data_filepath):
-                    os.remove(data_filepath)
+                if data_filepath.exists():
+                    data_filepath.unlink()
                     print(f"DEBUG: Deleted file: {data_filepath}")
-                if os.path.exists(measurements_filepath):
-                    os.remove(measurements_filepath)
+                if measurements_filepath.exists():
+                    measurements_filepath.unlink()
                     print(f"DEBUG: Deleted file: {measurements_filepath}")
             except Exception as e:
                 print(f"DEBUG: Error deleting files: {e}")
