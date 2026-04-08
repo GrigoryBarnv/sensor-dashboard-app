@@ -1,5 +1,19 @@
 # Sensor Dashboard App
 
+## Screenshots
+
+### Offline Dashboard
+
+![Offline Dashboard](Screenshots/offline.png)
+
+### Live Dashboard
+
+![Live Dashboard](Screenshots/online_static.png)
+
+### Login
+
+![Login](Screenshots/login.png)
+
 Sensor Dashboard is a full-stack web application for viewing gas sensor data in two modes:
 
 - `Offline`: load historical datasets and plot them on demand
