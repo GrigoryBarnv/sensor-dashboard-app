@@ -209,7 +209,95 @@ function classNames(...values) {
   return values.filter(Boolean).join(" ");
 }
 
+const STATIC_MODE =
+  import.meta.env.VITE_STATIC_MODE === "true" ||
+  window.location.protocol === "file:" ||
+  window.location.hostname.endsWith("github.io");
+
+const csvCache = new Map();
+
+function parseCsv(text) {
+  const lines = text.split(/\r?\n/).filter(Boolean);
+  if (lines.length < 2) {
+    return [];
+  }
+  const headers = lines[0].split(",").map((part) => part.trim());
+  return lines.slice(1).map((line) => {
+    const cols = line.split(",");
+    const row = {};
+    headers.forEach((header, index) => {
+      const raw = (cols[index] ?? "").trim();
+      const num = Number(raw);
+      row[header] = Number.isFinite(num) && raw !== "" ? num : raw;
+    });
+    return row;
+  });
+}
+
+async function loadCsvRows(filename) {
+  if (!filename) {
+    return [];
+  }
+  if (csvCache.has(filename)) {
+    return csvCache.get(filename);
+  }
+  const response = await fetch(`./data/${encodeURIComponent(filename)}`);
+  if (!response.ok) {
+    throw new Error(`CSV not found: ${filename}`);
+  }
+  const text = await response.text();
+  const rows = parseCsv(text);
+  csvCache.set(filename, rows);
+  return rows;
+}
+
+async function fetchStaticJson(url) {
+  const parsed = new URL(url, window.location.origin);
+  const path = parsed.pathname;
+
+  if (path === "/api/session") {
+    return { authenticated: false, user: null };
+  }
+  if (path === "/api/available-files") {
+    const response = await fetch("./data/index.json");
+    if (!response.ok) {
+      throw new Error("Dataset index not found. Run frontend build first.");
+    }
+    const payload = await response.json();
+    return Array.isArray(payload.files) ? payload.files : [];
+  }
+  if (path.startsWith("/api/sensor/")) {
+    const sensorId = decodeURIComponent(path.replace("/api/sensor/", ""));
+    const file = parsed.searchParams.get("file");
+    const rows = await loadCsvRows(file);
+    const time = [];
+    const values = [];
+    for (const row of rows) {
+      if (row.time !== undefined && row[sensorId] !== undefined) {
+        time.push(String(row.time));
+        values.push(Number(row[sensorId]));
+      }
+    }
+    return { time, values };
+  }
+  if (path === "/api/measurements") {
+    return [];
+  }
+  if (path.startsWith("/api/measurements/") && path.endsWith("/data")) {
+    throw new Error("Saved measurements are not available in static mode.");
+  }
+
+  if (path.startsWith("/api/") || path === "/login" || path === "/register") {
+    throw new Error("This feature requires the Flask backend and is disabled on GitHub Pages.");
+  }
+
+  throw new Error(`Unsupported static route: ${path}`);
+}
+
 async function fetchJson(url, options) {
+  if (STATIC_MODE) {
+    return fetchStaticJson(url);
+  }
   const response = await fetch(url, options);
   const contentType = response.headers.get("content-type") || "";
   const data = contentType.includes("application/json")
@@ -472,13 +560,15 @@ function OfflineDashboard({ language, selectedMeasurementId, onClearSelectedMeas
                   >
                     {t.sourceCsv}
                   </button>
-                  <button
-                    type="button"
-                    className={classNames("btn", dataSource === "sql" ? "btn-primary" : "btn-outline-primary")}
-                    onClick={() => setDataSource("sql")}
-                  >
-                    {t.sourceSql}
-                  </button>
+                  {!STATIC_MODE ? (
+                    <button
+                      type="button"
+                      className={classNames("btn", dataSource === "sql" ? "btn-primary" : "btn-outline-primary")}
+                      onClick={() => setDataSource("sql")}
+                    >
+                      {t.sourceSql}
+                    </button>
+                  ) : null}
                 </div>
               </div>
               <div className="dataset-picker">
@@ -980,7 +1070,7 @@ function MeasurementsModal({ open, onClose, onSelectMeasurement, onRefreshMeasur
 }
 
 export default function App() {
-  const initialPath = window.location.pathname === "/live" ? "live" : "offline";
+  const initialPath = !STATIC_MODE && window.location.pathname === "/live" ? "live" : "offline";
   const [view, setView] = useState(initialPath);
   const [language, setLanguage] = useState(localStorage.getItem("lang") || "de");
   const [session, setSession] = useState({ authenticated: false, user: null });
@@ -1088,13 +1178,15 @@ export default function App() {
             >
               {t.offline}
             </button>
-            <button
-              type="button"
-              className={classNames("btn btn-sm", view === "live" ? "btn-danger" : "btn-outline-danger")}
-              onClick={() => navigate("live")}
-            >
-              <span className="dot" /> {t.live}
-            </button>
+            {!STATIC_MODE ? (
+              <button
+                type="button"
+                className={classNames("btn btn-sm", view === "live" ? "btn-danger" : "btn-outline-danger")}
+                onClick={() => navigate("live")}
+              >
+                <span className="dot" /> {t.live}
+              </button>
+            ) : null}
             <button
               type="button"
               className={classNames("btn btn-sm", language === "de" ? "btn-light" : "btn-outline-light")}
@@ -1109,7 +1201,7 @@ export default function App() {
             >
               EN
             </button>
-            {session.authenticated ? (
+            {!STATIC_MODE && session.authenticated ? (
               <>
                 <button
                   type="button"
@@ -1125,7 +1217,7 @@ export default function App() {
                   {t.logout}
                 </button>
               </>
-            ) : (
+            ) : !STATIC_MODE ? (
               <>
                 <button
                   type="button"
@@ -1148,7 +1240,7 @@ export default function App() {
                   {t.register}
                 </button>
               </>
-            )}
+            ) : null}
           </div>
         </div>
       </header>

@@ -21,6 +21,31 @@ Sensor Dashboard is a full-stack web application for viewing gas sensor data in 
 
 The project now uses a React frontend and a Flask backend API. The backend also stores data in SQLite and can serve the same dataset either directly from CSV files or from SQL-imported copies.
 
+## GitHub Pages (static mode)
+
+This repository now supports a static GitHub Pages deployment for the frontend.
+
+- Build command in `frontend/`:
+  - `npm.cmd run build`
+- During build, CSV files from repo `data/` are copied into:
+  - `frontend/public/data/`
+- A dataset index is generated automatically:
+  - `frontend/public/data/index.json`
+
+### What works on Pages
+
+- Offline dashboard with CSV datasets
+- Sensor selection and plotting
+- Dataset switching within CSV files
+
+### What does not work on Pages
+
+- Flask API features
+- Login/register/session
+- SQL data source mode
+- Live Arduino streaming
+- Measurement save/delete/download APIs
+
 ## Tech Stack
 
 ### Frontend
