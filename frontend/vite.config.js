@@ -3,9 +3,9 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig(({ command }) => ({
   plugins: [react()],
-  base: command === "build" ? "/static/frontend/" : "/",
+  base: command === "build" ? "./" : "/",
   build: {
-    outDir: "../static/frontend",
+    outDir: "dist",
     emptyOutDir: true,
   },
   server: {

@@ -366,6 +366,28 @@ npm.cmd run dev
 
 Vite is configured to proxy backend requests to Flask.
 
+## GitHub Pages Deployment
+
+The repository now includes a workflow at:
+
+- `.github/workflows/pages.yml`
+
+It builds the React app from `frontend/` and deploys `frontend/dist` to GitHub Pages on every push to `main`.
+
+### One-time GitHub setup
+
+1. Open repository settings on GitHub.
+2. Go to `Pages`.
+3. Set source to `GitHub Actions`.
+
+### Important limitation on Pages
+
+GitHub Pages can only host static files.
+
+This means API-based features (`/api/*`, login/register, live Arduino, SQL/CSV backend endpoints) require the Flask backend to be hosted separately.
+
+The frontend itself is deployable and will load on Pages, but backend-dependent actions will fail unless you provide an external API URL/reverse proxy.
+
 ### Backend initialization
 
 On startup, `init_db()` does two things:

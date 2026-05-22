@@ -17,4 +17,5 @@ Thumbs.db
 
 # Frontend
 frontend/node_modules/
+frontend/dist/
 static/frontend/

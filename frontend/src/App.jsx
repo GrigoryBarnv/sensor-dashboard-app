@@ -1171,7 +1171,7 @@ export default function App() {
       <footer className="app-footer">
         <div className="footer-content">
           <img
-            src="/static/images/RZ_UniHohenheim_Logo_1C_Weiss_EN.png"
+            src={`${import.meta.env.BASE_URL}static/images/RZ_UniHohenheim_Logo_1C_Weiss_EN.png`}
             alt="Universität Hohenheim"
             className="footer-logo"
           />
