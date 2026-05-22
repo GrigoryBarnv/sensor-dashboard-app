@@ -25,6 +25,14 @@ The project now uses a React frontend and a Flask backend API. The backend also 
 
 This repository now supports a static GitHub Pages deployment for the frontend.
 
+### Quickstart (ohne Backend)
+
+1. Push auf `main`
+2. GitHub Action `.github/workflows/pages.yml` baut `frontend/dist`
+3. In GitHub: `Settings -> Pages -> Source: GitHub Actions`
+
+Hinweis: Auf Pages laufen nur statische Features (CSV-Offline-Ansicht, Sensor-Auswahl, Plotting).
+
 - Build command in `frontend/`:
   - `npm.cmd run build`
 - During build, CSV files from repo `data/` are copied into:
