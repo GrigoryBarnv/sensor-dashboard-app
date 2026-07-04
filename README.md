@@ -2,7 +2,7 @@
 
 ## Screenshots
 
-### Offline Dashboard
+### Offline Dashboard Setup
 
 ![Offline Dashboard](Screenshots/offline.png)
 
